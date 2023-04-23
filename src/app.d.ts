@@ -17,7 +17,7 @@ declare global {
             username: string;
             password: string;
             date_created: string;
-            profile_photo: string | null;
+            profile_photo: string?;
             admin: boolean;
         }
     }
