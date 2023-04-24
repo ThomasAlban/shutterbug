@@ -1,0 +1,88 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "cockroachdb"
+    url      = env("DATABASE_URL")
+}
+
+model User {
+    userID       String   @id @default(uuid())
+    username     String   @unique
+    password     String
+    dateCreated  DateTime @default(now())
+    profilePhoto String?
+    admin        Boolean  @default(false)
+
+    friendRequester Friend[] @relation("requester")
+    friendRequestee Friend[] @relation("requestee")
+    photos          Photo[]
+    votes           Vote[]
+    reports         Report[] @relation("reporter")
+    reportingUsers  Report[] @relation("culprit")
+}
+
+model Friend {
+    requester   User   @relation(name: "requester", fields: [requesterID], references: [userID])
+    requesterID String
+
+    requestee   User   @relation(name: "requestee", fields: [requesteeID], references: [userID])
+    requesteeID String
+
+    accepted Boolean @default(false)
+
+    @@id([requesterID, requesteeID])
+}
+
+model Photo {
+    photoID String @id @default(uuid())
+
+    user   User   @relation(fields: [userID], references: [userID])
+    userID String
+
+    theme   Theme  @relation(fields: [themeID], references: [themeID])
+    themeID String
+
+    photo       String
+    dateCreated DateTime @default(now())
+    Vote        Vote[]
+}
+
+model Vote {
+    voter   User   @relation(fields: [voterID], references: [userID])
+    voterID String
+
+    photo   Photo  @relation(fields: [photoID], references: [photoID])
+    photoID String
+
+    voteHumour      Int
+    voteCreativity  Int
+    votePhotography Int
+
+    @@id([voterID, photoID])
+}
+
+model Theme {
+    themeID   String   @id @default(uuid())
+    theme     String
+    dateStart DateTime
+    dateEnd   DateTime
+
+    photos Photo[]
+}
+
+model Report {
+    reporter   User   @relation(name: "reporter", fields: [reporterID], references: [userID])
+    reporterID String
+
+    culprit   User   @relation(name: "culprit", fields: [culpritID], references: [userID])
+    culpritID String
+
+    reason String?
+
+    @@id([reporterID, culpritID])
+}
