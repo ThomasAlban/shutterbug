@@ -18,8 +18,10 @@ model User {
     profilePhoto String?
     admin        Boolean  @default(false)
 
-    friendRequester Friend[] @relation("requester")
-    friendRequestee Friend[] @relation("requestee")
+    // these fields are not actually pushed to the database, but are a feature of Prisma
+    // in Prisma relationships have 2 sides to them
+    friendRequestsSent Friend[] @relation("requester")
+    friendRequestsRecieved Friend[] @relation("requestee")
     photos          Photo[]
     votes           Vote[]
     reports         Report[] @relation("reporter")
@@ -27,6 +29,8 @@ model User {
 }
 
 model Friend {
+    // 'requester' is not actually pushed to the database, but is an example of a Prisma relation field
+    // 'requester' in this case represents a User, and the @relation tag tells Prisma that the User's ID matches 'requesterID'
     requester   User   @relation(name: "requester", fields: [requesterID], references: [userID])
     requesterID String
 
@@ -35,6 +39,7 @@ model Friend {
 
     accepted Boolean @default(false)
 
+    // compound primary key of requesterID and requesteeID
     @@id([requesterID, requesteeID])
 }
 
