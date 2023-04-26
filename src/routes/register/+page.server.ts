@@ -1,6 +1,6 @@
 import type { Actions, PageServerLoad } from "../login/$types";
 import { fail, redirect } from "@sveltejs/kit";
-import prisma from "$lib/server/prisma";
+import db from "$lib/server/db";
 import bcrypt from "bcrypt";
 
 export const load: PageServerLoad = (event) => {
@@ -21,7 +21,7 @@ export const actions: Actions = {
 
     // Create a new user
     try {
-      await prisma.user.create({
+      await db.user.create({
         data: {
           username,
           password: await bcrypt.hash(password, 10),

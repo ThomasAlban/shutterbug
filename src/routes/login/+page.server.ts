@@ -1,6 +1,6 @@
 import type { Actions, PageServerLoad } from "./$types";
 import { fail, redirect } from "@sveltejs/kit";
-import prisma from "$lib/server/prisma";
+import db from "$lib/server/db";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { JWT_ACCESS_SECRET } from "$env/static/private";
@@ -23,7 +23,7 @@ export const actions: Actions = {
     };
 
     // get the user from the database
-    const user = await prisma.user.findUnique({
+    const user = await db.user.findUnique({
       where: {
         username,
       },

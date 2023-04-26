@@ -15,7 +15,7 @@ declare global {
       };
     }
   }
-  var prisma: PrismaClient;
+  var db: PrismaClient;
 }
 
 export {};

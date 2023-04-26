@@ -1,7 +1,7 @@
 import type { Handle } from "@sveltejs/kit";
 import { parse } from "cookie";
 import jwt from "jsonwebtoken";
-import prisma from "$lib/server/prisma";
+import prisma from "$lib/server/db";
 
 import { JWT_ACCESS_SECRET } from "$env/static/private";
 
