@@ -8,7 +8,12 @@ declare global {
     // interface Error {}
     // interface PageData {}
     // interface Platform {}
-    //interface Locals {}
+    interface Locals {
+      user?: {
+        userID: string;
+        username: string;
+      };
+    }
   }
   var prisma: PrismaClient;
 }
