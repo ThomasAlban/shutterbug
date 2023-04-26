@@ -1,11 +1,7 @@
-<script>
-  import { enhance } from "$app/forms";
-</script>
-
 <h1>Login</h1>
 
 <section>
-    <form method="post" use:enhance>
+    <form method="post">
         <div class="group">
             <label for="username">Username</label>
             <input type="text" name="username" id="username" required />

@@ -10,10 +10,12 @@ export const load: PageServerLoad = (event) => {
   if (event.locals.user) throw redirect(302, "/home");
 };
 
+// this function runs when the form is submitted
 export const actions: Actions = {
   default: async (event) => {
     const formData = Object.fromEntries(await event.request.formData());
 
+    // check to see if form input is valid
     if (!formData.username || !formData.password) return fail(400);
 
     // get the user data from the login form
@@ -30,16 +32,19 @@ export const actions: Actions = {
     });
     if (!user) return fail(400);
 
-    // Verify the password
+    // verify the password
     const passwordIsValid = await bcrypt.compare(password, user.password);
     if (!passwordIsValid) return fail(400);
 
+    // this is the user information which will be stored in the JWT token
     const jwtUser = {
       userID: user.userID,
       username: user.username,
     };
 
     // generate a JWT token, which will be stored on the client and used to authenticate the user
+    // JWT_ACCESS_SECRET is an environment variable containing a secret string (which can be anything)
+    // which is stored on the server and used to sign the JWT token
     const token = jwt.sign(jwtUser, JWT_ACCESS_SECRET, {
       expiresIn: "1d",
     });

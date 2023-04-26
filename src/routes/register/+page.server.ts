@@ -8,22 +8,32 @@ export const load: PageServerLoad = (event) => {
   if (event.locals.user) throw redirect(302, "/home");
 };
 
+// this function runs when the form is submitted
 export const actions: Actions = {
   default: async (event) => {
     const formData = Object.fromEntries(await event.request.formData());
 
-    if (!formData.username || !formData.password) return fail(400);
+    // check to make sure the username and password inputs are valid
+    if (
+      !formData.username ||
+      !formData.password ||
+      formData.password != formData.password2
+    ) {
+      return fail(400);
+    }
 
+    // get the username and password out of the formdata object
     const { username, password } = formData as {
       username: string;
       password: string;
     };
 
-    // Create a new user
+    // create a new user
     try {
       await db.user.create({
         data: {
           username,
+          // store in the database a hashed version of their password
           password: await bcrypt.hash(password, 10),
         },
       });
