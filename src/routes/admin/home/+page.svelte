@@ -19,7 +19,11 @@
             <td>{report.reporterID}</td>
             <td>{report.culpritID}</td>
             <td>{report.reason}</td>
-            <td>Delete</td>
+            <td>
+                <form action="?/delete&reporterID={report.reporterID}&culpritID={report.culpritID}" method="POST">
+                    <button type="submit">Delete</button>
+                </form>
+            </td>
         </tr>
     {/each}
 

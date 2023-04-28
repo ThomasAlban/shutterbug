@@ -37,9 +37,7 @@ export const actions = {
         },
       });
     } catch (error) {
-      return fail(500, {
-        error,
-      });
+      return fail(500, { error });
     }
 
     // Redirect to the login page
