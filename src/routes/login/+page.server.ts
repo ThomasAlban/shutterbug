@@ -1,18 +1,17 @@
-import type { Actions, PageServerLoad } from "./$types";
 import { fail, redirect } from "@sveltejs/kit";
 import db from "$lib/server/db";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { JWT_ACCESS_SECRET } from "$env/static/private";
 
-export const load: PageServerLoad = (event) => {
+export function load(event) {
   // If the user is already logged in, redirect them to the home page
   if (event.locals.user) throw redirect(302, "/home");
-};
+}
 
 // this function runs when the form is submitted
-export const actions: Actions = {
-  default: async (event) => {
+export const actions = {
+  async default(event) {
     const formData = Object.fromEntries(await event.request.formData());
 
     // check to see if form input is valid

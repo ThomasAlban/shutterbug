@@ -4,8 +4,6 @@ import { PrismaClient } from "@prisma/client";
 const db = global.db || new PrismaClient();
 
 // when in development mode and changes are made SvelteKit refreshes itself. This prevents a new PrismaClient being made in that case
-if (process.env.NODE_ENV === "development") {
-  global.db = db;
-}
+if (process.env.NODE_ENV === "development") global.db = db;
 
 export default db;

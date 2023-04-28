@@ -1,11 +1,10 @@
-import type { Handle } from "@sveltejs/kit";
 import { parse } from "cookie";
 import jwt from "jsonwebtoken";
 import db from "$lib/server/db";
 import { JWT_ACCESS_SECRET } from "$env/static/private";
 
 // this function is run on every request
-export const handle: Handle = async ({ event, resolve }) => {
+export async function handle({ event, resolve }) {
   const { headers } = event.request;
 
   // get the cookie from the headers of the request
@@ -41,4 +40,4 @@ export const handle: Handle = async ({ event, resolve }) => {
   }
 
   return await resolve(event);
-};
+}
