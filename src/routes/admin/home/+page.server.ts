@@ -3,7 +3,7 @@ import { fail } from '@sveltejs/kit';
 import { redirect } from '@sveltejs/kit';
 
 export async function load(event) {
-	if (!event.locals.user) throw redirect(302, '/login');
+if (!event.locals.user) throw redirect(302, '/login');
 	if (!event.locals.user.admin) throw redirect(302, '/home');
 
 	return {

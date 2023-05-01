@@ -20,12 +20,12 @@ model User {
 
     // these fields are not actually pushed to the database, but are a feature of Prisma
     // in Prisma relationships have 2 sides to them
-    friendRequestsSent Friend[] @relation("requester")
+    friendRequestsSent     Friend[] @relation("requester")
     friendRequestsRecieved Friend[] @relation("requestee")
-    photos          Photo[]
-    votes           Vote[]
-    reports         Report[] @relation("reporter")
-    reportingUsers  Report[] @relation("culprit")
+    photos                 Photo[]
+    votes                  Vote[]
+    reports                Report[] @relation("reporter")
+    reportingUsers         Report[] @relation("culprit")
 }
 
 model Friend {

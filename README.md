@@ -1,4 +1,6 @@
-Once cloned, run:
+# Shutterbug
+
+Once cloned, run these commands in the terminal:
 
 ```console
 npm install
