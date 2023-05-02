@@ -15,7 +15,7 @@
 		<th>Reporter ID</th>
 		<th>Culprit ID</th>
 		<th>Reason</th>
-		<th>Delete</th>
+		<th>Delete</th>å
 	</tr>
 
 	{#each reports as report}
@@ -25,8 +25,8 @@
 			<td>{report.reason}</td>
 			<td>
 				<form
-					action="?/delete&reporterID={report.reporterID}&culpritID={report.culpritID}"
-					method="POST"
+					action="?/deleteReport&reporterID={report.reporterID}&culpritID={report.culpritID}"
+					method="post"
 				>
 					<button type="submit">Delete</button>
 				</form>

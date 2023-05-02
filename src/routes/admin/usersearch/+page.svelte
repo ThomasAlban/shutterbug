@@ -1,10 +1,7 @@
 <script lang="ts">
-	import type { User } from '@prisma/client';
 	import { enhance } from '$app/forms';
 
 	export let form;
-
-	let users: User[] | undefined;
 	$: users = form?.users;
 </script>
 

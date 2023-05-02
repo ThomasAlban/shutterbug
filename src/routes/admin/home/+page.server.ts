@@ -4,7 +4,6 @@ import { redirect } from '@sveltejs/kit';
 
 export async function load(event) {
 	if (!event.locals.user) throw redirect(302, '/login');
-	if (!event.locals.user.admin) throw redirect(302, '/home');
 
 	return {
 		// get all reports
@@ -14,7 +13,7 @@ export async function load(event) {
 
 export const actions = {
 	// this runs when the delete button for a report is clicked
-	async delete({ url }) {
+	async deleteReport({ url }) {
 		const reporterID = url.searchParams.get('reporterID');
 		const culpritID = url.searchParams.get('culpritID');
 

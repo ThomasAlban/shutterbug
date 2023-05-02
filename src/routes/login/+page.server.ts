@@ -4,21 +4,21 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { JWT_ACCESS_SECRET } from '$env/static/private';
 
-export function load(event) {
+export function load({ locals }) {
 	// If the user is already logged in, redirect them to the home page
-	if (event.locals.user) {
-		if (event.locals.user.admin) throw redirect(302, '/admin/home');
+	if (locals.user) {
+		if (locals.user.admin) throw redirect(302, '/admin/home');
 		throw redirect(302, '/home');
 	}
 }
 
 // this function runs when the form is submitted
 export const actions = {
-	async default(event) {
-		const formData = Object.fromEntries(await event.request.formData());
+	async default({ request, cookies }) {
+		const formData = Object.fromEntries(await request.formData());
 
 		// check to see if form input is valid
-		if (!formData.username || !formData.password) return fail(400);
+		if (!formData.username || !formData.password) return fail(400, { message: 'Invalid input' });
 
 		// get the user data from the login form
 		const { username, password } = formData as {
@@ -28,15 +28,13 @@ export const actions = {
 
 		// get the user from the database
 		const user = await db.user.findUnique({
-			where: {
-				username
-			}
+			where: { username }
 		});
-		if (!user) return fail(400);
+		if (!user) return fail(400, { message: 'User not found' });
 
 		// verify the password
 		const passwordIsValid = await bcrypt.compare(password, user.password);
-		if (!passwordIsValid) return fail(400);
+		if (!passwordIsValid) return fail(400, { message: 'Incorrect password' });
 
 		// this is the user information which will be stored in the JWT token
 		const jwtUser = {
@@ -48,12 +46,10 @@ export const actions = {
 		// generate a JWT token, which will be stored on the client and used to authenticate the user
 		// JWT_ACCESS_SECRET is an environment variable containing a secret string (which can be anything)
 		// which is stored on the server and used to sign the JWT token
-		const token = jwt.sign(jwtUser, JWT_ACCESS_SECRET, {
-			expiresIn: '1d'
-		});
+		const token = jwt.sign(jwtUser, JWT_ACCESS_SECRET, { expiresIn: '1d' });
 
 		// Set the cookie
-		event.cookies.set('AuthorizationToken', `Bearer ${token}`, {
+		cookies.set('AuthorizationToken', `Bearer ${token}`, {
 			httpOnly: true,
 			path: '/',
 			secure: true,
