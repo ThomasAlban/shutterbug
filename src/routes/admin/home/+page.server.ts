@@ -2,8 +2,8 @@ import db from '$lib/server/db';
 import { fail } from '@sveltejs/kit';
 import { redirect } from '@sveltejs/kit';
 
-export async function load(event) {
-	if (!event.locals.user) throw redirect(302, '/login');
+export async function load({ locals }) {
+	if (!locals.user) throw redirect(302, '/login');
 
 	return {
 		// get all reports
