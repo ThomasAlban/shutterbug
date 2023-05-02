@@ -36,6 +36,12 @@
 				<td>{user.dateCreated}</td>
 				<td>{user.admin}</td>
 			</tr>
+		{:else}
+			<tr>
+				<td colspan="4" style="text-align: center">
+					<i>No results.</i>
+				</td>
+			</tr>
 		{/each}
 	</table>
 {/if}

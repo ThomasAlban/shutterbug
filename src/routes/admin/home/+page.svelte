@@ -32,6 +32,8 @@
 				</form>
 			</td>
 		</tr>
+	{:else}
+		<i>There are no reports.</i>
 	{/each}
 </table>
 

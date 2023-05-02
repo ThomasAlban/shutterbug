@@ -4,7 +4,10 @@ import bcrypt from 'bcrypt';
 
 export function load(event) {
 	// If the user is already logged in, redirect them to the home page
-	if (event.locals.user) throw redirect(302, '/home');
+	if (event.locals.user) {
+		if (event.locals.user.admin) throw redirect(302, '/admin/home');
+		throw redirect(302, '/home');
+	}
 }
 
 // this function runs when the form is submitted

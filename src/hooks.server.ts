@@ -1,6 +1,5 @@
 import { parse } from 'cookie';
 import jwt from 'jsonwebtoken';
-import db from '$lib/server/db';
 import { JWT_ACCESS_SECRET } from '$env/static/private';
 
 // this function is run on every request
