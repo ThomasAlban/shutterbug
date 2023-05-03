@@ -1,24 +1,31 @@
 import db from '$lib/server/db';
+import type { User } from '@prisma/client';
 import { fail } from '@sveltejs/kit';
-import { redirect } from '@sveltejs/kit';
-
-export async function load({ locals }) {
-	if (!locals.user) throw redirect(302, '/login');
-}
 
 export const actions = {
 	async default({ request }) {
 		const formData = Object.fromEntries(await request.formData());
 
 		if (!formData.text) return fail(400);
+		if (!formData.userID && !formData.username) return fail(400);
 
 		const { text } = formData as { text: string };
 
-		const users = await db.user.findMany({
-			where: {
-				username: { contains: text }
-			}
-		});
+		let users: User[];
+
+		if (formData.username) {
+			users = await db.user.findMany({
+				where: {
+					username: { contains: text }
+				}
+			});
+		} else {
+			users = await db.user.findMany({
+				where: {
+					userID: text
+				}
+			});
+		}
 
 		return { users };
 	}

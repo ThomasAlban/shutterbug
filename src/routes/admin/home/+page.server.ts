@@ -1,10 +1,7 @@
 import db from '$lib/server/db';
 import { fail } from '@sveltejs/kit';
-import { redirect } from '@sveltejs/kit';
 
-export async function load({ locals }) {
-	if (!locals.user) throw redirect(302, '/login');
-
+export async function load() {
 	return {
 		// get all reports
 		reports: await db.report.findMany()

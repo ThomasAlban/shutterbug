@@ -2,14 +2,6 @@ import { fail, redirect } from '@sveltejs/kit';
 import db from '$lib/server/db';
 import bcrypt from 'bcrypt';
 
-export function load({ locals }) {
-	// If the user is already logged in, redirect them to the home page
-	if (locals.user) {
-		if (locals.user.admin) throw redirect(302, '/admin/home');
-		throw redirect(302, '/home');
-	}
-}
-
 // this function runs when the form is submitted
 export const actions = {
 	async default({ request }) {

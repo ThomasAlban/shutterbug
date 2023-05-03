@@ -15,13 +15,17 @@
 		<th>Reporter ID</th>
 		<th>Culprit ID</th>
 		<th>Reason</th>
-		<th>Delete</th>å
+		<th>Delete</th>
 	</tr>
 
 	{#each reports as report}
 		<tr>
-			<td>{report.reporterID}</td>
-			<td>{report.culpritID}</td>
+			<td>
+				<a href="/admin/user/{report.reporterID}">{report.reporterID}</a>
+			</td>
+			<td>
+				<a href="/admin/user/{report.culpritID}">{report.culpritID}</a>
+			</td>
 			<td>{report.reason}</td>
 			<td>
 				<form

@@ -25,7 +25,7 @@ model User {
     photos                 Photo[]
     votes                  Vote[]
     reports                Report[] @relation("reporter")
-    reportingUsers         Report[] @relation("culprit")
+    reportedBy             Report[] @relation("culprit")
 }
 
 model Friend {

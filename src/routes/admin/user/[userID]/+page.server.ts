@@ -1,11 +1,9 @@
 import { error, fail, redirect } from '@sveltejs/kit';
 
-export async function load({ params, locals }) {
-	if (!locals.user) throw redirect(302, '/login');
-
+export async function load({ params }) {
 	const user = await db.user.findUnique({
 		where: { userID: params.userID },
-		include: { reports: true }
+		include: { reports: true, reportedBy: true }
 	});
 	if (!user) throw error(404, { message: 'User not found' });
 
@@ -49,5 +47,18 @@ export const actions = {
 			return fail(500, { error });
 		}
 		return { status: 200 };
+	},
+	async deleteUser({ params }) {
+		try {
+			await db.user.delete({
+				where: {
+					userID: params.userID
+				}
+			});
+		} catch (error) {
+			return fail(500, { error });
+		}
+
+		throw redirect(303, '/admin/home');
 	}
 };

@@ -6,13 +6,18 @@
 </script>
 
 <form method="post" use:enhance>
-	<div class="group">
-		<label for="text">Search For Users:</label>
-		<input type="text" name="text" id="text" required />
-	</div>
-	<div class="submit-container">
-		<button type="submit">Submit</button>
-	</div>
+	<label for="text">Search For Users:</label>
+	<input type="text" name="text" id="text" required />
+
+	<br />
+
+	<label for="username">Search By Username</label>
+	<input type="radio" id="username" name="username" value="username" />
+	<label for="userID">Search By User ID</label>
+	<input type="radio" id="userID" name="userID" value="userID" />
+
+	<br />
+	<button type="submit">Submit</button>
 </form>
 
 <br />
@@ -28,7 +33,9 @@
 
 		{#each users as user}
 			<tr>
-				<td>{user.userID}</td>
+				<td>
+					<a href="/admin/user/{user.userID}">{user.userID}</a>
+				</td>
 				<td>{user.username}</td>
 				<td>{user.dateCreated}</td>
 				<td>{user.admin}</td>
