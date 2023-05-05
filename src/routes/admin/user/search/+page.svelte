@@ -8,14 +8,11 @@
 <form method="post" use:enhance>
 	<label for="text">Search For Users:</label>
 	<input type="text" name="text" id="text" required />
-
 	<br />
-
 	<label for="username">Search By Username</label>
-	<input type="radio" id="username" name="username" value="username" />
+	<input type="radio" id="username" name="searchBy" value="username" />
 	<label for="userID">Search By User ID</label>
-	<input type="radio" id="userID" name="userID" value="userID" />
-
+	<input type="radio" id="userID" name="searchBy" value="userID" />
 	<br />
 	<button type="submit">Submit</button>
 </form>
@@ -34,6 +31,7 @@
 		{#each users as user}
 			<tr>
 				<td>
+					<!-- to do: create this route -->
 					<a href="/admin/user/{user.userID}">{user.userID}</a>
 				</td>
 				<td>{user.username}</td>

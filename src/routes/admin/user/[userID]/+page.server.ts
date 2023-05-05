@@ -2,7 +2,9 @@ import { error, fail, redirect } from '@sveltejs/kit';
 
 export async function load({ params }) {
 	const user = await db.user.findUnique({
+		// get the user from the database whose uuid is the same as the one in the url
 		where: { userID: params.userID },
+		// include that user's reports and who has reported them
 		include: { reports: true, reportedBy: true }
 	});
 	if (!user) throw error(404, { message: 'User not found' });
@@ -11,6 +13,7 @@ export async function load({ params }) {
 }
 
 export const actions = {
+	// runs when the toggle admin button is pressed
 	async toggleAdmin({ params }) {
 		const user = await db.user.findUnique({
 			where: { userID: params.userID },
@@ -28,6 +31,7 @@ export const actions = {
 		});
 		return { status: 200 };
 	},
+	// runs when the delete report button is pressed
 	async deleteReport({ url }) {
 		const reporterID = url.searchParams.get('reporterID');
 		const culpritID = url.searchParams.get('culpritID');
@@ -48,6 +52,7 @@ export const actions = {
 		}
 		return { status: 200 };
 	},
+	// runs when the delete user button is pressed
 	async deleteUser({ params }) {
 		try {
 			await db.user.delete({
@@ -58,7 +63,7 @@ export const actions = {
 		} catch (error) {
 			return fail(500, { error });
 		}
-
+		// redirect them because the user no longer exists
 		throw redirect(303, '/admin/home');
 	}
 };

@@ -41,12 +41,12 @@ export async function handle({ event, resolve }) {
 
 	// routes that logged-in users can access
 	if (event.url.pathname.startsWith('/home')) {
-		if (!event.locals.user) throw redirect(303, '/login');
+		if (!event.locals.user) throw redirect(303, '/auth/login');
 	}
 
 	// routes that only admins can access
 	if (event.url.pathname.startsWith('/admin')) {
-		if (!event.locals.user) throw redirect(303, '/login');
+		if (!event.locals.user) throw redirect(303, '/auth/login');
 		if (!event.locals.user.admin) throw redirect(303, '/home');
 	}
 

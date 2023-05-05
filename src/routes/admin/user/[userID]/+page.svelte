@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-
 	export let data;
 	$: ({ user } = data);
 </script>
@@ -8,11 +7,8 @@
 <a href="/admin/home">Admin Home</a>
 
 <h1>Admin User Page: {user.username}</h1>
-
 <p><b>User ID:</b> {user.userID}</p>
-
 <p><b>Date Created:</b> {user.dateCreated}</p>
-
 <p><b>Admin:</b> {user.admin}</p>
 
 <form action="?/toggleAdmin" method="post" use:enhance>

@@ -6,7 +6,7 @@
 <h1>Admin - Home Page</h1>
 <h2>Reports</h2>
 
-<a href="/admin/usersearch">Search For Users</a>
+<a href="/admin/user/search">Search For Users</a>
 
 <br /><br />
 
@@ -28,6 +28,7 @@
 			</td>
 			<td>{report.reason}</td>
 			<td>
+				<!-- to do: create this route -->
 				<form
 					action="?/deleteReport&reporterID={report.reporterID}&culpritID={report.culpritID}"
 					method="post"
