@@ -39,6 +39,6 @@ export const actions = {
 		}
 
 		// Redirect to the login page
-		throw redirect(302, '/login');
+		throw redirect(302, '/auth/login');
 	}
 };

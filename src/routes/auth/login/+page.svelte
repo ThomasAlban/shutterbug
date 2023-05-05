@@ -8,7 +8,7 @@
 
 <h1>Login</h1>
 
-<form method="post" use:enhance>
+<form method="post">
 	<div class="group">
 		<label for="username">Username</label>
 		<input type="text" name="username" id="username" required />
@@ -20,7 +20,7 @@
 	<div class="submit-container">
 		<button type="submit">Log in</button>
 	</div>
-	<a href="/register">Register</a>
+	<a href="/auth/register">Register</a>
 </form>
 
 {#if message}
