@@ -32,7 +32,7 @@ export async function handle({ event, resolve }) {
 	}
 
 	// routes that non-logged-in users can access
-	if (event.url.pathname.startsWith('/auth')) {
+	if (event.url.pathname.startsWith('/auth') && !event.url.pathname.includes('logout')) {
 		if (event.locals.user) {
 			if (event.locals.user.admin) throw redirect(303, '/admin/home');
 			throw redirect(303, '/home');
