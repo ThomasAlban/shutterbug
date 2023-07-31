@@ -21,7 +21,7 @@ model User {
     // these fields are not actually pushed to the database, but are a feature of Prisma
     // in Prisma relationships have 2 sides to them
     friendRequestsSent     Friend[] @relation("requester")
-    friendRequestsRecieved Friend[] @relation("requestee")
+    friendRequestsReceived Friend[] @relation("requestee")
     photos                 Photo[]
     votes                  Vote[]
     reports                Report[] @relation("reporter")
@@ -44,8 +44,6 @@ model Friend {
 }
 
 model Photo {
-    photoID String @id @default(uuid())
-
     user   User   @relation(fields: [userID], references: [userID])
     userID String
 
@@ -55,20 +53,22 @@ model Photo {
     photo       String
     dateCreated DateTime @default(now())
     Vote        Vote[]
+
+    @@id([userID, themeID])
 }
 
 model Vote {
-    voter   User   @relation(fields: [voterID], references: [userID])
-    voterID String
+    user   User   @relation(fields: [userID], references: [userID])
+    userID String
 
-    photo   Photo  @relation(fields: [photoID], references: [photoID])
-    photoID String
+    photo   Photo  @relation(fields: [userID, themeID], references: [userID, themeID])
+    themeID String
 
     voteHumour      Int
     voteCreativity  Int
     votePhotography Int
 
-    @@id([voterID, photoID])
+    @@id([userID, themeID])
 }
 
 model Theme {

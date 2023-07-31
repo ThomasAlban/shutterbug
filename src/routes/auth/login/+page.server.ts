@@ -8,7 +8,7 @@ export function load({ locals }) {
 	// If the user is already logged in, redirect them to the home page
 	if (locals.user) {
 		if (locals.user.admin) throw redirect(302, '/admin/home');
-		throw redirect(302, '/home');
+		throw redirect(302, '/app/home');
 	}
 }
 
@@ -52,13 +52,9 @@ export const actions = {
 		cookies.set('AuthorizationToken', `Bearer ${token}`, {
 			httpOnly: true,
 			path: '/',
-			secure: true,
+			secure: false,
 			sameSite: 'strict',
 			maxAge: 60 * 60 * 24 // 1 day
 		});
-
-		if (user.admin) throw redirect(302, '/admin/home');
-
-		throw redirect(302, '/home');
 	}
 };

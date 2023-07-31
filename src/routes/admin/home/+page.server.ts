@@ -4,7 +4,8 @@ import { fail } from '@sveltejs/kit';
 export async function load() {
 	return {
 		// get all reports
-		reports: await db.report.findMany()
+		reports: await db.report.findMany(),
+		themes: await db.theme.findMany()
 	};
 }
 
@@ -23,6 +24,29 @@ export const actions = {
 						reporterID,
 						culpritID
 					}
+				}
+			});
+		} catch (error) {
+			return fail(500, { error });
+		}
+		return { status: 200 };
+	},
+	async createTheme({ request }) {
+		const formData = Object.fromEntries(await request.formData());
+		if (!formData.theme || !formData.dateStart || !formData.dateEnd) return fail(400);
+
+		const theme = formData.theme.toString();
+		const dateStart = new Date(formData.dateStart.toString());
+		const dateEnd = new Date(formData.dateEnd.toString());
+
+		if (dateStart >= dateEnd) return fail(400);
+
+		try {
+			await db.theme.create({
+				data: {
+					theme,
+					dateStart,
+					dateEnd
 				}
 			});
 		} catch (error) {

@@ -1,32 +1,92 @@
 import db from '$lib/server/db';
-import type { User } from '@prisma/client';
-import { fail } from '@sveltejs/kit';
-import fs from 'fs';
-import imgur from 'imgur';
+import { fail, redirect } from '@sveltejs/kit';
+import { ImgurClient } from 'imgur';
+import { IMGUR_CLIENT_ID } from '$env/static/private';
+
+export async function load() {
+	const currentDate = new Date();
+	const theme = await db.theme.findFirst({
+		where: {
+			dateStart: {
+				lt: currentDate
+			},
+			dateEnd: {
+				gt: currentDate
+			}
+		}
+	});
+	if (!theme) {
+		throw redirect(303, '/app/home');
+	}
+	return { theme };
+}
 
 export const actions = {
-	async upload({ request }) {
+	async upload({ request, locals }) {
+		// get the current theme in the bounds of the current date
+		const currentDate = new Date();
+		const theme = await db.theme.findFirst({
+			where: {
+				dateStart: {
+					lt: currentDate
+				},
+				dateEnd: {
+					gt: currentDate
+				}
+			}
+		});
+		if (!theme) {
+			return fail(500, { message: 'no theme found' });
+		}
+
 		const formData = await request.formData();
+		if (!formData) return fail(400, { message: 'no data' });
 
 		const img = formData.get('image');
+		if (!img || !(img instanceof Object) || !img.name)
+			return fail(400, { message: 'invalid image' });
 
-		if (!img) return fail(400);
+		// check that the image is not larger than 10MB (arbitrary)
+		if (img.size > 10_000_000) return fail(400, { message: 'file size too large' });
 
-		// const fileTypes = ['image/png', 'image/jpeg'];
-		// if (!fileTypes.includes(img.type)) return fail(400);
+		// convert the image to a base64 string so that it can be uploaded
+		const imgBase64 = Buffer.from(await img.arrayBuffer()).toString('base64');
 
-		// console.log(img);
+		// create a new instance of the imgur client
+		const imgurClient = new ImgurClient({
+			clientId: IMGUR_CLIENT_ID
+		});
 
-		if (!(img instanceof Object) || !img.name) return fail(400);
+		// upload the image to imgur
+		const res = await imgurClient.upload({
+			image: imgBase64,
+			type: 'base64'
+		});
+		// validate to make sure the upload was successful
+		if (!res.success) return fail(500, { message: 'server error' });
 
-		console.log(img.name);
+		try {
+			await db.photo.create({
+				data: {
+					// connect this entry with the current logged-in user
+					user: {
+						connect: {
+							username: locals.user?.username
+						}
+					},
+					// add the current theme
+					theme: {
+						connect: {
+							themeID: theme.themeID
+						}
+					},
+					photo: res.data.link
+				}
+			});
+		} catch (error) {
+			return fail(500, { error });
+		}
 
-		const buffer = Buffer.from(await img.arrayBuffer());
-
-		fs.writeFileSync(`static/${img.name}`, buffer, 'base64');
-
-		// imgur.
-
-		// return { success: true };
+		return { success: true };
 	}
 };

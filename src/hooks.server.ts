@@ -31,23 +31,25 @@ export async function handle({ event, resolve }) {
 		}
 	}
 
+	console.log(event.url.pathname);
+
 	// routes that non-logged-in users can access
 	if (event.url.pathname.startsWith('/auth') && !event.url.pathname.includes('logout')) {
 		if (event.locals.user) {
 			if (event.locals.user.admin) throw redirect(303, '/admin/home');
-			throw redirect(303, '/home');
+			throw redirect(303, '/app/home');
 		}
 	}
 
 	// routes that logged-in users can access
-	if (event.url.pathname.startsWith('/home')) {
+	if (event.url.pathname.startsWith('/app')) {
 		if (!event.locals.user) throw redirect(303, '/auth/login');
 	}
 
 	// routes that only admins can access
 	if (event.url.pathname.startsWith('/admin')) {
 		if (!event.locals.user) throw redirect(303, '/auth/login');
-		if (!event.locals.user.admin) throw redirect(303, '/home');
+		if (!event.locals.user.admin) throw redirect(303, '/app/home');
 	}
 
 	return await resolve(event);

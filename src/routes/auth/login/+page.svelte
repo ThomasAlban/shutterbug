@@ -8,7 +8,7 @@
 
 <h1>Login</h1>
 
-<form method="post">
+<form method="post" use:enhance>
 	<div class="group">
 		<label for="username">Username</label>
 		<input type="text" name="username" id="username" required />
