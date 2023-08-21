@@ -5,6 +5,7 @@ export async function load() {
 	return {
 		// get all reports
 		reports: await db.report.findMany(),
+		// get all themes
 		themes: await db.theme.findMany()
 	};
 }
@@ -39,6 +40,7 @@ export const actions = {
 		const dateStart = new Date(formData.dateStart.toString());
 		const dateEnd = new Date(formData.dateEnd.toString());
 
+		// validate the date input
 		if (dateStart >= dateEnd) return fail(400);
 
 		try {

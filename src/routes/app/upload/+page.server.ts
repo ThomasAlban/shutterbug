@@ -3,7 +3,7 @@ import { fail, redirect } from '@sveltejs/kit';
 import { ImgurClient } from 'imgur';
 import { IMGUR_CLIENT_ID } from '$env/static/private';
 
-export async function load() {
+export async function load({ locals }) {
 	const currentDate = new Date();
 	const theme = await db.theme.findFirst({
 		where: {
@@ -18,7 +18,12 @@ export async function load() {
 	if (!theme) {
 		throw redirect(303, '/app/home');
 	}
-	return { theme };
+	const alreadySubmitted = await db.photo.findMany({
+		where: { userID: locals.user?.userID, themeID: theme.themeID }
+	});
+	if (alreadySubmitted.length > 0) return { theme, alreadySubmitted: true };
+
+	return { theme, alreadySubmitted: false };
 }
 
 export const actions = {
@@ -38,13 +43,20 @@ export const actions = {
 		if (!theme) {
 			return fail(500, { message: 'no theme found' });
 		}
+		const alreadySubmitted = await db.photo.findMany({
+			where: { userID: locals.user?.userID, themeID: theme.themeID }
+		});
+		if (alreadySubmitted.length > 0) {
+			return fail(400, { message: 'already submitted' });
+		}
 
-		const formData = await request.formData();
+		const formData = Object.fromEntries(await request.formData());
 		if (!formData) return fail(400, { message: 'no data' });
 
-		const img = formData.get('image');
-		if (!img || !(img instanceof Object) || !img.name)
-			return fail(400, { message: 'invalid image' });
+		if (!(formData.image as File).name || (formData.image as File).name === 'undefined') {
+			return fail(400, { message: 'You must provide a file to upload' });
+		}
+		const img = formData.image as File;
 
 		// check that the image is not larger than 10MB (arbitrary)
 		if (img.size > 10_000_000) return fail(400, { message: 'file size too large' });
@@ -84,7 +96,7 @@ export const actions = {
 				}
 			});
 		} catch (error) {
-			return fail(500, { error });
+			return fail(500, { message: error as string });
 		}
 
 		return { success: true };

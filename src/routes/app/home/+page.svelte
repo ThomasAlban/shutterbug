@@ -1,7 +1,7 @@
 <script lang="ts">
 	// this is the data returned from the load function
 	export let data;
-	$: ({ user, theme } = data);
+	$: ({ user, theme, alreadySubmitted } = data);
 
 	let remaining: { days: number; hours: number; minutes: number; seconds: number } | undefined =
 		undefined;
@@ -18,12 +18,14 @@
 		}
 	}
 
-	setInterval(updateRemaining, 1000);
+	let interval = setInterval(updateRemaining, 1000);
+
+	$: if (alreadySubmitted) clearInterval(interval);
 </script>
 
 welcome, {user.username}! <br />
 
-{#if theme}
+{#if theme && !alreadySubmitted}
 	Current theme is: <b>{theme.theme}</b>. <br />
 	You have until {theme.dateEnd.toLocaleDateString()}, {theme.dateEnd.toLocaleTimeString()} to enter.
 	<br />
@@ -33,9 +35,15 @@ welcome, {user.username}! <br />
 	{/if}
 	<br />
 	<a href="/app/upload">Upload Photo</a>
+{:else if alreadySubmitted}
+	You have already submitted a photo.
 {:else}
 	There is no current theme.
 {/if}
+
+<br /> <br />
+
+<a href="/app/vote">Vote on your friends' submissions</a>
 
 <br /><br />
 

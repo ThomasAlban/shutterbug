@@ -13,5 +13,9 @@ export async function load({ locals }) {
 		}
 	});
 
-	return { user: locals.user!, theme };
+	const alreadySubmitted = await db.photo.findMany({
+		where: { userID: locals.user?.userID, themeID: theme?.themeID }
+	});
+
+	return { user: locals.user!, theme, alreadySubmitted: alreadySubmitted.length > 0 };
 }

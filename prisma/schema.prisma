@@ -23,18 +23,21 @@ model User {
     friendRequestsSent     Friend[] @relation("requester")
     friendRequestsReceived Friend[] @relation("requestee")
     photos                 Photo[]
-    votes                  Vote[]
-    reports                Report[] @relation("reporter")
-    reportedBy             Report[] @relation("culprit")
+
+    reports    Report[] @relation("reporter")
+    reportedBy Report[] @relation("culprit")
+
+    voter Vote[] @relation("voter")
+    votee Vote[] @relation("votee")
 }
 
 model Friend {
     // 'requester' is not actually pushed to the database, but is an example of a Prisma relation field
     // 'requester' in this case represents a User, and the @relation tag tells Prisma that the User's ID matches 'requesterID'
-    requester   User   @relation(name: "requester", fields: [requesterID], references: [userID])
+    requester   User   @relation(name: "requester", fields: [requesterID], references: [userID], onDelete: Cascade)
     requesterID String
 
-    requestee   User   @relation(name: "requestee", fields: [requesteeID], references: [userID])
+    requestee   User   @relation(name: "requestee", fields: [requesteeID], references: [userID], onDelete: Cascade)
     requesteeID String
 
     accepted Boolean @default(false)
@@ -44,10 +47,10 @@ model Friend {
 }
 
 model Photo {
-    user   User   @relation(fields: [userID], references: [userID])
+    user   User   @relation(fields: [userID], references: [userID], onDelete: Cascade)
     userID String
 
-    theme   Theme  @relation(fields: [themeID], references: [themeID])
+    theme   Theme  @relation(fields: [themeID], references: [themeID], onDelete: Cascade)
     themeID String
 
     photo       String
@@ -58,17 +61,20 @@ model Photo {
 }
 
 model Vote {
-    user   User   @relation(fields: [userID], references: [userID])
-    userID String
+    voter   User   @relation(name: "voter", fields: [voterID], references: [userID], onDelete: Cascade)
+    voterID String
 
-    photo   Photo  @relation(fields: [userID, themeID], references: [userID, themeID])
+    votee   User   @relation(name: "votee", fields: [voteeID], references: [userID], onDelete: Cascade)
+    voteeID String
+
+    photo   Photo  @relation(fields: [voteeID, themeID], references: [userID, themeID], onDelete: Cascade)
     themeID String
 
     voteHumour      Int
     voteCreativity  Int
     votePhotography Int
 
-    @@id([userID, themeID])
+    @@id([voterID, voteeID, themeID])
 }
 
 model Theme {
@@ -81,10 +87,10 @@ model Theme {
 }
 
 model Report {
-    reporter   User   @relation(name: "reporter", fields: [reporterID], references: [userID])
+    reporter   User   @relation(name: "reporter", fields: [reporterID], references: [userID], onDelete: Cascade)
     reporterID String
 
-    culprit   User   @relation(name: "culprit", fields: [culpritID], references: [userID])
+    culprit   User   @relation(name: "culprit", fields: [culpritID], references: [userID], onDelete: Cascade)
     culpritID String
 
     reason String?
