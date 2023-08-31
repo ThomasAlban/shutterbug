@@ -11,7 +11,14 @@
 <p><b>Date Created:</b> {user.dateCreated}</p>
 <p><b>Admin:</b> {user.admin}</p>
 
-<form action="?/toggleAdmin" method="post" use:enhance>
+<form
+	action="?/toggleAdmin"
+	method="post"
+	use:enhance={({ submitter }) => {
+		submitter?.setAttribute('disabled', 'true');
+		return ({ update }) => update().then(() => submitter?.removeAttribute('disabled'));
+	}}
+>
 	<button type="submit">
 		{user.admin ? 'Demote From Admin' : 'Promote To Admin'}
 	</button>
@@ -28,11 +35,16 @@
 			Culprit ID: <a href="/admin/user/{report.culpritID}">{report.culpritID}</a> <br />
 			Reason: {report.reason} <br />
 			<form
-				action="?/deleteReport&reporterID={report.reporterID}&culpritID={report.culpritID}"
+				action="?/deleteReport"
 				method="post"
-				use:enhance
+				use:enhance={({ submitter }) => {
+					submitter?.setAttribute('disabled', 'true');
+					return ({ update }) => update().then(() => submitter?.removeAttribute('disabled'));
+				}}
 			>
-				<button type="submit">Delete Report</button>
+				<input type="hidden" name="reporterID" value={report.reporterID} />
+				<input type="hidden" name="culpritID" value={report.culpritID} />
+				<button type="submit">Delete</button>
 			</form>
 		</li>
 	{:else}
@@ -49,7 +61,10 @@
 			<form
 				action="?/deleteReport&reporterID={report.reporterID}&culpritID={report.culpritID}"
 				method="post"
-				use:enhance
+				use:enhance={({ submitter }) => {
+					submitter?.setAttribute('disabled', 'true');
+					return ({ update }) => update().then(() => submitter?.removeAttribute('disabled'));
+				}}
 			>
 				<button type="submit">Delete Report</button>
 			</form>

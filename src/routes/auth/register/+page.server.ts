@@ -1,44 +1,38 @@
 import { fail, redirect } from '@sveltejs/kit';
-import db from '$lib/server/db';
-import bcrypt from 'bcrypt';
+import * as db from '$lib/server/db';
+import { z } from 'zod';
+import { setError, superValidate } from 'sveltekit-superforms/server';
 
-// this function runs when the form is submitted
+const registerSchema = z.object({
+	username: z.string({ required_error: 'Username is required' }).min(1, { message: 'Username is required' }).trim(),
+	password: z
+		.string({ required_error: 'Password is required' })
+		.min(6, { message: 'Password must be at least 6 characters' })
+		.trim(),
+	password2: z
+		.string({ required_error: 'Password is required' })
+		.min(6, { message: 'Password must be at least 6 characters' })
+		.trim()
+});
+
+export async function load(event) {
+	const form = await superValidate(event, registerSchema);
+	return { form };
+}
+
 export const actions = {
-	async default({ request }) {
-		const formData = Object.fromEntries(await request.formData());
+	async default(event) {
+		const form = await superValidate(event, registerSchema);
+		if (!form.valid) return fail(400, { form });
 
-		// check to make sure the username and password inputs are valid
-		if (!formData.username || !formData.password) return fail(400, { message: 'Invalid input' });
+		const user = await db.getUniqueUserByUsername(form.data.username);
+		if (user) return setError(form, 'username', 'Username taken');
 
-		if (formData.password !== formData.password2)
-			return fail(400, { message: 'Passwords do not match' });
+		if (form.data.password !== form.data.password2) return setError(form, 'password2', 'Passwords do not match');
 
-		// get the username and password out of the formdata object
-		const { username, password } = formData as {
-			username: string;
-			password: string;
-		};
-
-		const usernameTaken = await db.user.findUnique({
-			where: { username }
-		});
-
-		if (usernameTaken) return fail(400, { message: 'Username taken' });
-
-		// create a new user
-		try {
-			await db.user.create({
-				data: {
-					username,
-					// store in the database a hashed version of their password
-					password: await bcrypt.hash(password, 10)
-				}
-			});
-		} catch (error) {
-			return fail(500, { error });
-		}
+		await db.createUser(form.data.username, form.data.password);
 
 		// Redirect to the login page
-		throw redirect(302, '/auth/login');
+		throw redirect(303, '/auth/login');
 	}
 };

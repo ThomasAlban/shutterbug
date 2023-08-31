@@ -1,30 +1,34 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
+	import { superForm } from 'sveltekit-superforms/client';
 
-	export let form;
-	$: message = form?.message;
+	export let data;
+	const { form, errors, enhance, constraints } = superForm(data.form);
 </script>
 
 <h1>Register</h1>
 
 <form method="post" use:enhance>
-	<div class="group">
-		<label for="username">Username</label>
-		<input type="text" name="username" id="username" required />
-	</div>
-	<div class="group">
-		<label for="password">Password</label>
-		<input type="password" name="password" id="password" required />
-	</div>
-	<div class="group">
-		<label for="password2">Retype Password</label>
-		<input type="password" name="password2" id="password2" required />
-	</div>
-	<div class="submit-container">
-		<button type="submit">Sign Up</button>
-	</div>
-</form>
+	<label for="username">Username</label>
+	<input type="text" name="username" id="username" bind:value={$form.username} {...$constraints.username} />
+	{#if $errors.username}
+		{$errors.username}
+	{/if}
+	<br />
 
-{#if message}
-	<p><i>{message}, please try again.</i></p>
-{/if}
+	<label for="username">Password</label>
+	<input type="password" name="password" id="password" bind:value={$form.password} {...$constraints.password} />
+	{#if $errors.password}
+		{$errors.password}
+	{/if}
+	<br />
+
+	<label for="username">Retype Password</label>
+	<input type="password" name="password2" id="password2" bind:value={$form.password2} {...$constraints.password2} />
+	{#if $errors.password2}
+		{$errors.password2}
+	{/if}
+	<br />
+
+	<button type="submit">Sign Up</button>
+</form>
+<a href="/auth/login">Back</a>

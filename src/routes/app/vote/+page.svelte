@@ -1,32 +1,41 @@
 <script lang="ts">
 	export let data;
-	$: ({ friendsWithPhotos } = data);
+	$: ({ friendsWithSubmissions, previousTheme } = data);
 </script>
 
 <a href="/app/home">Home</a> <br /> <br />
 
-{#each friendsWithPhotos as friend}
-	{#if friend.photo}
-		{friend.name}
+Last week's theme was: {previousTheme.theme} <br /> <br />
+
+{#each friendsWithSubmissions as user}
+	{#if user.photoSubmission}
+		{user.user.username}
 		<br />
-		<img src={friend.photo} referrerpolicy="no-referrer" width="200px" alt={friend.name} />
+		<img src={user.photoSubmission} referrerpolicy="no-referrer" width="200px" alt={user.user.username} />
 		<br /> <br />
 
-		<form method="post" action="?/vote&friendID={friend.ID}">
-			<label for="humour">Humour Vote</label>
-			<input type="number" id="humour" name="humour" min="0" max="9" step="1" value="5" />
-			<br />
-			<label for="creativity">Creativity Vote</label>
-			<input type="number" id="creativity" name="creativity" min="0" max="9" step="1" value="5" />
-			<br />
-			<label for="photography">Photography Vote</label>
-			<input type="number" id="photography" name="photography" min="0" max="9" step="1" value="5" />
-			<br />
-			<input type="submit" value="Submit vote" />
-		</form>
+		{#if user.vote}
+			Humour Vote: {user.vote.humour} <br />
+			Creativity Vote: {user.vote.creativity} <br />
+			Photography Vote: {user.vote.photography} <br />
+		{:else}
+			<form method="post" action="?/vote">
+				<input type="hidden" value={user.user.userID} name="ID" />
+				<label for="humour">Humour Vote</label>
+				<input type="number" name="humour" min="0" max="10" step="1" value="5" />
+				<br />
+				<label for="creativity">Creativity Vote</label>
+				<input type="number" name="creativity" min="0" max="10" step="1" value="5" />
+				<br />
+				<label for="photography">Photography Vote</label>
+				<input type="number" name="photography" min="0" max="10" step="1" value="5" />
+				<br />
+				<input type="submit" value="Submit vote" />
+			</form>
+		{/if}
 
 		<br />
 	{/if}
 {:else}
-	You have voted on all your friends' submissions.
+	There are no submissions.
 {/each}

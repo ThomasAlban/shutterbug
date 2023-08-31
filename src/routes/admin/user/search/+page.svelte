@@ -1,25 +1,27 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
+	import { superForm } from 'sveltekit-superforms/client';
 
+	export let data;
 	export let form;
-	$: users = form?.users;
+
+	const { form: searchForm, enhance: searchEnhance, constraints: searchConstraints } = superForm(data.form);
 </script>
 
-<form method="post" use:enhance>
+<form method="post" use:searchEnhance>
 	<label for="text">Search For Users:</label>
-	<input type="text" name="text" id="text" required />
+	<input type="text" name="search" bind:value={$searchForm.search} {...$searchConstraints.search} />
 	<br />
 	<label for="username">Search By Username</label>
-	<input type="radio" id="username" name="searchBy" value="username" />
+	<input type="radio" name="searchBy" value="username" />
 	<label for="userID">Search By User ID</label>
-	<input type="radio" id="userID" name="searchBy" value="userID" />
+	<input type="radio" name="searchBy" value="userID" />
 	<br />
 	<button type="submit">Submit</button>
 </form>
 
 <br />
 
-{#if users}
+{#if form?.users}
 	<table>
 		<tr>
 			<th>User ID</th>
@@ -28,10 +30,9 @@
 			<th>Admin</th>
 		</tr>
 
-		{#each users as user}
+		{#each form.users as user}
 			<tr>
 				<td>
-					<!-- to do: create this route -->
 					<a href="/admin/user/{user.userID}">{user.userID}</a>
 				</td>
 				<td>{user.username}</td>

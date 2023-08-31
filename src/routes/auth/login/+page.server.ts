@@ -1,40 +1,34 @@
-import { fail, redirect } from '@sveltejs/kit';
-import db from '$lib/server/db';
+import { fail } from '@sveltejs/kit';
+import * as db from '$lib/server/db';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { JWT_ACCESS_SECRET } from '$env/static/private';
+import { z } from 'zod';
+import { setError, superValidate } from 'sveltekit-superforms/server';
 
-export function load({ locals }) {
-	// If the user is already logged in, redirect them to the home page
-	if (locals.user) {
-		if (locals.user.admin) throw redirect(302, '/admin/home');
-		throw redirect(302, '/app/home');
-	}
+const loginSchema = z.object({
+	username: z.string({ required_error: 'Username is required' }).min(1, { message: 'Username is required' }).trim(),
+	password: z.string({ required_error: 'Password is required' }).min(1, { message: 'Password is required' }).trim()
+});
+
+export async function load(event) {
+	const form = await superValidate(event, loginSchema);
+	return { form };
 }
 
 // this function runs when the form is submitted
 export const actions = {
-	async default({ request, cookies }) {
-		const formData = Object.fromEntries(await request.formData());
-
-		// check to see if form input is valid
-		if (!formData.username || !formData.password) return fail(400, { message: 'Invalid input' });
-
-		// get the user data from the login form
-		const { username, password } = formData as {
-			username: string;
-			password: string;
-		};
+	async default(event) {
+		const form = await superValidate(event, loginSchema);
+		if (!form.valid) return fail(400, { form });
 
 		// get the user from the database
-		const user = await db.user.findUnique({
-			where: { username }
-		});
-		if (!user) return fail(400, { message: 'User not found' });
+		const user = await db.getUniqueUserByUsername(form.data.username);
+		if (!user) return setError(form, 'username', 'User does not exist');
 
 		// verify the password
-		const passwordIsValid = await bcrypt.compare(password, user.password);
-		if (!passwordIsValid) return fail(400, { message: 'Incorrect password' });
+		const passwordIsValid = await bcrypt.compare(form.data.password, user.password);
+		if (!passwordIsValid) return setError(form, 'password', 'Incorrect password');
 
 		// this is the user information which will be stored in the JWT token
 		const jwtUser = {
@@ -49,12 +43,14 @@ export const actions = {
 		const token = jwt.sign(jwtUser, JWT_ACCESS_SECRET, { expiresIn: '1d' });
 
 		// Set the cookie
-		cookies.set('AuthorizationToken', `Bearer ${token}`, {
+		event.cookies.set('AuthorizationToken', `Bearer ${token}`, {
 			httpOnly: true,
 			path: '/',
 			secure: false,
 			sameSite: 'strict',
 			maxAge: 60 * 60 * 24 // 1 day
 		});
+
+		return { form };
 	}
 };

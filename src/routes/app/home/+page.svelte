@@ -1,15 +1,16 @@
 <script lang="ts">
 	// this is the data returned from the load function
 	export let data;
-	$: ({ user, theme, alreadySubmitted } = data);
+	$: ({ user, currentTheme, alreadySubmitted } = data);
 
 	let remaining: { days: number; hours: number; minutes: number; seconds: number } | undefined =
 		undefined;
 
+	// this function runs every second and updates the remaining variable above
 	function updateRemaining() {
 		let currentDate = new Date();
-		if (theme) {
-			let timeDiff = theme.dateEnd.getTime() - currentDate.getTime();
+		if (currentTheme) {
+			let timeDiff = currentTheme.dateEnd.getTime() - currentDate.getTime();
 			let days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
 			let hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
 			let minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
@@ -25,26 +26,38 @@
 
 welcome, {user.username}! <br />
 
-{#if theme && !alreadySubmitted}
-	Current theme is: <b>{theme.theme}</b>. <br />
-	You have until {theme.dateEnd.toLocaleDateString()}, {theme.dateEnd.toLocaleTimeString()} to enter.
-	<br />
-	{#if remaining}
-		{remaining.days} days, {remaining.hours} hours, {remaining.minutes} minutes, {remaining.seconds}
-		seconds
+{#if currentTheme}
+	Current theme is: <b>{currentTheme.theme}</b>. <br />
+
+	{#if !alreadySubmitted}
+		<!-- display the countdown -->
+		You have until {currentTheme.dateEnd.toLocaleDateString()}, {currentTheme.dateEnd.toLocaleTimeString()}
+		to enter.
+		<br />
+
+		{#if remaining}
+			{remaining.days} days, {remaining.hours} hours, {remaining.minutes} minutes, {remaining.seconds}
+			seconds
+		{/if}
+		<br />
+		<a href="/app/upload">Upload photo for current theme</a>
+	{:else}
+		You have already submitted a photo.
 	{/if}
-	<br />
-	<a href="/app/upload">Upload Photo</a>
-{:else if alreadySubmitted}
-	You have already submitted a photo.
 {:else}
 	There is no current theme.
 {/if}
 
 <br /> <br />
 
-<a href="/app/vote">Vote on your friends' submissions</a>
+<a href="/app/vote">View and vote on your friends' submissions from the previous week</a>
 
 <br /><br />
 
-<a href="/auth/logout">Log Out</a>
+<a href="/app/friends">View and add friends</a>
+
+<br /><br />
+
+<form action="/auth/logout" method="post">
+	<button type="submit">Log Out</button>
+</form>

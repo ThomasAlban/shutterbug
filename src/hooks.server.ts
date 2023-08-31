@@ -31,8 +31,6 @@ export async function handle({ event, resolve }) {
 		}
 	}
 
-	console.log(event.url.pathname);
-
 	// routes that non-logged-in users can access
 	if (event.url.pathname.startsWith('/auth') && !event.url.pathname.includes('logout')) {
 		if (event.locals.user) {

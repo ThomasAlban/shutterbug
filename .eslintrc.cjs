@@ -11,7 +11,7 @@ module.exports = {
 		}
 	],
 	settings: {
-		'svelte3/typescript': () => require('typescript')
+		'svelte3/typescript': () => require('typescript'),
 	},
 	parserOptions: {
 		sourceType: 'module',
@@ -24,5 +24,6 @@ module.exports = {
 	},
     rules: {
         "@typescript-eslint/no-non-null-assertion": 0,
+        "no-mixed-spaces-and-tabs": 0,
     }
 };

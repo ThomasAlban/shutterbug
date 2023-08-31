@@ -1,21 +1,12 @@
-import db from '$lib/server/db';
+import * as db from '$lib/server/db';
 
-export async function load({ locals }) {
-	const currentDate = new Date();
-	const theme = await db.theme.findFirst({
-		where: {
-			dateStart: {
-				lt: currentDate
-			},
-			dateEnd: {
-				gt: currentDate
-			}
-		}
-	});
+export async function load(event) {
+	const currentTheme = await db.getCurrentTheme();
 
-	const alreadySubmitted = await db.photo.findMany({
-		where: { userID: locals.user?.userID, themeID: theme?.themeID }
-	});
+	let alreadySubmitted = false;
+	if (currentTheme) {
+		alreadySubmitted = await db.userAlreadySubmittedPhoto(event.locals.user!.userID, currentTheme.themeID);
+	}
 
-	return { user: locals.user!, theme, alreadySubmitted: alreadySubmitted.length > 0 };
+	return { user: event.locals.user!, currentTheme, alreadySubmitted };
 }
