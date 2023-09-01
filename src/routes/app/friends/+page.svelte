@@ -7,6 +7,8 @@
 	export let form;
 	$: ({ friends, incomingFriendRequests, outgoingFriendRequests } = data);
 	const { form: searchForm, enhance: searchEnhance, constraints: searchConstraints } = superForm(data.searchForm);
+
+	$: console.log(form);
 </script>
 
 <a href="/app/home">Home</a>
@@ -43,6 +45,7 @@
 					return ({ update }) => update().then(() => submitter?.removeAttribute('disabled'));
 				}}
 			>
+				<input type="hidden" value={form.searchResult} />
 				<input type="hidden" name="ID" value={sr.user.userID} />
 				<input type="submit" value="Accept" />
 			</form>
@@ -55,6 +58,7 @@
 					return ({ update }) => update().then(() => submitter?.removeAttribute('disabled'));
 				}}
 			>
+				<input type="hidden" value={form.searchResult} />
 				<input type="hidden" name="ID" value={sr.user.userID} />
 				<input type="submit" value="Remove" />
 			</form>
@@ -67,6 +71,7 @@
 					return ({ update }) => update().then(() => submitter?.removeAttribute('disabled'));
 				}}
 			>
+				<input type="hidden" value={form.searchResult} />
 				<input type="hidden" name="ID" value={sr.user.userID} />
 				<input type="submit" value="Remove" />
 			</form>
@@ -79,10 +84,13 @@
 					return ({ update }) => update().then(() => submitter?.removeAttribute('disabled'));
 				}}
 			>
+				<input type="hidden" value={form.searchResult} />
 				<input type="hidden" name="ID" value={sr.user.userID} />
 				<input type="submit" value="Send Friend Request" />
 			</form>
 		{/if}
+	{:else}
+		<i>No results</i>
 	{/each}
 	<br />
 {/if}

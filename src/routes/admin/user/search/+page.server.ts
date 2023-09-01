@@ -2,7 +2,7 @@ import * as db from '$lib/server/db';
 import type { User } from '@prisma/client';
 import { fail } from '@sveltejs/kit';
 import { z } from 'zod';
-import { setError, superValidate } from 'sveltekit-superforms/server';
+import { superValidate } from 'sveltekit-superforms/server';
 
 const searchSchema = z.object({
 	search: z.string({ required_error: 'Search cannot be empty' }).min(1, { message: 'Search cannot be empty' }).trim(),

@@ -15,10 +15,13 @@ export const actions = {
 		const currentTheme = await db.getCurrentTheme();
 		if (!currentTheme) return fail(400, { message: 'No current theme found' });
 
-		const alreadySubmitted = await db.userAlreadySubmittedPhoto(event.locals.user!.userID, currentTheme.themeID);
-		if (alreadySubmitted) return fail(400, { message: 'Already submitted photo for this theme' });
+		const [alreadySubmitted, formData] = await Promise.all([
+			db.userAlreadySubmittedPhoto(event.locals.user!.userID, currentTheme.themeID),
+			event.request.formData()
+		]);
+		const form = Object.fromEntries(formData);
 
-		const form = Object.fromEntries(await event.request.formData());
+		if (alreadySubmitted) return fail(400, { message: 'Already submitted photo for this theme' });
 		if (!form) return fail(400, { message: 'No data' });
 
 		if (!(form.image instanceof File) || !(form.image as File).name || (form.image as File).name === 'undefined')

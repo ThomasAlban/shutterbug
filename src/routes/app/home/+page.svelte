@@ -3,8 +3,7 @@
 	export let data;
 	$: ({ user, currentTheme, alreadySubmitted } = data);
 
-	let remaining: { days: number; hours: number; minutes: number; seconds: number } | undefined =
-		undefined;
+	let remaining: { days: number; hours: number; minutes: number; seconds: number } | undefined = undefined;
 
 	// this function runs every second and updates the remaining variable above
 	function updateRemaining() {
@@ -55,6 +54,10 @@ welcome, {user.username}! <br />
 <br /><br />
 
 <a href="/app/friends">View and add friends</a>
+
+<br /><br />
+
+<a href="/app/user/{user.userID}">View your page</a>
 
 <br /><br />
 

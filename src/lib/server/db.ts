@@ -1,11 +1,4 @@
-import {
-	Prisma,
-	PrismaClient,
-	type User,
-	type Friend,
-	type Theme,
-	type Photo
-} from '@prisma/client';
+import { PrismaClient, type User, type Theme, type Photo } from '@prisma/client';
 
 import bcrypt from 'bcrypt';
 import { ImgurClient } from 'imgur';
@@ -20,7 +13,7 @@ if (process.env.NODE_ENV === 'development') global.db = db;
 
 export default db;
 
-type ClientUser = {
+export type ClientUser = {
 	userID: string;
 	username: string;
 	dateCreated: Date;
@@ -31,7 +24,7 @@ type Vote = {
 	creativity: number;
 	photography: number;
 };
-type FriendStatus = 'friends' | 'outgoingRequest' | 'incomingRequest' | 'none';
+export type FriendStatus = 'friends' | 'outgoingRequest' | 'incomingRequest' | 'none';
 
 const toClientUser = ({ userID, username, dateCreated, profilePhoto }: User): ClientUser => ({
 	userID,
@@ -121,6 +114,17 @@ export async function acceptFriendRequest(userID: string, friendID: string) {
 		throw error(500, {
 			message: 'user trying to accept friend request was neither requester nor requestee'
 		});
+	} catch (e) {
+		throw error(500, { message: 'database error: ' + (e as string) });
+	}
+}
+
+export async function isNotFriendsWith(userID: string, otherUserID: string) {
+	try {
+		const count1 = await db.friend.count({ where: { requesterID: userID, requesteeID: otherUserID } });
+		const count2 = await db.friend.count({ where: { requesterID: otherUserID, requesteeID: userID } });
+
+		return !count1 && !count2;
 	} catch (e) {
 		throw error(500, { message: 'database error: ' + (e as string) });
 	}
@@ -265,7 +269,7 @@ export async function getFriendsWithSubmissions(userID: string, themeID: string)
 		const friendsWithPhotos: {
 			user: ClientUser;
 			photoSubmission: string;
-			vote: Vote | null;
+			vote: { userVote: Vote; overallVote: Vote } | null;
 		}[] = [];
 
 		// first go through all the friends where the user sent the request
@@ -313,11 +317,14 @@ export async function getFriendsWithSubmissions(userID: string, themeID: string)
 		for (const vote of user.voter) {
 			for (const friend of friendsWithPhotos) {
 				if (friend.user.userID === vote.voteeID) {
-					friend.vote = {
+					const userVote = {
 						humour: vote.voteHumour,
 						creativity: vote.voteCreativity,
 						photography: vote.votePhotography
 					};
+					const overallVote = await getOverallVoteScore(vote.voteeID, themeID);
+					if (!overallVote) throw error(500, { message: 'overallVote was null' });
+					friend.vote = { userVote, overallVote };
 				}
 			}
 		}
@@ -481,11 +488,7 @@ export async function createTheme(theme: string, dateStart: Date, dateEnd: Date)
 	}
 }
 
-export async function searchUsersWithFriendStatus(
-	searchQuery: string,
-	userID: string,
-	take: number
-) {
+export async function searchUsersWithFriendStatus(searchQuery: string, userID: string, take: number) {
 	if (take < 1) throw error(500, { message: 'take is less than 1' });
 
 	let query;
@@ -650,11 +653,12 @@ export async function getClientUser(userID: string) {
 }
 
 type ClientUserFriendDataAndPhotos =
-	| { user: ClientUser; friendStatus: 'none' | 'outgoingRequest' }
+	| { user: ClientUser; friendStatus: 'none' | 'outgoingRequest'; reported: 'none' | 'reporter' | 'culprit' }
 	| {
 			user: ClientUser;
-			photoSubmissions: { photo: Photo; theme: Theme }[];
+			photoSubmissions: { photo: Photo; theme: Theme; overallVote: Vote | null }[];
 			friendStatus: 'incomingRequest' | 'friends' | 'self';
+			reported: 'none' | 'reporter' | 'culprit';
 	  };
 
 export async function getClientUserFriendDataAndPhotos(
@@ -670,6 +674,11 @@ export async function getClientUserFriendDataAndPhotos(
 
 	if (!user) throw error(500, { message: 'user does not exist' });
 
+	let reported: 'none' | 'reporter' | 'culprit';
+	if (await checkReported(loggedInUserID, userID)) reported = 'reporter';
+	else if (await checkReported(userID, loggedInUserID)) reported = 'culprit';
+	else reported = 'none';
+
 	const getPhotoSubmissions = async () => {
 		let photoSubmissionsQuery;
 		try {
@@ -680,12 +689,18 @@ export async function getClientUserFriendDataAndPhotos(
 		} catch (e) {
 			throw error(500, { message: 'database error: ' + (e as string) });
 		}
-		const photoSubmissions = photoSubmissionsQuery.map((photo) => {
+
+		const photoSubmissionsResult = photoSubmissionsQuery.map(async (photo) => {
+			const overallVote = await getOverallVoteScore(userID, photo.theme.themeID);
 			return {
 				photo: toPhoto(photo),
-				theme: photo.theme
+				theme: photo.theme,
+				overallVote,
+				reported
 			};
 		});
+		const photoSubmissions = await Promise.all(photoSubmissionsResult);
+
 		return photoSubmissions;
 	};
 
@@ -695,7 +710,8 @@ export async function getClientUserFriendDataAndPhotos(
 		return {
 			user,
 			photoSubmissions,
-			friendStatus: 'self'
+			friendStatus: 'self',
+			reported
 		};
 	}
 
@@ -704,7 +720,7 @@ export async function getClientUserFriendDataAndPhotos(
 	// check if the logged-in user has an outgoing friend request to the user
 	for (const outgoingFR of loggedInUserFriendData.outgoingFriendRequests) {
 		if (outgoingFR.userID === userID) {
-			return { user, friendStatus: 'outgoingRequest' };
+			return { user, friendStatus: 'outgoingRequest', reported };
 		}
 	}
 	// check if the logged-in user has an incoming friend request to the user
@@ -714,7 +730,8 @@ export async function getClientUserFriendDataAndPhotos(
 			return {
 				user,
 				photoSubmissions,
-				friendStatus: 'incomingRequest'
+				friendStatus: 'incomingRequest',
+				reported
 			};
 		}
 	}
@@ -725,10 +742,67 @@ export async function getClientUserFriendDataAndPhotos(
 			return {
 				user,
 				photoSubmissions,
-				friendStatus: 'friends'
+				friendStatus: 'friends',
+				reported
 			};
 		}
 	}
 
-	return { user, friendStatus: 'none' };
+	return { user, friendStatus: 'none', reported };
+}
+
+export async function createReport(reporterID: string, culpritID: string, reason?: string | undefined) {
+	console.log(reporterID, culpritID, reason);
+	if (await checkReported(reporterID, culpritID)) {
+		throw error(500, { message: 'user has already reported' });
+	}
+	try {
+		await db.report.create({
+			data: { reporterID, culpritID, reason }
+		});
+	} catch (e) {
+		throw error(500, { message: 'database error: ' + (e as string) });
+	}
+}
+
+export async function checkReported(reporterID: string, culpritID: string) {
+	try {
+		const count = await db.report.count({ where: { reporterID, culpritID } });
+		return count !== 0;
+	} catch (e) {
+		throw error(500, { message: 'database error: ' + (e as string) });
+	}
+}
+
+export async function getOverallVoteScore(voteeID: string, themeID: string) {
+	try {
+		const votes = await db.vote.findMany({
+			where: { voteeID, themeID }
+		});
+		let humour = 0,
+			creativity = 0,
+			photography = 0;
+
+		let voted = false;
+		for (const vote of votes) {
+			humour += vote.voteHumour;
+			creativity += vote.voteCreativity;
+			photography += vote.votePhotography;
+			voted = true;
+		}
+		if (voted) {
+			humour /= votes.length;
+			creativity /= votes.length;
+			photography /= votes.length;
+		} else {
+			return null;
+		}
+		humour = +humour.toFixed(2);
+		creativity = +creativity.toFixed(2);
+		photography = +photography.toFixed(2);
+
+		return { humour, creativity, photography };
+	} catch (e) {
+		throw error(500, { message: 'database error: ' + (e as string) });
+	}
 }

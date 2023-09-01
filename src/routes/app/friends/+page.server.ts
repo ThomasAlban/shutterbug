@@ -8,8 +8,10 @@ const searchSchema = z.object({
 });
 
 export async function load(event) {
-	const friendData = await db.getAllFriendData(event.locals.user!.userID);
-	const searchForm = await superValidate(event, searchSchema);
+	const [friendData, searchForm] = await Promise.all([
+		db.getAllFriendData(event.locals.user!.userID),
+		superValidate(event, searchSchema)
+	]);
 
 	return { searchForm, ...friendData };
 }
@@ -39,12 +41,22 @@ export const actions = {
 	},
 
 	async sendRequest(event) {
-		const form = Object.fromEntries(await event.request.formData());
+		const [formData, friends, reports] = await Promise.all([
+			event.request.formData(),
+			db.getFriends(event.locals.user!.userID),
+			db.getAllReports()
+		]);
+
+		const form = Object.fromEntries(formData);
+
 		const friendID = form.ID.toString();
 		if (!friendID) return fail(400, { message: 'no ID supplied' });
 		if (event.locals.user!.userID === friendID) return fail(400, { message: 'userID and friendID are equal' });
 
-		const friends = await db.getFriends(event.locals.user!.userID);
+		for (const report of reports) {
+			if (report.reporterID === friendID && report.culpritID === event.locals.user!.userID)
+				return fail(400, { message: 'cannot send friend request, you have been reported by this user' });
+		}
 
 		for (const friend of friends) {
 			if (friend.userID === friendID) return fail(400, { message: 'friend already exists' });

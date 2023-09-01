@@ -11,6 +11,8 @@
 <p><b>Date Created:</b> {user.dateCreated}</p>
 <p><b>Admin:</b> {user.admin}</p>
 
+<a href="/app/user/{user.userID}">Go to user page</a>
+
 <form
 	action="?/toggleAdmin"
 	method="post"

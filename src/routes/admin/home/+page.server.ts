@@ -14,9 +14,11 @@ const createThemeSchema = z.object({
 });
 
 export async function load(event) {
-	const reports = await db.getAllReports();
-	const themes = await db.getAllThemes();
-	const createThemeForm = await superValidate(event, createThemeSchema);
+	const [reports, themes, createThemeForm] = await Promise.all([
+		db.getAllReports(),
+		db.getAllThemes(),
+		superValidate(event, createThemeSchema)
+	]);
 
 	return { reports, themes, createThemeForm };
 }

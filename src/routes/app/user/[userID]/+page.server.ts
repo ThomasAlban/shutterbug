@@ -9,31 +9,59 @@ export async function load(event) {
 
 export const actions = {
 	async remove(event) {
-		const formData = Object.fromEntries(await event.request.formData());
-		const friendID = formData.ID.toString();
-		if (!friendID) return fail(400, { message: 'no ID supplied' });
-
-		await db.removeFriend(event.locals.user!.userID, friendID);
+		await db.removeFriend(event.locals.user!.userID, event.params.userID);
 	},
 	async accept(event) {
-		const formData = Object.fromEntries(await event.request.formData());
-		const friendID = formData.ID.toString();
-		if (!friendID) return fail(400, { message: 'no ID supplied' });
-
-		await db.acceptFriendRequest(event.locals.user!.userID, friendID);
+		await db.acceptFriendRequest(event.locals.user!.userID, event.params.userID);
 	},
 	async sendRequest(event) {
-		const formData = Object.fromEntries(await event.request.formData());
-		const friendID = formData.ID.toString();
-		if (!friendID) return fail(400, { message: 'no ID supplied' });
-		if (event.locals.user!.userID === friendID) return fail(400, { message: 'userID and friendID are equal' });
+		if (event.locals.user!.userID === event.params.userID)
+			return fail(400, { message: 'userID and friendID are equal' });
 
-		const friends = await db.getFriends(event.locals.user!.userID);
+		const [friends, reports] = await Promise.all([db.getFriends(event.locals.user!.userID), db.getAllReports()]);
 
 		for (const friend of friends) {
-			if (friend.userID === friendID) return fail(400, { message: 'friend already exists' });
+			if (friend.userID === event.params.userID) return fail(400, { message: 'friend already exists' });
 		}
 
-		await db.sendFriendRequest(event.locals.user!.userID, friendID);
+		for (const report of reports) {
+			if (report.reporterID === event.params.userID && report.culpritID === event.locals.user!.userID)
+				return fail(400, { message: 'cannot send friend request, you have been reported by this user' });
+		}
+
+		await db.sendFriendRequest(event.locals.user!.userID, event.params.userID);
+	},
+	async report(event) {
+		if (event.locals.user!.userID === event.params.userID)
+			return fail(400, { message: 'reporterID and culpritID are equal' });
+		// await the formData and check already reported at the same time
+		const [formData, checkAlreadyReported] = await Promise.all([
+			event.request.formData(),
+			db.checkReported(event.locals.user!.userID, event.params.userID)
+		]);
+
+		const form = Object.fromEntries(formData);
+		if (checkAlreadyReported) return fail(400, { message: 'already reported user' });
+
+		const reason = form.reason ? form.reason.toString() : undefined;
+
+		const [, notFriends] = await Promise.all([
+			db.createReport(event.locals.user!.userID, event.params.userID, reason),
+			db.isNotFriendsWith(event.locals.user!.userID, event.params.userID)
+		]);
+		// if they are not friends then just return
+		if (notFriends) return;
+
+		// if they are friends then remove friend
+		await db.removeFriend(event.locals.user!.userID, event.params.userID);
+	},
+	async deleteReport(event) {
+		if (event.locals.user!.userID === event.params.userID)
+			return fail(400, { message: 'reporterID and culpritID are equal' });
+
+		const checkAlreadyReported = await db.checkReported(event.locals.user!.userID, event.params.userID);
+		if (!checkAlreadyReported) return fail(400, { message: 'there is no report to delete' });
+
+		await db.deleteReport(event.locals.user!.userID, event.params.userID);
 	}
 };

@@ -20,13 +20,12 @@ export async function load(event) {
 
 export const actions = {
 	async vote(event) {
-		const previousTheme = await db.getPreviousTheme();
+		const [previousTheme, formData] = await Promise.all([db.getPreviousTheme(), event.request.formData()]);
 		if (!previousTheme) throw redirect(303, '/app/home');
+		const form = Object.fromEntries(formData);
 
 		let vote: { humour: number; creativity: number; photography: number }, friendID: string;
 
-		// get the form data
-		const form = Object.fromEntries(await event.request.formData());
 		try {
 			({ ID: friendID, ...vote } = voteSchema.parse(form));
 		} catch (e) {

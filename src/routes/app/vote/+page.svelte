@@ -5,7 +5,7 @@
 
 <a href="/app/home">Home</a> <br /> <br />
 
-Last week's theme was: {previousTheme.theme} <br /> <br />
+Last week's theme was: {previousTheme.theme} <br /><br />
 
 {#each friendsWithSubmissions as user}
 	{#if user.photoSubmission}
@@ -15,9 +15,9 @@ Last week's theme was: {previousTheme.theme} <br /> <br />
 		<br /> <br />
 
 		{#if user.vote}
-			Humour Vote: {user.vote.humour} <br />
-			Creativity Vote: {user.vote.creativity} <br />
-			Photography Vote: {user.vote.photography} <br />
+			Overall humour Vote: {user.vote.overallVote.humour} <br />
+			Overall creativity Vote: {user.vote.overallVote.creativity} <br />
+			Overall photography Vote: {user.vote.overallVote.photography} <br />
 		{:else}
 			<form method="post" action="?/vote">
 				<input type="hidden" value={user.user.userID} name="ID" />
