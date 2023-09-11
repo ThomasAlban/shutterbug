@@ -7,8 +7,6 @@
 	export let form;
 	$: ({ friends, incomingFriendRequests, outgoingFriendRequests } = data);
 	const { form: searchForm, enhance: searchEnhance, constraints: searchConstraints } = superForm(data.searchForm);
-
-	$: console.log(form);
 </script>
 
 <a href="/app/home">Home</a>
@@ -94,6 +92,8 @@
 	{/each}
 	<br />
 {/if}
+
+<!-- continued... -->
 
 <h2>Friends</h2>
 

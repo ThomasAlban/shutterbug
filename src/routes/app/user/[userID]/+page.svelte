@@ -19,6 +19,10 @@
 	{/if}
 </h1>
 
+{#if userData.friendStatus === 'self'}
+	<a href="/app/user/edit">Edit Profile</a>
+{/if}
+
 {#if userData.reported === 'none'}
 	{#if userData.friendStatus === 'none'}
 		<form

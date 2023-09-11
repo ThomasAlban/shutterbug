@@ -1,9 +1,8 @@
 import * as db from '$lib/server/db';
-import { error, fail } from '@sveltejs/kit';
+import { fail } from '@sveltejs/kit';
 
 export async function load(event) {
 	const userData = await db.getClientUserFriendDataAndPhotos(event.params.userID, event.locals.user!.userID);
-	if (!userData) throw error(404, { message: 'User not found' });
 	return { userData };
 }
 

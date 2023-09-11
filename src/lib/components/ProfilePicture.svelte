@@ -1,6 +1,6 @@
 <script lang="ts">
 	export let src: string;
-	export let size: number = 50;
+	export let size = 50;
 </script>
 
 <img {src} alt="profile img" class="rounded" width={size} height={size} />

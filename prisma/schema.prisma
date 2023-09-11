@@ -13,6 +13,7 @@ datasource db {
 model User {
     userID       String   @id @default(uuid())
     username     String   @unique
+    email        String   @unique
     password     String
     dateCreated  DateTime @default(now())
     profilePhoto String?
@@ -29,6 +30,8 @@ model User {
 
     voter Vote[] @relation("voter")
     votee Vote[] @relation("votee")
+
+    ResetToken ResetToken?
 }
 
 model Friend {
@@ -96,4 +99,12 @@ model Report {
     reason String?
 
     @@id([reporterID, culpritID])
+}
+
+model ResetToken {
+    user   User   @relation(fields: [userID], references: [userID], onDelete: Cascade)
+    userID String @id
+
+    token  String
+    expiry DateTime
 }

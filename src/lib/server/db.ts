@@ -16,6 +16,7 @@ export default db;
 export type ClientUser = {
 	userID: string;
 	username: string;
+	email: string;
 	dateCreated: Date;
 	profilePhoto: string | null;
 };
@@ -26,9 +27,10 @@ type Vote = {
 };
 export type FriendStatus = 'friends' | 'outgoingRequest' | 'incomingRequest' | 'none';
 
-const toClientUser = ({ userID, username, dateCreated, profilePhoto }: User): ClientUser => ({
+const toClientUser = ({ userID, username, email, dateCreated, profilePhoto }: User): ClientUser => ({
 	userID,
 	username,
+	email,
 	dateCreated,
 	profilePhoto
 });
@@ -39,11 +41,12 @@ const toPhoto = ({ userID, themeID, photo, dateCreated }: Photo): Photo => ({
 	dateCreated
 });
 
-export async function createUser(username: string, password: string) {
+export async function createUser(username: string, email: string, password: string) {
 	try {
 		await db.user.create({
 			data: {
 				username,
+				email,
 				// store in the database a hashed version of their password
 				password: await bcrypt.hash(password, 10)
 			}
@@ -176,9 +179,10 @@ export async function removeFriend(userID: string, friendID: string) {
 }
 
 export async function getAllFriendData(userID: string) {
+	let user;
 	try {
 		// get the currently logged-in user, and also find all their friends
-		const user = await db.user.findUnique({
+		user = await db.user.findUnique({
 			where: { userID: userID },
 			include: {
 				friendRequestsSent: {
@@ -189,30 +193,30 @@ export async function getAllFriendData(userID: string) {
 				}
 			}
 		});
-		if (!user) throw error(500, { message: 'no user' });
-
-		const outgoingFriendRequests = user.friendRequestsSent
-			.filter((request) => !request.accepted)
-			.map((request) => toClientUser(request.requestee));
-
-		const incomingFriendRequests = user.friendRequestsReceived
-			.filter((request) => !request.accepted)
-			.map((request) => toClientUser(request.requester));
-
-		// make a list of all the user's friends
-		const friends: ClientUser[] = [];
-		// first go through all the friends where the user sent the request
-		for (const request of user.friendRequestsSent) {
-			if (request.accepted) friends.push(toClientUser(request.requestee));
-		}
-		// then go through all the friends where the friend sent the request
-		for (const request of user.friendRequestsReceived) {
-			if (request.accepted) friends.push(toClientUser(request.requester));
-		}
-		return { friends, outgoingFriendRequests, incomingFriendRequests };
 	} catch (e) {
 		throw error(500, { message: 'database error: ' + (e as string) });
 	}
+	if (!user) throw error(500, { message: 'no user' });
+
+	const outgoingFriendRequests = user.friendRequestsSent
+		.filter((request) => !request.accepted)
+		.map((request) => toClientUser(request.requestee));
+
+	const incomingFriendRequests = user.friendRequestsReceived
+		.filter((request) => !request.accepted)
+		.map((request) => toClientUser(request.requester));
+
+	// make a list of all the user's friends
+	const friends: ClientUser[] = [];
+	// first go through all the friends where the user sent the request
+	for (const request of user.friendRequestsSent) {
+		if (request.accepted) friends.push(toClientUser(request.requestee));
+	}
+	// then go through all the friends where the friend sent the request
+	for (const request of user.friendRequestsReceived) {
+		if (request.accepted) friends.push(toClientUser(request.requester));
+	}
+	return { friends, outgoingFriendRequests, incomingFriendRequests };
 }
 
 export async function getFriends(userID: string) {
@@ -619,6 +623,29 @@ export async function getUniqueUserByUsername(username: string) {
 	}
 }
 
+export async function getUniqueUserByUserID(userID: string) {
+	try {
+		const user = await db.user.findUnique({
+			where: { userID }
+		});
+		return user;
+	} catch (e) {
+		throw error(500, { message: 'database error: ' + (e as string) });
+	}
+}
+
+export async function getUniqueUserByEmail(email: string) {
+	try {
+		const user = await db.user.findUnique({
+			where: { email }
+		});
+		return user;
+	} catch (e) {
+		console.log(e);
+		throw error(500, { message: 'database error: ' + (e as string) });
+	}
+}
+
 export async function getAllReports() {
 	try {
 		const reports = await db.report.findMany();
@@ -672,7 +699,7 @@ export async function getClientUserFriendDataAndPhotos(
 		throw error(500, { message: 'database error: ' + (e as string) });
 	}
 
-	if (!user) throw error(500, { message: 'user does not exist' });
+	if (!user) throw error(404, { message: 'user does not exist' });
 
 	let reported: 'none' | 'reporter' | 'culprit';
 	if (await checkReported(loggedInUserID, userID)) reported = 'reporter';
@@ -802,6 +829,108 @@ export async function getOverallVoteScore(voteeID: string, themeID: string) {
 		photography = +photography.toFixed(2);
 
 		return { humour, creativity, photography };
+	} catch (e) {
+		throw error(500, { message: 'database error: ' + (e as string) });
+	}
+}
+
+export async function updateUsername(userID: string, newUsername: string) {
+	try {
+		await db.user.update({ where: { userID }, data: { username: newUsername } });
+	} catch (e) {
+		throw error(500, { message: 'database error: ' + (e as string) });
+	}
+}
+
+export async function verifyPasswordByUserID(userID: string, passwordAttempt: string) {
+	// get the user from the database
+	const user = await getUniqueUserByUserID(userID);
+	if (!user) throw error(500, { message: 'user does not exist' });
+	// verify the password
+	const passwordIsValid = await bcrypt.compare(passwordAttempt, user.password);
+	return passwordIsValid;
+}
+
+export async function verifyPasswordByUsername(username: string, passwordAttempt: string) {
+	// get the user from the database
+	const user = await getUniqueUserByUsername(username);
+	if (!user) throw error(500, { message: 'user does not exist' });
+	// verify the password
+	const passwordIsValid = await bcrypt.compare(passwordAttempt, user.password);
+	return passwordIsValid;
+}
+
+export async function updateEmail(userID: string, email: string) {
+	try {
+		await db.user.update({ where: { userID }, data: { email } });
+	} catch (e) {
+		throw error(500, { message: 'database error: ' + (e as string) });
+	}
+}
+
+export async function updatePassword(userID: string, password: string) {
+	try {
+		await db.user.update({
+			where: { userID },
+			data: {
+				password: await bcrypt.hash(password, 10)
+			}
+		});
+	} catch (e) {
+		throw error(500, { message: 'database error: ' + (e as string) });
+	}
+}
+
+export async function setResetToken(userID: string) {
+	try {
+		// delete reset token if already exists
+		const resetTokenAlreadyExists = await db.resetToken.findUnique({
+			where: {
+				userID
+			}
+		});
+		if (resetTokenAlreadyExists) {
+			await db.resetToken.delete({
+				where: { userID }
+			});
+		}
+
+		const token = crypto.randomUUID();
+		const hashedToken = await bcrypt.hash(token, 10);
+
+		const expiry = new Date();
+		expiry.setMinutes(expiry.getMinutes() + 10);
+
+		await db.resetToken.create({
+			data: {
+				userID,
+				token: hashedToken,
+				expiry
+			}
+		});
+
+		return token;
+	} catch (e) {
+		throw error(500, { message: 'database error: ' + (e as string) });
+	}
+}
+
+export async function validateResetToken(userID: string, token: string) {
+	try {
+		const resetToken = await db.resetToken.findUnique({
+			where: {
+				userID
+			}
+		});
+		if (!resetToken) return false;
+
+		if (resetToken.expiry > new Date()) {
+			await db.resetToken.delete({
+				where: { userID }
+			});
+		}
+
+		return await bcrypt.compare(token, resetToken.token);
 	} catch (e) {
 		throw error(500, { message: 'database error: ' + (e as string) });
 	}

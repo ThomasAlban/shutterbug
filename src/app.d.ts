@@ -9,11 +9,7 @@ declare global {
 		// interface PageData {}
 		// interface Platform {}
 		interface Locals {
-			user?: {
-				userID: string;
-				username: string;
-				admin: boolean;
-			};
+			user?: jwtUser;
 		}
 	}
 	var db: PrismaClient;
