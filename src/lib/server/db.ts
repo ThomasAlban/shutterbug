@@ -1,7 +1,8 @@
 import { PrismaClient, type User, type Theme, type Photo } from '@prisma/client';
 
 import bcrypt from 'bcrypt';
-import { ImgurClient } from 'imgur';
+
+import ImgurClient from 'imgur';
 import { IMGUR_CLIENT_ID } from '$env/static/private';
 import { error } from '@sveltejs/kit';
 
