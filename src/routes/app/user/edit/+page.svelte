@@ -79,6 +79,8 @@
 	<input type="submit" value="Submit" />
 </form>
 
+<!-- continued... -->
+
 <h2>Edit Password</h2>
 
 <form method="post" action="?/password" use:passwordEnhance>

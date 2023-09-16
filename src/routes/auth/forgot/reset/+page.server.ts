@@ -1,4 +1,4 @@
-import { error, fail, redirect } from '@sveltejs/kit';
+import { error, fail, redirect, type RequestEvent, type ServerLoadEvent } from '@sveltejs/kit';
 import * as db from '$lib/server/db';
 import { z } from 'zod';
 import { setError, superValidate } from 'sveltekit-superforms/server';
@@ -16,19 +16,23 @@ const passwordSchema = z.object({
 		.min(6, { message: 'Password must be at least 6 characters' })
 });
 
-export async function load(event) {
-	// url param validation
+async function validateUrlParams(event: ServerLoadEvent | RequestEvent) {
 	const tokenParam = event.url.searchParams.get('token');
 	const userIDParam = event.url.searchParams.get('userID');
+
 	if (!tokenParam) throw error(400, { message: 'Token not found' });
 	if (!userIDParam) throw error(400, { message: 'UserID not found' });
-	const userExists = db.getUniqueUserByUserID(userIDParam);
+	const userExists = await db.getUniqueUserByUserID(userIDParam);
 	if (!userExists) throw error(400, { message: 'User does not exist' });
 
 	const valid = await db.validateResetToken(userIDParam, tokenParam);
-	console.log(valid);
 	if (!valid) throw error(400, { message: 'Invalid token' });
-	// ----
+
+	return { userIDParam, tokenParam };
+}
+
+export async function load(event) {
+	const { userIDParam, tokenParam } = await validateUrlParams(event);
 
 	const usernameForm = await superValidate(event, usernameSchema);
 	const passwordForm = await superValidate(event, passwordSchema);
@@ -37,18 +41,7 @@ export async function load(event) {
 
 export const actions = {
 	async username(event) {
-		// url param validation
-		console.log(event.url);
-		const tokenParam = event.url.searchParams.get('token');
-		const userIDParam = event.url.searchParams.get('userID');
-		if (!tokenParam) throw error(400, { message: 'Token not found' });
-		if (!userIDParam) throw error(400, { message: 'UserID not found' });
-		const userExists = db.getUniqueUserByUserID(userIDParam);
-		if (!userExists) throw error(400, { message: 'User does not exist' });
-
-		const valid = db.validateResetToken(userIDParam, tokenParam);
-		if (!valid) throw error(400, { message: 'Invalid token' });
-		// ----
+		const { userIDParam } = await validateUrlParams(event);
 
 		const form = await superValidate(event, usernameSchema);
 		if (!form.valid) return fail(400, { form });
@@ -65,18 +58,7 @@ export const actions = {
 	},
 
 	async password(event) {
-		// url param validation
-		const tokenParam = event.url.searchParams.get('token');
-		const userIDParam = event.url.searchParams.get('userID');
-
-		if (!tokenParam) throw error(400, { message: 'Token not found' });
-		if (!userIDParam) throw error(400, { message: 'UserID not found' });
-		const userExists = db.getUniqueUserByUserID(userIDParam);
-		if (!userExists) throw error(400, { message: 'User does not exist' });
-
-		const valid = db.validateResetToken(userIDParam, tokenParam);
-		if (!valid) throw error(400, { message: 'Invalid token' });
-		// ----
+		const { userIDParam } = await validateUrlParams(event);
 
 		const form = await superValidate(event, passwordSchema);
 		if (!form.valid) return fail(400, { form });

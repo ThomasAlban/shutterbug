@@ -21,3 +21,5 @@ for 10 minutes. If you submit the form again, the previous link will stop workin
 	<br />
 	<input type="submit" value="Submit" />
 </form>
+
+<a href="/auth/login">Back to Login</a>

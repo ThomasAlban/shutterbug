@@ -15,6 +15,8 @@
 		"@sveltejs/kit": "^1.5.0",
 		"@types/bcrypt": "^5.0.0",
 		"@types/jsonwebtoken": "^9.0.1",
+		"@types/nodemailer": "^6.4.10",
+		"@types/nodemailer-mailgun-transport": "^1.4.3",
 		"@types/pg": "^8.6.6",
 		"@typescript-eslint/eslint-plugin": "^5.59.0",
 		"@typescript-eslint/parser": "^5.59.0",
@@ -32,9 +34,12 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@google-cloud/local-auth": "^2.1.0",
 		"@prisma/client": "^5.1.0",
 		"bcrypt": "^5.1.0",
+		"googleapis": "^105.0.0",
 		"imgur": "^2.3.0",
-		"jsonwebtoken": "^9.0.0"
+		"jsonwebtoken": "^9.0.0",
+		"nodemailer": "^6.9.5"
 	}
 }

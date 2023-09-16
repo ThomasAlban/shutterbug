@@ -2,6 +2,7 @@ import { fail } from '@sveltejs/kit';
 import * as db from '$lib/server/db';
 import { z } from 'zod';
 import { setError, superValidate } from 'sveltekit-superforms/server';
+import { sendResetEmail } from '$lib/server/mail.js';
 
 const emailSchema = z.object({
 	email: z.string({ invalid_type_error: 'Invalid email', required_error: 'email is required' }).email()
@@ -22,10 +23,11 @@ export const actions = {
 
 		const token = await db.setResetToken(user.userID);
 
-		const link = `/auth/forgot/reset?userID=${user.userID}&token=${token}`;
+		// temporary localhost link, will change when the app is in production
+		const link = `http://localhost:5173/auth/forgot/reset?userID=${user.userID}&token=${token}`;
+
+		sendResetEmail(form.data.email, link);
 
 		console.log(link);
-
-		// send an email with this link
 	}
 };
