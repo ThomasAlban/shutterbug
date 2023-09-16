@@ -36,6 +36,7 @@
 	"dependencies": {
 		"@google-cloud/local-auth": "^2.1.0",
 		"@prisma/client": "^5.1.0",
+		"@sveltejs/adapter-vercel": "^3.0.3",
 		"bcrypt": "^5.1.0",
 		"googleapis": "^105.0.0",
 		"imgur": "^2.3.0",
