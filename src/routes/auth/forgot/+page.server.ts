@@ -26,6 +26,8 @@ export const actions = {
 		// temporary localhost link, will change when the app is in production
 		const link = `http://localhost:5173/auth/forgot/reset?userID=${user.userID}&token=${token}`;
 
+		console.log('about to send reset email');
+
 		sendResetEmail(form.data.email, link);
 
 		console.log(link);

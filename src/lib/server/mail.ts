@@ -24,7 +24,9 @@ function send(recipient: string, subject: string, html: string) {
 }
 
 export function sendResetEmail(recipient: string, resetLink: string) {
+	console.log('sending reset email');
 	send(recipient, 'Reset Username/Password', resetEmailHtml(resetLink));
+	console.log('sent');
 }
 
 export function resetEmailHtml(resetLink: string) {
