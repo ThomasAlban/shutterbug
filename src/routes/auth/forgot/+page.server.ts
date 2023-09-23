@@ -26,6 +26,6 @@ export const actions = {
 
 		const link = APP_URL + `/auth/forgot/reset?userID=${user.userID}&token=${token}`;
 
-		sendResetEmail(form.data.email, link);
+		await sendResetEmail(form.data.email, link);
 	}
 };
