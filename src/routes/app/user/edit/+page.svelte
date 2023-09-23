@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import ProfilePicture from '$lib/components/ProfilePicture.svelte';
 	import { superForm } from 'sveltekit-superforms/client';
 	export let form;
 
@@ -27,6 +26,8 @@
 		constraints: passwordConstraints
 	} = superForm(data.passwordForm);
 </script>
+
+<a href="/app/user/{user.userID}">Back to user page</a>
 
 <h1>Edit User: {user.username}</h1>
 
