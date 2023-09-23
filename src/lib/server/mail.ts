@@ -9,7 +9,7 @@ const transporter = nodemailer.createTransport({
 	}
 });
 
-function send(recipient: string, subject: string, html: string) {
+async function send(recipient: string, subject: string, html: string) {
 	console.log('sending');
 	const mailOptions = {
 		from: `Shutterbug <${GOOGLE_EMAIL}>`,
@@ -17,16 +17,21 @@ function send(recipient: string, subject: string, html: string) {
 		subject,
 		html
 	};
-	transporter.sendMail(mailOptions, (error, info) => {
-		if (error) console.log(error);
-		else console.log('Email sent: ' + info.response);
+	await new Promise((resolve, reject) => {
+		transporter.sendMail(mailOptions, (error, info) => {
+			if (error) {
+				console.log(error);
+				reject(error);
+			} else {
+				console.log('Email sent: ' + info);
+				resolve(info);
+			}
+		});
 	});
 }
 
-export function sendResetEmail(recipient: string, resetLink: string) {
-	console.log('sending reset email');
-	send(recipient, 'Reset Username/Password', resetEmailHtml(resetLink));
-	console.log('sent');
+export async function sendResetEmail(recipient: string, resetLink: string) {
+	await send(recipient, 'Reset Username/Password', resetEmailHtml(resetLink));
 }
 
 export function resetEmailHtml(resetLink: string) {
