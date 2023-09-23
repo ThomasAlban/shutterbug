@@ -23,7 +23,7 @@ async function send(recipient: string, subject: string, html: string) {
 				console.log(error);
 				reject(error);
 			} else {
-				console.log('Email sent: ' + info);
+				console.log('Email sent: ' + info.response);
 				resolve(info);
 			}
 		});
