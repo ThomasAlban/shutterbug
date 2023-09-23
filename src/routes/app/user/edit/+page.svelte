@@ -1,5 +1,8 @@
 <script lang="ts">
+	import { enhance } from '$app/forms';
+	import ProfilePicture from '$lib/components/ProfilePicture.svelte';
 	import { superForm } from 'sveltekit-superforms/client';
+	export let form;
 
 	export let data;
 	$: ({ user } = data);
@@ -24,6 +27,30 @@
 		constraints: passwordConstraints
 	} = superForm(data.passwordForm);
 </script>
+
+<h1>Edit User: {user.username}</h1>
+
+<h2>Upload/change profile picture</h2>
+
+{#if form?.success}
+	Upload successful!
+{:else}
+	<form
+		method="post"
+		action="?/upload"
+		enctype="multipart/form-data"
+		use:enhance={({ submitter }) => {
+			submitter?.setAttribute('disabled', 'true');
+			return ({ update }) => update().then(() => submitter?.removeAttribute('disabled'));
+		}}
+	>
+		<input type="file" name="image" accept="image/*" required />
+		<input type="submit" value="Upload" />
+	</form>
+	{#if form?.message}
+		Upload failed - {form.message}
+	{/if}
+{/if}
 
 <h2>Edit Username ({user.username})</h2>
 

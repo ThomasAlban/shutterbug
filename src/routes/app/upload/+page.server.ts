@@ -34,8 +34,6 @@ export const actions = {
 		// check that the image is not larger than 10MB (arbitrary)
 		if (img.size > 10_000_000) return fail(400, { message: 'Image size too large' });
 
-		console.log('about to submit photo');
-
 		await db.submitPhoto(img, event.locals.user!.userID, currentTheme.themeID);
 
 		return { success: true };

@@ -9,7 +9,7 @@
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"lint": "eslint .",
-        "postinstall": "prisma generate"
+		"postinstall": "prisma generate"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^2.0.0",
@@ -24,7 +24,7 @@
 		"eslint": "^8.39.0",
 		"eslint-plugin-svelte3": "^4.0.0",
 		"prettier-plugin-svelte": "^2.10.0",
-		"prisma": "^5.1.0",
+		"prisma": "^5.3.1",
 		"svelte": "^3.54.0",
 		"svelte-check": "^3.0.1",
 		"sveltekit-superforms": "^1.6.1",
@@ -36,9 +36,10 @@
 	"type": "module",
 	"dependencies": {
 		"@google-cloud/local-auth": "^2.1.0",
-		"@prisma/client": "^5.1.0",
+		"@prisma/client": "^5.3.1",
 		"@sveltejs/adapter-vercel": "^3.0.3",
 		"bcrypt": "^5.1.0",
+		"cloudinary": "^1.40.0",
 		"googleapis": "^105.0.0",
 		"imgur": "^2.3.0",
 		"jsonwebtoken": "^9.0.0",

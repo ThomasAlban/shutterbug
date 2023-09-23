@@ -2,8 +2,11 @@ import { PrismaClient, type User, type Theme, type Photo } from '@prisma/client'
 
 import bcrypt from 'bcrypt';
 
-import ImgurClient from 'imgur';
-import { IMGUR_CLIENT_ID } from '$env/static/private';
+// import ImgurClient from 'imgur';
+// import { IMGUR_CLIENT_ID } from '$env/static/private';
+import { v2 as cloudinary } from 'cloudinary';
+import type { UploadApiErrorResponse, UploadApiResponse } from 'cloudinary';
+
 import { error } from '@sveltejs/kit';
 
 // set the prisma variable to the global variable 'prisma' if it exists, if not make a new PrismaClient
@@ -414,39 +417,36 @@ export async function createVote(voterID: string, voteeID: string, themeID: stri
 	}
 }
 
+// async function upload(file: File) {
+// 	const arrayBuffer = await file.arrayBuffer();
+// 	const buffer = Buffer.from(arrayBuffer); // <-- convert to Buffer
+// 	return new Promise((resolve, reject) => {
+// 		cloudinary.uploader
+// 			.upload_stream({ resource_type: 'image' }, (error, result) => {
+// 				if (error) return reject({ success: false, error });
+// 				return resolve({ success: true, result });
+// 			})
+// 			.end(buffer);
+// 	});
+// }
+
+async function cloudinaryUploadImg(
+	img: File
+): Promise<{ success: false; error: UploadApiErrorResponse } | { success: true; result: UploadApiResponse }> {
+	const buffer = Buffer.from(await img.arrayBuffer());
+	return new Promise((resolve, reject) => {
+		cloudinary.uploader
+			.upload_stream({ resource_type: 'image' }, (error, result) => {
+				if (error) return reject({ success: false, error });
+				return resolve({ success: true, result: result! });
+			})
+			.end(buffer);
+	});
+}
+
 export async function submitPhoto(img: File, userID: string, themeID: string) {
-	// convert the image to a base64 string so that it can be uploaded
-	const imgBase64 = Buffer.from(await img.arrayBuffer()).toString('base64');
-
-	const apiUrl = 'https://api.imgur.com/3/image';
-	const formData = new FormData();
-	formData.append('image', imgBase64);
-
-	let link = '';
-	await fetch(apiUrl, {
-		method: 'post',
-		headers: {
-			Authorization: 'Client-ID ' + IMGUR_CLIENT_ID
-		},
-		body: formData
-	})
-		.then((data) => data.json())
-		.then((data) => {
-			link = data.data.link;
-		});
-
-	// // create a new instance of the imgur client
-	// const imgurClient = new ImgurClient({
-	// 	clientId: IMGUR_CLIENT_ID
-	// });
-
-	// // upload the image to imgur
-	// const res = await imgurClient.upload({
-	// 	image: imgBase64,
-	// 	type: 'base64'
-	// });
-	// // validate to make sure the upload was successful
-	// if (!res.success) throw error(500, { message: 'could not upload image to imgur' });
+	const response = await cloudinaryUploadImg(img);
+	if (!response.success) throw error(500, { message: 'image upload error: ' + response.error.message });
 
 	try {
 		await db.photo.create({
@@ -459,12 +459,28 @@ export async function submitPhoto(img: File, userID: string, themeID: string) {
 				theme: {
 					connect: { themeID: themeID }
 				},
-				photo: link
+				photo: response.result.url
 			}
 		});
 	} catch (e) {
 		throw error(500, { message: 'database error: ' + (e as string) });
 	}
+}
+
+export async function updateProfilePicture(img: File, userID: string) {
+	const response = await cloudinaryUploadImg(img);
+	if (!response.success) throw error(500, { message: 'image upload error: ' + response.error.message });
+
+	try {
+		await db.user.update({
+			where: { userID },
+			data: { profilePhoto: response.result.url }
+		});
+	} catch (e) {
+		throw error(500, { message: 'database error: ' + (e as string) });
+	}
+
+	console.log(response.result.url);
 }
 
 export async function userAlreadySubmittedPhoto(userID: string, themeID: string) {

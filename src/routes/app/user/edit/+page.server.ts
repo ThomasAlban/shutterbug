@@ -32,6 +32,8 @@ export async function load(event) {
 		superValidate(event, passwordSchema)
 	]);
 
+	console.log(event.locals.user!.username);
+
 	return { user: event.locals.user!, usernameForm, emailForm, passwordForm };
 }
 
@@ -85,5 +87,27 @@ export const actions = {
 			return setError(form, 'newPassword', 'Password has not changed');
 
 		await db.updatePassword(event.locals.user!.userID, form.data.newPassword);
+	},
+	async upload(event) {
+		const form = Object.fromEntries(await event.request.formData());
+
+		if (
+			!form.image ||
+			!(form.image instanceof File) ||
+			!(form.image as File).name ||
+			(form.image as File).name === 'undefined'
+		)
+			return fail(400, { message: 'You must provide an image to upload' });
+
+		const img = form.image as File;
+
+		if (img.type.split('/')[0] !== 'image') return fail(400, { message: 'File is not an image' });
+
+		// check that the image is not larger than 10MB (arbitrary)
+		if (img.size > 10_000_000) return fail(400, { message: 'Image size too large' });
+
+		await db.updateProfilePicture(img, event.locals.user!.userID);
+
+		return { success: true };
 	}
 };
