@@ -420,17 +420,21 @@ export async function createVote(voterID: string, voteeID: string, themeID: stri
 async function cloudinaryUploadImg(
 	img: File
 ): Promise<{ success: false; error: UploadApiErrorResponse } | { success: true; result: UploadApiResponse }> {
-	const arrayBuffer = await img.arrayBuffer();
-	const buffer = Buffer.from(arrayBuffer);
+	try {
+		const arrayBuffer = await img.arrayBuffer();
+		const buffer = Buffer.from(arrayBuffer);
 
-	return new Promise((resolve, reject) => {
-		cloudinary.uploader
-			.upload_stream({ resource_type: 'image' }, (err, result) => {
-				if (err) return reject({ success: false, error });
-				return resolve({ success: true, result: result! });
-			})
-			.end(buffer);
-	});
+		return new Promise((resolve, reject) => {
+			cloudinary.uploader
+				.upload_stream({ resource_type: 'image' }, (err, result) => {
+					if (err) return reject({ success: false, err });
+					return resolve({ success: true, result: result! });
+				})
+				.end(buffer);
+		});
+	} catch (e) {
+		throw error(500, { message: 'cloudinary uploader error: ' + (e as string) });
+	}
 }
 
 export async function submitPhoto(img: File, userID: string, themeID: string) {
@@ -457,13 +461,7 @@ export async function submitPhoto(img: File, userID: string, themeID: string) {
 }
 
 export async function updateProfilePicture(img: File, userID: string) {
-	let response;
-	try {
-		response = await cloudinaryUploadImg(img);
-	} catch (e) {
-		console.log(e as string);
-		return;
-	}
+	const response = await cloudinaryUploadImg(img);
 
 	if (!response.success) throw error(500, { message: 'image upload error: ' + response.error.message });
 	try {
@@ -474,8 +472,6 @@ export async function updateProfilePicture(img: File, userID: string) {
 	} catch (e) {
 		throw error(500, { message: 'database error: ' + (e as string) });
 	}
-
-	console.log(response.result.url);
 }
 
 export async function userAlreadySubmittedPhoto(userID: string, themeID: string) {
