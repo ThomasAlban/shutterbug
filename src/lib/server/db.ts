@@ -433,11 +433,13 @@ export async function createVote(voterID: string, voteeID: string, themeID: stri
 async function cloudinaryUploadImg(
 	img: File
 ): Promise<{ success: false; error: UploadApiErrorResponse } | { success: true; result: UploadApiResponse }> {
-	console.log('e');
 	const arrayBuffer = await img.arrayBuffer();
-	console.log('f');
 	const buffer = Buffer.from(arrayBuffer);
-	console.log('g');
+
+	console.log('file:');
+	console.log(img);
+	console.log('buffer:');
+	console.log(buffer);
 	return new Promise((resolve, reject) => {
 		cloudinary.uploader
 			.upload_stream({ resource_type: 'image' }, (error, result) => {
