@@ -28,6 +28,6 @@ export const actions = {
 
 		console.log(link);
 
-		// await sendResetEmail(form.data.email, link);
+		await sendResetEmail(form.data.email, link);
 	}
 };
