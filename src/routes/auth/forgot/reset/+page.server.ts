@@ -68,7 +68,7 @@ export const actions = {
 		if (await bcrypt.compare(form.data.password, user.password))
 			return setError(form, 'password', 'Password has not changed');
 
-		if (form.data.password === user.password) await db.updatePassword(userIDParam, form.data.password);
+		await db.updatePassword(userIDParam, form.data.password);
 
 		throw redirect(303, '/auth/login');
 	}
