@@ -9,7 +9,7 @@ const deleteReportSchema = z.object({
 });
 const createThemeSchema = z.object({
 	theme: z.string({ required_error: 'Theme is required' }).min(1, { message: 'Theme is required' }).trim(),
-	dateStart: z.date().min(new Date(), { message: 'Date Start must be in the future' }),
+	dateStart: z.date(),
 	dateEnd: z.date().min(new Date(), { message: 'Date End must be in the future' })
 });
 

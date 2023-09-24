@@ -17,13 +17,15 @@
 	} = superForm(data.passwordForm);
 </script>
 
+<a href="/auth/login">Back to login</a>
+
 <h2>Reset Username/Password</h2>
 
 <form method="post" action="?/username&userID={data.userIDParam}&token={data.tokenParam}" use:usernameEnhance>
 	<label for="username">New Username:</label>
 	<input type="text" name="username" bind:value={$usernameForm.username} {...$usernameConstraints.username} />
 	{#if $usernameErrors.username}
-		$usernameErrors.username
+		{$usernameErrors.username}
 	{/if}
 	<br />
 
@@ -36,14 +38,14 @@
 	<label for="password">New Password:</label>
 	<input type="password" name="password" bind:value={$passwordForm.password} {...$passwordConstraints.password} />
 	{#if $passwordErrors.password}
-		$passwordErrors.password
+		{$passwordErrors.password}
 	{/if}
 	<br />
 
 	<label for="password2">Retype Password:</label>
 	<input type="password" name="password2" bind:value={$passwordForm.password2} {...$passwordConstraints.password2} />
 	{#if $passwordErrors.password2}
-		$passwordErrors.password2
+		{$passwordErrors.password2}
 	{/if}
 	<br />
 

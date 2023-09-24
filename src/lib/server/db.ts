@@ -933,7 +933,9 @@ export async function setResetToken(userID: string) {
 		const hashedToken = await bcrypt.hash(token, 10);
 
 		const expiry = new Date();
+		console.log('current date: ' + expiry);
 		expiry.setMinutes(expiry.getMinutes() + 10);
+		console.log('expiry date: ' + expiry);
 
 		await db.resetToken.create({
 			data: {
@@ -958,7 +960,7 @@ export async function validateResetToken(userID: string, token: string) {
 		});
 		if (!resetToken) return false;
 
-		if (resetToken.expiry > new Date()) {
+		if (resetToken.expiry <= new Date()) {
 			await db.resetToken.delete({
 				where: { userID }
 			});
