@@ -417,19 +417,6 @@ export async function createVote(voterID: string, voteeID: string, themeID: stri
 	}
 }
 
-// async function upload(file: File) {
-// 	const arrayBuffer = await file.arrayBuffer();
-// 	const buffer = Buffer.from(arrayBuffer); // <-- convert to Buffer
-// 	return new Promise((resolve, reject) => {
-// 		cloudinary.uploader
-// 			.upload_stream({ resource_type: 'image' }, (error, result) => {
-// 				if (error) return reject({ success: false, error });
-// 				return resolve({ success: true, result });
-// 			})
-// 			.end(buffer);
-// 	});
-// }
-
 async function cloudinaryUploadImg(
 	img: File
 ): Promise<{ success: false; error: UploadApiErrorResponse } | { success: true; result: UploadApiResponse }> {
