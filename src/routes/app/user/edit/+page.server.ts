@@ -32,8 +32,6 @@ export async function load(event) {
 		superValidate(event, passwordSchema)
 	]);
 
-	console.log(event.locals.user!.username);
-
 	return { user: event.locals.user!, usernameForm, emailForm, passwordForm };
 }
 
@@ -99,15 +97,8 @@ export const actions = {
 		)
 			return fail(400, { message: 'You must provide an image to upload' });
 
-		console.log('a');
-
 		const img = form.image as File;
-
-		console.log('b');
-
 		if (img.type.split('/')[0] !== 'image') return fail(400, { message: 'File is not an image' });
-
-		console.log('c');
 
 		// check that the image is not larger than 10MB (arbitrary)
 		if (img.size > 10_000_000) return fail(400, { message: 'Image size too large' });

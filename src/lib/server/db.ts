@@ -436,19 +436,10 @@ async function cloudinaryUploadImg(
 	const arrayBuffer = await img.arrayBuffer();
 	const buffer = Buffer.from(arrayBuffer);
 
-	console.log('file:');
-	console.log(img);
-	console.log('buffer:');
-	console.log(buffer);
 	return new Promise((resolve, reject) => {
 		cloudinary.uploader
-			.upload_stream({ resource_type: 'image' }, (error, result) => {
-				if (error) {
-					console.log('rejected');
-					return reject({ success: false, error });
-				}
-				console.log('resolved');
-				console.log('result: ' + result);
+			.upload_stream({ resource_type: 'image' }, (err, result) => {
+				if (err) return reject({ success: false, error });
 				return resolve({ success: true, result: result! });
 			})
 			.end(buffer);
@@ -479,8 +470,14 @@ export async function submitPhoto(img: File, userID: string, themeID: string) {
 }
 
 export async function updateProfilePicture(img: File, userID: string) {
-	console.log('d');
-	const response = await cloudinaryUploadImg(img);
+	let response;
+	try {
+		response = await cloudinaryUploadImg(img);
+	} catch (e) {
+		console.log(e as string);
+		return;
+	}
+
 	if (!response.success) throw error(500, { message: 'image upload error: ' + response.error.message });
 	try {
 		await db.user.update({
