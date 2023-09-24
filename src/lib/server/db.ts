@@ -441,7 +441,12 @@ async function cloudinaryUploadImg(
 	return new Promise((resolve, reject) => {
 		cloudinary.uploader
 			.upload_stream({ resource_type: 'image' }, (error, result) => {
-				if (error) return reject({ success: false, error });
+				if (error) {
+					console.log('rejected');
+					return reject({ success: false, error });
+				}
+				console.log('resolved');
+				console.log('result: ' + result);
 				return resolve({ success: true, result: result! });
 			})
 			.end(buffer);
