@@ -433,7 +433,11 @@ export async function createVote(voterID: string, voteeID: string, themeID: stri
 async function cloudinaryUploadImg(
 	img: File
 ): Promise<{ success: false; error: UploadApiErrorResponse } | { success: true; result: UploadApiResponse }> {
-	const buffer = Buffer.from(await img.arrayBuffer());
+	console.log('e');
+	const arrayBuffer = await img.arrayBuffer();
+	console.log('f');
+	const buffer = Buffer.from(arrayBuffer);
+	console.log('g');
 	return new Promise((resolve, reject) => {
 		cloudinary.uploader
 			.upload_stream({ resource_type: 'image' }, (error, result) => {
@@ -470,9 +474,7 @@ export async function submitPhoto(img: File, userID: string, themeID: string) {
 export async function updateProfilePicture(img: File, userID: string) {
 	console.log('d');
 	const response = await cloudinaryUploadImg(img);
-	console.log('e');
 	if (!response.success) throw error(500, { message: 'image upload error: ' + response.error.message });
-	console.log('f');
 	try {
 		await db.user.update({
 			where: { userID },
@@ -481,7 +483,6 @@ export async function updateProfilePicture(img: File, userID: string) {
 	} catch (e) {
 		throw error(500, { message: 'database error: ' + (e as string) });
 	}
-	console.log('g');
 
 	console.log(response.result.url);
 }
