@@ -1,19 +1,7 @@
 import { fail, redirect } from '@sveltejs/kit';
 import * as db from '$lib/server/db';
-import { z } from 'zod';
+import { registerSchema } from './schema.js';
 import { setError, superValidate } from 'sveltekit-superforms/server';
-
-const registerSchema = z.object({
-	username: z.string({ required_error: 'Username is required' }).min(1, { message: 'Username is required' }).trim(),
-	email: z.string({ invalid_type_error: 'Invalid email', required_error: 'email is required' }).email(),
-	email2: z.string({ invalid_type_error: 'Invalid email', required_error: 'email is required' }).email(),
-	password: z
-		.string({ required_error: 'Password is required' })
-		.min(6, { message: 'Password must be at least 6 characters' }),
-	password2: z
-		.string({ required_error: 'Password is required' })
-		.min(6, { message: 'Password must be at least 6 characters' })
-});
 
 export async function load(event) {
 	const form = await superValidate(event, registerSchema);
@@ -37,6 +25,6 @@ export const actions = {
 		await db.createUser(form.data.username, form.data.email, form.data.password);
 
 		// Redirect to the login page
-		throw redirect(303, '/auth/login');
+		throw redirect(303, '/auth/login?registerSuccess');
 	}
 };

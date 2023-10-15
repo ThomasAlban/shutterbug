@@ -14,7 +14,7 @@ export async function handle({ event, resolve }) {
 		}
 	}
 
-	// routes that logged-in users can access
+	//routes that logged-in users can access
 	if (event.url.pathname.startsWith('/app')) {
 		if (!user) throw redirect(303, '/auth/login');
 	}

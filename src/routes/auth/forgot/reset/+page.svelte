@@ -1,53 +1,70 @@
 <script lang="ts">
-	import { superForm } from 'sveltekit-superforms/client';
+	import { Form } from 'formsnap';
+	import '$lib/style.css';
+	import { usernameSchema, passwordSchema } from './schema';
+	import Button from '$lib/components/Button.svelte';
+	import { page } from '$app/stores';
 
 	export let data;
-	const {
-		form: usernameForm,
-		errors: usernameErrors,
-		enhance: usernameEnhance,
-		constraints: usernameConstraints
-	} = superForm(data.usernameForm);
+	let [usernameLoading, passwordLoading] = [false, false];
 
-	const {
-		form: passwordForm,
-		errors: passwordErrors,
-		enhance: passwordEnhance,
-		constraints: passwordConstraints
-	} = superForm(data.passwordForm);
+	let token = $page.url.searchParams.get('token');
+	let userID = $page.url.searchParams.get('userID');
 </script>
 
-<a href="/auth/login">Back to login</a>
+<div class="wrapper">
+	<h1>Reset Credentials</h1>
 
-<h2>Reset Username/Password</h2>
+	<Form.Root
+		form={data.usernameForm}
+		schema={usernameSchema}
+		action="?/username&userID={userID}&token={token}"
+		let:config
+		options={{
+			onSubmit: () => (usernameLoading = true),
+			onResult: () => (usernameLoading = false)
+		}}
+	>
+		<Form.Field {config} name="username">
+			<Form.Label>New Username:</Form.Label> <br />
+			<Form.Validation />
+			<Form.Input type="text" />
+		</Form.Field>
+		<br />
 
-<form method="post" action="?/username&userID={data.userIDParam}&token={data.tokenParam}" use:usernameEnhance>
-	<label for="username">New Username:</label>
-	<input type="text" name="username" bind:value={$usernameForm.username} {...$usernameConstraints.username} />
-	{#if $usernameErrors.username}
-		{$usernameErrors.username}
-	{/if}
+		<Button type="submit" fontSize={2} loading={usernameLoading} width={9}>Submit</Button>
+	</Form.Root>
+
 	<br />
 
-	<input type="submit" value="Submit" />
-</form>
+	<Form.Root
+		form={data.passwordForm}
+		schema={passwordSchema}
+		action="?/password&userID={userID}&token={token}"
+		let:config
+		options={{
+			onSubmit: () => (passwordLoading = true),
+			onResult: () => (passwordLoading = false)
+		}}
+	>
+		<Form.Field {config} name="password">
+			<Form.Label>New Password:</Form.Label> <br />
+			<Form.Validation />
+			<Form.Input type="password" />
+		</Form.Field>
+		<br />
 
-<br />
+		<Form.Field {config} name="password2">
+			<Form.Label>Retype Password:</Form.Label> <br />
+			<Form.Validation />
+			<Form.Input type="password" />
+		</Form.Field>
+		<br />
 
-<form method="post" action="?/password&userID={data.userIDParam}&token={data.tokenParam}" use:passwordEnhance>
-	<label for="password">New Password:</label>
-	<input type="password" name="password" bind:value={$passwordForm.password} {...$passwordConstraints.password} />
-	{#if $passwordErrors.password}
-		{$passwordErrors.password}
-	{/if}
-	<br />
+		<Button type="submit" fontSize={2} loading={passwordLoading} width={9}>Submit</Button>
+	</Form.Root>
 
-	<label for="password2">Retype Password:</label>
-	<input type="password" name="password2" bind:value={$passwordForm.password2} {...$passwordConstraints.password2} />
-	{#if $passwordErrors.password2}
-		{$passwordErrors.password2}
-	{/if}
-	<br />
-
-	<input type="submit" value="Submit" />
-</form>
+	<div class="links">
+		<Button fontSize={1.5} link="/auth/login" invertColor={true}>Back to login</Button>
+	</div>
+</div>

@@ -1,16 +1,9 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import { superForm } from 'sveltekit-superforms/client';
-
+	import { Form } from 'formsnap';
+	import { deleteReportSchema, createThemeSchema } from './schema';
 	export let data;
 	$: ({ reports, themes } = data);
-
-	const {
-		form: createThemeForm,
-		errors: createThemeErrors,
-		enhance: createThemeEnhance,
-		constraints: createThemeConstraints
-	} = superForm(data.createThemeForm);
 </script>
 
 <h1>Admin - Home Page</h1>
@@ -42,18 +35,15 @@
 				</td>
 				<td>{report.reason}</td>
 				<td>
-					<form
-						action="?/deleteReport"
-						method="post"
-						use:enhance={({ submitter }) => {
-							submitter?.setAttribute('disabled', 'true');
-							return ({ update }) => update().then(() => submitter?.removeAttribute('disabled'));
-						}}
-					>
-						<input type="hidden" name="reporterID" value={report.reporterID} />
-						<input type="hidden" name="culpritID" value={report.culpritID} />
+					<Form.Root form={data.deleteReportForm} schema={deleteReportSchema} let:config action="?/deleteReport">
+						<Form.Field {config} name="reporterID">
+							<Form.Input type="hidden" value={report.reporterID} />
+						</Form.Field>
+						<Form.Field {config} name="culpritID">
+							<Form.Input type="hidden" value={report.culpritID} />
+						</Form.Field>
 						<button type="submit">Delete</button>
-					</form>
+					</Form.Root>
 				</td>
 			</tr>
 		{:else}
@@ -92,42 +82,24 @@
 
 <h3>Create Theme</h3>
 
-<form action="?/createTheme" method="post" use:createThemeEnhance>
-	<label for="theme">Theme:</label>
-	<input type="text" name="theme" id="theme" bind:value={$createThemeForm.theme} {...$createThemeConstraints.theme} />
-	{#if $createThemeErrors.theme}
-		{$createThemeErrors.theme}
-	{/if}
-	<br />
-
-	<label for="dateStart">Date Start (GMT):</label>
-	<input
-		type="datetime-local"
-		name="dateStart"
-		id="dateStart"
-		bind:value={$createThemeForm.dateStart}
-		{...$createThemeConstraints.dateEnd}
-	/>
-	{#if $createThemeErrors.dateStart}
-		{$createThemeErrors.dateStart}
-	{/if}
-	<br />
-
-	<label for="dateEnd">Date End (GMT):</label>
-	<input
-		type="datetime-local"
-		name="dateEnd"
-		id="dateEnd"
-		bind:value={$createThemeForm.dateEnd}
-		{...$createThemeConstraints.dateEnd}
-	/>
-	{#if $createThemeErrors.dateEnd}
-		{$createThemeErrors.dateEnd}
-	{/if}
-	<br />
-
+<Form.Root form={data.createThemeForm} schema={createThemeSchema} let:config action="?/createTheme">
+	<Form.Field name="theme" {config}>
+		<Form.Label>Theme:</Form.Label>
+		<Form.Input type="text" />
+		<Form.Validation />
+	</Form.Field>
+	<Form.Field name="dateStart" {config}>
+		<Form.Label>Date Start (GMT):</Form.Label>
+		<Form.Input type="datetime-local" />
+		<Form.Validation />
+	</Form.Field>
+	<Form.Field name="dateEnd" {config}>
+		<Form.Label>Date End (GMT):</Form.Label>
+		<Form.Input type="datetime-local" />
+		<Form.Validation />
+	</Form.Field>
 	<button type="submit">Submit</button>
-</form>
+</Form.Root>
 
 <style>
 	table,

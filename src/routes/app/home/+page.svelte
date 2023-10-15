@@ -1,66 +1,94 @@
 <script lang="ts">
+	import BlurBgImg from '$lib/components/BlurBGImg.svelte';
+	import Button from '$lib/components/Button.svelte';
+	import '$lib/style.css';
 	// this is the data returned from the load function
 	export let data;
-	$: ({ user, currentTheme, alreadySubmitted } = data);
+	$: ({ user, currentTheme, alreadySubmitted, nextTheme } = data);
 
 	let remaining: { days: number; hours: number; minutes: number; seconds: number } | undefined = undefined;
 
 	// this function runs every second and updates the remaining variable above
-	function updateRemaining() {
+	function updateRemaining(dateUntil: Date) {
 		let currentDate = new Date();
-		if (currentTheme) {
-			let timeDiff = currentTheme.dateEnd.getTime() - currentDate.getTime();
-			let days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
-			let hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-			let minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
-			let seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
-			remaining = { days, hours, minutes, seconds };
-		}
+		let timeDiff = dateUntil.getTime() - currentDate.getTime();
+		let days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+		let hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+		let minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+		let seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+		remaining = { days, hours, minutes, seconds };
 	}
 
-	let interval = setInterval(updateRemaining, 1000);
-
-	$: if (alreadySubmitted) clearInterval(interval);
+	$: {
+		if (currentTheme && !alreadySubmitted) {
+			updateRemaining(currentTheme.dateEnd);
+			setInterval(updateRemaining, 1000, currentTheme.dateEnd);
+		} else if (nextTheme) {
+			console.log(nextTheme);
+			updateRemaining(nextTheme.dateEnd);
+			setInterval(updateRemaining, 1000, nextTheme.dateEnd);
+		}
+	}
 </script>
 
-welcome, {user.username}! <br />
-
-{#if currentTheme}
-	Current theme is: <b>{currentTheme.theme}</b>. <br />
-
-	{#if !alreadySubmitted}
-		<!-- display the countdown -->
-		You have until {currentTheme.dateEnd.toLocaleDateString()}, {currentTheme.dateEnd.toLocaleTimeString()}
-		to enter.
-		<br />
-
-		{#if remaining}
-			{remaining.days} days, {remaining.hours} hours, {remaining.minutes} minutes, {remaining.seconds}
-			seconds
+<div class="wrapper">
+	<div class="orange">
+		{#if !currentTheme}
+			<p class="small-text">There is no current theme.</p>
 		{/if}
-		<br />
-		<a href="/app/upload">Upload photo for current theme</a>
-	{:else}
-		You have already submitted a photo.
-	{/if}
-{:else}
-	There is no current theme.
-{/if}
 
-<br /> <br />
+		{#if remaining && (currentTheme || nextTheme)}
+			<p class="small-text">There {remaining.days == 1 ? 'is' : 'are'}:</p>
+			<p class="large-text">
+				{#if remaining.days}
+					{remaining.days} {remaining.days == 1 ? 'day' : 'days'},
+				{/if}
+				{#if remaining.hours}
+					{remaining.hours} {remaining.hours == 1 ? 'hour' : 'hours'},
+				{/if}
+				{#if remaining.days && remaining.hours}<br />{/if}
+				{#if remaining.minutes}
+					{remaining.minutes} {remaining.minutes == 1 ? 'minute' : 'minutes'},
+				{/if}
+				{#if !remaining.days && remaining.hours && remaining.minutes}<br />{/if}
+				{remaining.seconds}
+				{remaining.seconds == 1 ? 'second' : 'seconds'}
+			</p>
+		{/if}
 
-<a href="/app/vote">View and vote on your friends' submissions from the previous week</a>
+		{#if currentTheme}
+			<p class="small-text">until photo submission!</p>
+			<div class="submit-container">
+				<Button fontSize={2} link="/app/upload" invertColor={true}>Submit now</Button>
+			</div>
+		{:else if nextTheme}
+			<p class="small-text">until the next theme starts!</p>
+		{/if}
+	</div>
+	<div class="blurbg-container">
+		<BlurBgImg url={data.randomSubmission}>
+			<div>
+				<p class="medium-text">View & vote on your friends' submissions for last week</p>
+				<br />
+			</div>
+			<Button fontSize={2} link="/app/vote" invertColor={true}>Start voting</Button>
+		</BlurBgImg>
+	</div>
+</div>
 
-<br /><br />
-
-<a href="/app/friends">View and add friends</a>
-
-<br /><br />
-
-<a href="/app/user/{user.userID}">View your page</a>
-
-<br /><br />
-
-<form action="/auth/logout" method="post">
-	<button type="submit">Log Out</button>
-</form>
+<style>
+	.wrapper {
+		display: flex;
+		flex-flow: column;
+		height: calc(100vh - 10rem);
+	}
+	.orange {
+		flex: 0 1 auto;
+	}
+	.blurbg-container {
+		flex: 1 1 auto;
+	}
+	.submit-container {
+		padding: 1rem;
+	}
+</style>

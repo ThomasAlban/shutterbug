@@ -1,30 +1,58 @@
 <script lang="ts">
-	import { superForm } from 'sveltekit-superforms/client';
+	import Button from '$lib/components/Button.svelte';
+	import { Form } from 'formsnap';
+	import { loginSchema } from './schema';
+	import '$lib/style.css';
+	import { page } from '$app/stores';
+	import { toasts } from 'svelte-toasts';
+
+	const registerSuccess = $page.url.searchParams.has('registerSuccess');
+
+	if (registerSuccess)
+		toasts.add({
+			title: 'Regestration success',
+			description: 'Now you can log in!',
+			placement: 'bottom-center',
+			type: 'success'
+		});
 
 	export let data;
-	const { form, errors, enhance, constraints } = superForm(data.form);
+
+	let loading = false;
 </script>
 
-<h1>Login</h1>
+<div class="wrapper">
+	<h1>Login</h1>
 
-<form method="post" use:enhance>
-	<label for="username">Username</label>
-	<input type="text" name="username" bind:value={$form.username} {...$constraints.username} />
-	{#if $errors.username}
-		{$errors.username}
-	{/if}
-	<br />
+	<Form.Root
+		form={data.form}
+		schema={loginSchema}
+		let:config
+		options={{
+			onSubmit: () => (loading = true),
+			onResult: () => (loading = false)
+		}}
+	>
+		<Form.Field {config} name="username">
+			<Form.Label>Username:</Form.Label> <br />
+			<Form.Validation />
+			<Form.Input type="text" />
+		</Form.Field>
+		<br />
 
-	<label for="password">Password</label>
-	<input type="password" name="password" bind:value={$form.password} {...$constraints.password} />
-	{#if $errors.password}
-		{$errors.password}
-	{/if}
-	<br />
+		<Form.Field {config} name="password">
+			<Form.Label>Password:</Form.Label> <br />
+			<Form.Validation />
+			<Form.Input type="password" />
+		</Form.Field>
+		<br />
 
-	<button type="submit">Log in</button>
-</form>
+		<Button type="submit" fontSize={2} {loading} width={9}>Log in</Button>
+	</Form.Root>
 
-<a href="/auth/register">Register</a>
-<br />
-<a href="/auth/forgot">Forgot Username/Password</a>
+	<div class="links">
+		<Button fontSize={1.5} link="/auth/register" invertColor={true}>Register</Button>
+		<br />
+		<Button fontSize={1.5} link="/auth/forgot" invertColor={true}>Forgot credentials</Button>
+	</div>
+</div>

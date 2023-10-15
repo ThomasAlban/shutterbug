@@ -1,26 +1,17 @@
 import * as db from '$lib/server/db';
 import { fail } from '@sveltejs/kit';
-import { z } from 'zod';
 import { setError, superValidate } from 'sveltekit-superforms/server';
-
-const deleteReportSchema = z.object({
-	reporterID: z.string().min(1).trim(),
-	culpritID: z.string().min(1).trim()
-});
-const createThemeSchema = z.object({
-	theme: z.string({ required_error: 'Theme is required' }).min(1, { message: 'Theme is required' }).trim(),
-	dateStart: z.date(),
-	dateEnd: z.date().min(new Date(), { message: 'Date End must be in the future' })
-});
+import { deleteReportSchema, createThemeSchema } from './schema';
 
 export async function load(event) {
-	const [reports, themes, createThemeForm] = await Promise.all([
+	const [reports, themes, createThemeForm, deleteReportForm] = await Promise.all([
 		db.getAllReports(),
 		db.getAllThemes(),
-		superValidate(event, createThemeSchema)
+		superValidate(event, createThemeSchema),
+		superValidate(event, deleteReportSchema)
 	]);
 
-	return { reports, themes, createThemeForm };
+	return { reports, themes, createThemeForm, deleteReportForm };
 }
 
 export const actions = {

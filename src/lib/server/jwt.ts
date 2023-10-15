@@ -3,7 +3,7 @@ import { JWT_ACCESS_SECRET } from '$env/static/private';
 import { error, type RequestEvent } from '@sveltejs/kit';
 import { parse } from 'cookie';
 
-type jwtUser = {
+export type jwtUser = {
 	userID: string;
 	username: string;
 	admin: boolean;

@@ -1,14 +1,10 @@
 import { fail } from '@sveltejs/kit';
 import * as db from '$lib/server/db';
 import bcrypt from 'bcrypt';
-import { z } from 'zod';
+import { loginSchema } from './schema';
+
 import { setError, superValidate } from 'sveltekit-superforms/server';
 import * as jwt from '$lib/server/jwt';
-
-const loginSchema = z.object({
-	username: z.string({ required_error: 'Username is required' }).min(1, { message: 'Username is required' }).trim(),
-	password: z.string({ required_error: 'Password is required' }).min(1, { message: 'Password is required' })
-});
 
 export async function load(event) {
 	const form = await superValidate(event, loginSchema);

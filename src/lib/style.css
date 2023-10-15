@@ -1,0 +1,72 @@
+[data-fs-label] {
+	color: #e27d00;
+	font-size: 2rem;
+}
+
+[data-fs-input] {
+	font-size: 1.5rem;
+	font-family: 'Merriweather-Italic';
+	text-align: center;
+}
+
+[data-fs-validation] {
+	color: #ad0000;
+	margin: 0;
+	line-height: 1rem;
+	font-family: 'Merriweather-BlackItalic';
+}
+
+h1 {
+	font-size: 3rem;
+	color: #e27d00;
+	line-height: 4rem;
+}
+
+p {
+	line-height: 1.5rem;
+}
+.wrapper {
+	/* margin-top: 7rem; */
+	line-height: 3rem;
+	text-align: center;
+	/* width: 100%; */
+	/* left: 0; */
+}
+.links {
+	line-height: 1rem;
+	padding: 3rem;
+}
+.orange {
+	background-color: #e27d00;
+	margin: 0;
+	color: white;
+	box-shadow: 0 0 2rem 1rem rgba(0, 0, 0, 0.8);
+	line-height: 2rem;
+	font-size: 1.5rem;
+	padding: 0.75rem 0 0.75rem;
+	position: relative;
+}
+.small-text {
+	font-size: min(1.25rem, 3.75vw);
+	line-height: min(2rem, 6vw);
+	margin: 0;
+}
+.medium-text {
+	font-size: min(1.75rem, 5.25vw);
+	line-height: min(2.5rem, 7.5vw);
+	margin: 0;
+}
+.large-text {
+	font-size: min(2.25rem, 6.75vw);
+	line-height: min(3.25rem, 9.75vw);
+	margin: 0;
+}
+.very-large-text {
+	font-size: min(3rem, 9vw);
+	line-height: min(4rem, 12vw);
+	margin: 0;
+}
+.center {
+	display: flex;
+	justify-content: center;
+}

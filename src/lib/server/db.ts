@@ -361,6 +361,25 @@ export async function getCurrentTheme() {
 	}
 }
 
+export async function getNextTheme() {
+	try {
+		const currentDate = new Date();
+		const theme = await db.theme.findFirst({
+			where: {
+				dateStart: {
+					gt: currentDate
+				}
+			},
+			orderBy: {
+				dateStart: 'asc'
+			}
+		});
+		return theme;
+	} catch (e) {
+		throw error(500, { message: 'database error: ' + (e as string) });
+	}
+}
+
 export async function getPreviousTheme() {
 	try {
 		const currentDate = new Date();
@@ -707,11 +726,11 @@ export async function getClientUser(userID: string) {
 type ClientUserFriendDataAndPhotos =
 	| { user: ClientUser; friendStatus: 'none' | 'outgoingRequest'; reported: 'none' | 'reporter' | 'culprit' }
 	| {
-			user: ClientUser;
-			photoSubmissions: { photo: Photo; theme: Theme; overallVote: Vote | null }[];
-			friendStatus: 'incomingRequest' | 'friends' | 'self';
-			reported: 'none' | 'reporter' | 'culprit';
-	  };
+		user: ClientUser;
+		photoSubmissions: { photo: Photo; theme: Theme; overallVote: Vote | null }[];
+		friendStatus: 'incomingRequest' | 'friends' | 'self';
+		reported: 'none' | 'reporter' | 'culprit';
+	};
 
 export async function getClientUserFriendDataAndPhotos(
 	userID: string,
@@ -775,7 +794,7 @@ export async function getClientUserFriendDataAndPhotos(
 			return { user, friendStatus: 'outgoingRequest', reported };
 		}
 	}
-	// check if the logged-in user has an incoming friend request to the user
+	// check if the logged-in user has an incoming friend request from the user
 	for (const incomingFR of loggedInUserFriendData.incomingFriendRequests) {
 		if (incomingFR.userID === userID) {
 			const photoSubmissions = await getPhotoSubmissions();
@@ -924,9 +943,7 @@ export async function setResetToken(userID: string) {
 		const hashedToken = await bcrypt.hash(token, 10);
 
 		const expiry = new Date();
-		console.log('current date: ' + expiry);
 		expiry.setMinutes(expiry.getMinutes() + 10);
-		console.log('expiry date: ' + expiry);
 
 		await db.resetToken.create({
 			data: {
@@ -961,4 +978,16 @@ export async function validateResetToken(userID: string, token: string) {
 	} catch (e) {
 		throw error(500, { message: 'database error: ' + (e as string) });
 	}
+}
+
+export async function getRandomFriendPhotoSubmission(userID: string) {
+	const prevTheme = await getPreviousTheme();
+	if (!prevTheme) return null;
+
+	const friends = await getFriendsWithSubmissions(userID, prevTheme.themeID);
+	if (friends.length == 0) return null;
+
+	const photo = friends[Math.floor(Math.random() * friends.length)];
+
+	return photo.photoSubmission;
 }

@@ -1,54 +1,65 @@
 <script lang="ts">
-	import { superForm } from 'sveltekit-superforms/client';
+	import { registerSchema } from './schema.js';
+	import { Form } from 'formsnap';
+	import Button from '$lib/components/Button.svelte';
+	import '$lib/style.css';
 
 	export let data;
-	const { form, errors, enhance, constraints } = superForm(data.form);
+
+	let loading = false;
 </script>
 
-<h1>Register</h1>
+<div class="wrapper">
+	<h1>Register</h1>
 
-<form method="post" use:enhance>
-	<label for="username">Username</label>
-	<input type="text" name="username" bind:value={$form.username} {...$constraints.username} />
-	{#if $errors.username}
-		{$errors.username}
-	{/if}
-	<br />
+	<Form.Root
+		form={data.form}
+		schema={registerSchema}
+		let:config
+		options={{
+			onSubmit: () => (loading = true),
+			onResult: () => (loading = false)
+		}}
+	>
+		<Form.Field {config} name="username">
+			<Form.Label>Username:</Form.Label>
+			<Form.Validation />
+			<Form.Input type="text" />
+		</Form.Field>
+		<br />
 
-	<label for="email">Email</label>
-	<input type="email" name="email" bind:value={$form.email} {...$constraints.email} />
-	{#if $errors.email}
-		{$errors.email}
-	{/if}
-	<br />
+		<Form.Field {config} name="email">
+			<Form.Label>Email:</Form.Label>
+			<Form.Validation />
+			<Form.Input type="email" />
+		</Form.Field>
+		<br />
 
-	<label for="email2">Retype Email</label>
-	<input type="email" name="email2" bind:value={$form.email2} {...$constraints.email2} />
-	{#if $errors.email2}
-		{$errors.email2}
-	{/if}
-	<br />
+		<Form.Field {config} name="email2">
+			<Form.Label>Retype Email:</Form.Label>
+			<Form.Validation />
+			<Form.Input type="email" />
+		</Form.Field>
+		<br />
 
-	<i>
-		Note: if you use an email you don't have access to, you will not be able to recover your account if you forget your
-		password.
-	</i>
-	<br />
+		<Form.Field {config} name="password">
+			<Form.Label>Password:</Form.Label>
+			<Form.Validation />
+			<Form.Input type="password" />
+		</Form.Field>
+		<br />
 
-	<label for="password">Password</label>
-	<input type="password" name="password" bind:value={$form.password} {...$constraints.password} />
-	{#if $errors.password}
-		{$errors.password}
-	{/if}
-	<br />
+		<Form.Field {config} name="password2">
+			<Form.Label>Retype Password:</Form.Label>
+			<Form.Validation />
+			<Form.Input type="password" />
+		</Form.Field>
+		<br />
 
-	<label for="password2">Retype Password</label>
-	<input type="password" name="password2" bind:value={$form.password2} {...$constraints.password2} />
-	{#if $errors.password2}
-		{$errors.password2}
-	{/if}
-	<br />
+		<Button type="submit" fontSize={2} {loading} width={10}>Register</Button>
+	</Form.Root>
 
-	<input type="submit" value="Sign Up" />
-</form>
-<a href="/auth/login">Back</a>
+	<div class="links">
+		<Button fontSize={1.5} link="/auth/login" invertColor={true}>Back to login</Button>
+	</div>
+</div>

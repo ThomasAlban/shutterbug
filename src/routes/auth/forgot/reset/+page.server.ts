@@ -1,21 +1,8 @@
 import { error, fail, redirect, type RequestEvent, type ServerLoadEvent } from '@sveltejs/kit';
 import * as db from '$lib/server/db';
-import { z } from 'zod';
+import { usernameSchema, passwordSchema } from './schema';
 import { setError, superValidate } from 'sveltekit-superforms/server';
 import bcrypt from 'bcrypt';
-
-const usernameSchema = z.object({
-	username: z.string({ required_error: 'Username is required' }).min(1, { message: 'Username is required' }).trim()
-});
-
-const passwordSchema = z.object({
-	password: z
-		.string({ required_error: 'Password is required' })
-		.min(6, { message: 'Password must be at least 6 characters' }),
-	password2: z
-		.string({ required_error: 'Password is required' })
-		.min(6, { message: 'Password must be at least 6 characters' })
-});
 
 async function validateUrlParams(event: ServerLoadEvent | RequestEvent) {
 	const tokenParam = event.url.searchParams.get('token');
@@ -43,7 +30,6 @@ export async function load(event) {
 export const actions = {
 	async username(event) {
 		const { userIDParam, user } = await validateUrlParams(event);
-
 		const form = await superValidate(event, usernameSchema);
 		if (!form.valid) return fail(400, { form });
 
@@ -54,7 +40,7 @@ export const actions = {
 
 		await db.updateUsername(userIDParam, form.data.username);
 
-		throw redirect(303, '/auth/login');
+		throw redirect(303, '/auth/login?reset="username"');
 	},
 
 	async password(event) {
@@ -70,6 +56,6 @@ export const actions = {
 
 		await db.updatePassword(userIDParam, form.data.password);
 
-		throw redirect(303, '/auth/login');
+		throw redirect(303, '/auth/login?reset="password"');
 	}
 };
