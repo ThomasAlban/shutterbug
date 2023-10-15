@@ -5,7 +5,8 @@
 
 [data-fs-input] {
 	font-size: 1.5rem;
-	font-family: 'Merriweather-Italic';
+	font-family: 'Merriweather';
+	font-style: italic;
 	text-align: center;
 }
 
