@@ -34,6 +34,7 @@
 	}
 	.blur {
 		backdrop-filter: blur(10px) brightness(75%);
+		-webkit-backdrop-filter: blur(10px) brightness(75%);
 		width: 100%;
 		height: 100%;
 		padding: 3rem;
