@@ -16,6 +16,5 @@
 		min-height: -webkit-fill-available;
 		box-shadow: 0 0 3rem 0.5rem;
 		line-height: 2rem;
-		overflow: auto;
 	}
 </style>

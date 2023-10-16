@@ -46,6 +46,10 @@
 </div>
 
 <style>
+	.center {
+		display: flex;
+		justify-content: center;
+	}
 	.button-wrapper {
 		line-height: 1;
 	}

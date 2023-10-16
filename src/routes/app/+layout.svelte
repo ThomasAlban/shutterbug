@@ -6,17 +6,20 @@
 </script>
 
 <NavbarTop />
-<div class="container">
+<div class="content-container">
 	<slot />
 </div>
 
 <NavbarBottom userID={data.user.userID} />
 
 <style>
-	.container {
-		padding-top: 5rem;
-		padding-bottom: 5rem;
+	.content-container {
+		margin-top: 5rem;
+		margin-bottom: 5rem;
 		height: calc(100vh - 10rem);
-		overflow: auto;
+		height: calc(-webkit-fill-available - 10rem);
+
+		overflow-y: auto;
+		overflow-x: hidden;
 	}
 </style>

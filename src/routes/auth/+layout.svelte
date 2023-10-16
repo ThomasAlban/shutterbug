@@ -10,8 +10,11 @@
 
 <style>
 	.container {
-		overflow-x: hidden;
+		margin-top: 5rem;
+		height: calc(100vh - 10rem);
+		height: calc(-webkit-fill-available - 10rem);
+
 		overflow-y: auto;
-		height: calc(100vh - 5rem);
+		overflow-x: hidden;
 	}
 </style>

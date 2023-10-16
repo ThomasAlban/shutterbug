@@ -25,12 +25,10 @@ h1 {
 p {
 	line-height: 1.5rem;
 }
+
 .wrapper {
-	/* margin-top: 7rem; */
 	line-height: 3rem;
 	text-align: center;
-	/* width: 100%; */
-	/* left: 0; */
 }
 .links {
 	line-height: 1rem;
@@ -65,8 +63,4 @@ p {
 	font-size: min(3rem, 9vw);
 	line-height: min(4rem, 12vw);
 	margin: 0;
-}
-.center {
-	display: flex;
-	justify-content: center;
 }
