@@ -1,18 +1,17 @@
 <script lang="ts">
 	import NavbarBottom from '$lib/components/NavbarBottom.svelte';
 	import NavbarTop from '$lib/components/NavbarTop.svelte';
-	import { onMount } from 'svelte';
 
 	export let data;
 
-	let windowHeight = '100vh';
-	onMount(() => {
-		windowHeight = window.innerHeight.toString() + 'px';
-	});
+	$: innerHeight = 0;
 </script>
 
+<svelte:window bind:innerHeight />
+
 <NavbarTop />
-<div class="content-container" style="--window-height: {windowHeight}">
+
+<div class="content-container" style="--window-height: {innerHeight}px">
 	<slot />
 </div>
 

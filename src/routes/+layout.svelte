@@ -1,13 +1,10 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-
-	let windowHeight = '100vh';
-	onMount(() => {
-		windowHeight = window.innerHeight.toString() + 'px';
-	});
+	$: innerHeight = 0;
 </script>
 
-<div class="background">
+<svelte:window bind:innerHeight />
+
+<div class="background" style="--window-height: {innerHeight}px">
 	<div class="app-container">
 		<slot />
 	</div>
@@ -21,7 +18,7 @@
 	}
 	.app-container {
 		width: min(100%, 50rem);
-		min-height: var(--window-height);
+		min-height: calc(var(--window-height) - 10rem);
 		box-shadow: 0 0 3rem 0.5rem;
 		line-height: 2rem;
 	}
