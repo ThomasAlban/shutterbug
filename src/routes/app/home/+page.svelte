@@ -2,9 +2,15 @@
 	import BlurBgImg from '$lib/components/BlurBGImg.svelte';
 	import Button from '$lib/components/Button.svelte';
 	import '$lib/style.css';
+	import { onMount } from 'svelte';
 	// this is the data returned from the load function
 	export let data;
 	$: ({ user, currentTheme, alreadySubmitted, nextTheme } = data);
+
+	let windowHeight = '100vh';
+	onMount(() => {
+		windowHeight = window.innerHeight.toString() + 'px';
+	});
 
 	let remaining: { days: number; hours: number; minutes: number; seconds: number } | undefined = undefined;
 
@@ -31,7 +37,7 @@
 	}
 </script>
 
-<div class="wrapper" style="--window-height: {window.innerHeight}px">
+<div class="wrapper" style="--window-height: {windowHeight}">
 	<div class="orange">
 		{#if !currentTheme}
 			<p class="small-text">There is no current theme.</p>
