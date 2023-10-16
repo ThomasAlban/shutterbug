@@ -1,3 +1,12 @@
+<script lang="ts">
+	import { onMount } from 'svelte';
+
+	let windowHeight = '100vh';
+	onMount(() => {
+		windowHeight = window.innerHeight.toString() + 'px';
+	});
+</script>
+
 <div class="background">
 	<div class="app-container">
 		<slot />
@@ -12,12 +21,8 @@
 	}
 	.app-container {
 		width: min(100%, 50rem);
-		min-height: 100vh;
-		/* min-height: -webkit-fill-available; */
+		min-height: var(--window-height);
 		box-shadow: 0 0 3rem 0.5rem;
 		line-height: 2rem;
-
-		/* cut off shadow everywhere but the bottom
-		clip-path: inset(0 -5rem 0 -5rem); */
 	}
 </style>

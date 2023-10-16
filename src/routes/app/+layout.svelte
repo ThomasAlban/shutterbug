@@ -21,8 +21,6 @@
 <style>
 	.content-container {
 		margin: 5rem 0 5rem 0;
-		min-height: calc(100vh - 10rem);
-		/* cater for the ios address bar */
 		min-height: calc(var(--window-height) - 10rem);
 	}
 </style>
