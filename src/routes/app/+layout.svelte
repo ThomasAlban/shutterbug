@@ -14,10 +14,9 @@
 
 <style>
 	.content-container {
-		padding: 5rem 0 5rem 0;
+		margin: 5rem 0 5rem 0;
 		min-height: calc(100vh - 10rem);
 		/* cater for the ios address bar */
 		min-height: calc(-webkit-fill-available - 10rem);
-		background-color: blue;
 	}
 </style>
