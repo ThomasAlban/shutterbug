@@ -43,6 +43,9 @@ p {
 	font-size: 1.5rem;
 	padding: 0.75rem 0 0.75rem;
 	position: relative;
+
+    /* cut off shadow everywhere but the bottom */
+    clip-path: inset(0 0 -5rem 0);
 }
 .small-text {
 	font-size: min(1.25rem, 3.75vw);

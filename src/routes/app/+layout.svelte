@@ -18,8 +18,5 @@
 		margin-bottom: 5rem;
 		height: calc(100vh - 10rem);
 		height: calc(-webkit-fill-available - 10rem);
-
-		overflow-y: auto;
-		overflow-x: hidden;
 	}
 </style>

@@ -12,8 +12,8 @@
 	}
 	.app-container {
 		width: min(100%, 50rem);
-		min-height: 100vh;
-		min-height: -webkit-fill-available;
+		height: 100vh;
+		/* min-height: -webkit-fill-available; */
 		box-shadow: 0 0 3rem 0.5rem;
 		line-height: 2rem;
 	}
