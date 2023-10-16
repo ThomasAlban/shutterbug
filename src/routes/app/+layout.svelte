@@ -14,9 +14,10 @@
 
 <style>
 	.content-container {
-		margin-top: 5rem;
-		margin-bottom: 5rem;
-		height: calc(100vh - 10rem);
-		height: calc(-webkit-fill-available - 10rem);
+		padding: 5rem 0 5rem 0;
+		min-height: calc(100vh - 10rem);
+		/* cater for the ios address bar */
+		min-height: calc(-webkit-fill-available - 10rem);
+		background-color: blue;
 	}
 </style>

@@ -86,6 +86,8 @@
 
 <style>
 	.wrapper {
+		min-height: calc(100vh - 10rem);
+		background-color: purple;
 		display: flex;
 		flex-flow: column;
 	}
