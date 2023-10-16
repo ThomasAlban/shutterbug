@@ -31,9 +31,8 @@
 	}
 </script>
 
-<div class="wrapper">
-	<div class="wrapper2" />
-	<!-- <div class="orange">
+<div class="wrapper" style="--window-height: {window.innerHeight}px">
+	<div class="orange">
 		{#if !currentTheme}
 			<p class="small-text">There is no current theme.</p>
 		{/if}
@@ -82,15 +81,14 @@
 			</div>
 			<Button fontSize={2} link="/app/vote" invertColor={true}>Start voting</Button>
 		</BlurBgImg>
-	</div> -->
+	</div>
 </div>
 
 <style>
 	.wrapper {
 		display: flex;
 		flex-flow: column;
-		height: calc(100vh - 10rem);
-		height: calc(-webkit-fill-available - 10rem);
+		height: calc(var(--window-height) - 10rem);
 		background-color: blue;
 	}
 	.orange {
