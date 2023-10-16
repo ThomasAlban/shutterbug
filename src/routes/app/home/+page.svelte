@@ -38,7 +38,15 @@
 		{/if}
 
 		{#if remaining && (currentTheme || nextTheme)}
-			<p class="small-text">There {remaining.days == 1 ? 'is' : 'are'}:</p>
+			<p class="small-text">
+				There
+				{remaining.days == 1 ||
+				(!remaining.days && remaining.hours == 1) ||
+				(!remaining.days && !remaining.hours && remaining.minutes == 1) ||
+				(!remaining.days && !remaining.hours && !remaining.minutes && remaining.seconds == 1)
+					? 'is'
+					: 'are'}:
+			</p>
 			<p class="large-text">
 				{#if remaining.days}
 					{remaining.days} {remaining.days == 1 ? 'day' : 'days'},
@@ -80,7 +88,6 @@
 	.wrapper {
 		display: flex;
 		flex-flow: column;
-		height: calc(100vh - 10rem);
 	}
 	.orange {
 		flex: 0 1 auto;

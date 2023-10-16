@@ -14,9 +14,9 @@
 
 <style>
 	.container {
+		padding-top: 5rem;
+		padding-bottom: 5rem;
 		height: calc(100vh - 10rem);
-		position: relative;
-		top: 5rem;
-		overflow-y: auto;
+		overflow: auto;
 	}
 </style>
