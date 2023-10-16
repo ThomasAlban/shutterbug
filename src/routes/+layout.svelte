@@ -18,8 +18,10 @@
 	}
 	.app-container {
 		width: min(100%, 50rem);
-		min-height: calc(var(--window-height) - 10rem);
+		min-height: var(--window-height);
 		box-shadow: 0 0 3rem 0.5rem;
 		line-height: 2rem;
+		/* if you overscroll you will see black */
+		background-color: black;
 	}
 </style>

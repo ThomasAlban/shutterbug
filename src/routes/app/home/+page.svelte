@@ -94,7 +94,6 @@
 		display: flex;
 		flex-flow: column;
 		height: calc(var(--window-height) - 10rem);
-		background-color: blue;
 	}
 	.orange {
 		flex: 0 1 auto;
