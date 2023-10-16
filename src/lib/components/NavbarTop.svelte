@@ -5,11 +5,15 @@
 <style>
 	.navbar {
 		background-color: black;
+		overflow: hidden;
 		z-index: 1;
-		position: sticky;
-		left: 0;
+
+		position: fixed;
 		top: 0;
-		width: 100%;
+		margin-left: auto;
+		margin-right: auto;
+		width: min(100%, 50rem);
+		height: 5rem;
 
 		display: flex;
 		justify-content: center;

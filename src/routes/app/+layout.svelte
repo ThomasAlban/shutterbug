@@ -14,8 +14,9 @@
 
 <style>
 	.container {
-		overflow-x: hidden;
-		overflow-y: auto;
 		height: calc(100vh - 10rem);
+		position: relative;
+		top: 5rem;
+		overflow-y: auto;
 	}
 </style>

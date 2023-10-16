@@ -14,7 +14,7 @@
 		background-color: black;
 		overflow: hidden;
 
-		position: absolute;
+		position: fixed;
 		bottom: 0;
 		margin-left: auto;
 		margin-right: auto;
