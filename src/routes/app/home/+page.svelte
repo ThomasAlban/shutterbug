@@ -89,6 +89,7 @@
 		display: flex;
 		flex-flow: column;
 		height: calc(100vh - 10rem);
+		height: calc(-webkit-fill-available - 10rem);
 	}
 	.orange {
 		flex: 0 1 auto;
