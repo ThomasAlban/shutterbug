@@ -1,84 +1,104 @@
 <script lang="ts">
-	import Loading from './Loading.svelte';
-	import '$lib/style.css';
+	import { onMount } from 'svelte';
+
 	export let type: 'button' | 'submit' | 'reset' | null | undefined = 'button';
-	export let fontSize = 40;
+
 	export let invertColor = false;
 	export let link: string | undefined = undefined;
 	export let loading = false;
-	export let width: number | undefined = undefined;
 
-	let backgroundColor = '#e27d00';
-	let textColor = '#fff';
-
-	if (invertColor) [backgroundColor, textColor] = [textColor, backgroundColor];
+	let width: number | undefined = undefined;
+	let height: number | undefined = undefined;
+	onMount(() => {
+		let slot = document.getElementById('slot');
+		width = slot?.offsetWidth;
+		height = slot?.offsetHeight;
+	});
 </script>
 
-<div class="button-wrapper">
+<div
+	class="button-wrapper"
+	style="
+        --background-color: {invertColor ? '#fff' : 'var(--orange)'}; 
+        --text-color: {invertColor ? 'var(--orange)' : '#fff'};
+        line-height: 1;
+    "
+>
 	{#if link}
-		<a
-			class="btn btnhover"
-			href={link}
-			style="--font-size: {fontSize}rem; --background-color: {backgroundColor}; --text-color: {textColor}"
-		>
+		<a class="btn" href={link}>
 			<slot />
 		</a>
-	{:else if loading}
-		<button
-			disabled
-			class="btn"
-			{type}
-			style="--font-size: {fontSize}rem; --background-color: {backgroundColor}; --text-color: {textColor}; --width: {width}rem"
-		>
-			<div class="center">
-				<Loading size={fontSize} color={textColor} />
-			</div>
-		</button>
 	{:else}
-		<button
-			class="btn btnhover"
-			{type}
-			style="--font-size: {fontSize}rem; --background-color: {backgroundColor}; --text-color: {textColor}; --width: {width}rem"
-		>
-			<slot />
+		<button disabled={loading} class="btn" {type}>
+			{#if loading}
+				<div class="spinner-container" style={width && height ? `width: ${width}px; height: ${height}px` : ''}>
+					<div class="loading-spinner" />
+				</div>
+			{:else}
+				<div id="slot">
+					<slot />
+				</div>
+			{/if}
 		</button>
 	{/if}
 </div>
 
 <style>
-	.center {
+	a,
+	button {
+		cursor: pointer;
+	}
+
+	.spinner-container {
 		display: flex;
 		justify-content: center;
-	}
-	.button-wrapper {
-		line-height: 1;
+		align-items: center;
 	}
 
 	.btn {
-		width: var(--width);
+		--size: 1.75;
+		--line-height: 2.5;
+		font-size: min(calc(var(--size) * 1rem), calc(var(--size) * var(--rem-vw-ratio) * 1vw));
+		line-height: min(calc(var(--line-height) * 1rem), calc(var(--line-height) * var(--rem-vw-ratio) * 1vw));
+
 		text-decoration: none;
 		font-family: 'Merriweather-BoldItalic';
 		display: inline-block;
-		font-size: var(--font-size);
-		line-height: 1;
-		border-radius: 500px;
-		transition-property: background-color, border-color, color, box-shadow, filter;
-		transition-duration: 0.3s;
-		border: 1px solid transparent;
-		letter-spacing: 1px;
-		text-align: center;
 
-		--padding-amount: calc(var(--font-size) / 3);
-		padding: var(--padding-amount);
+		border-radius: 500px;
+
+		transition-property: width;
+
+		border: 1px solid transparent;
+		letter-spacing: 0.05rem;
+		text-align: center;
 
 		color: var(--text-color);
 		background-color: var(--background-color);
 
-		--shadow-h-offset: calc(var(--font-size) / 8);
-		--shadow-blur: calc(var(--font-size) / 5);
-		box-shadow: 0px var(--shadow-h-offset) var(--shadow-blur) 1px rgb(90, 90, 90);
+		box-shadow: 0 calc(var(--size) * 0.2rem) calc(var(--size) * 0.3rem) 1px rgb(50, 50, 50);
+
+		padding: 0.2rem 1rem 0.2rem 1rem;
 	}
-	.btnhover {
-		cursor: pointer;
+
+	.loading-spinner {
+		height: 1em;
+		width: 1em;
+		border-color: var(--text-color) transparent var(--text-color) var(--text-color);
+		border-width: calc(1em / 8);
+		border-style: solid;
+		border-image: initial;
+		box-sizing: border-box;
+		border-radius: 100%;
+		animation: 0.75s linear 0s infinite normal none running rotate;
+		margin: 0;
+	}
+	@keyframes rotate {
+		0% {
+			transform: rotate(0);
+		}
+		100% {
+			transform: rotate(360deg);
+		}
 	}
 </style>

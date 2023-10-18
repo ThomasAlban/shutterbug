@@ -1,13 +1,14 @@
 <script lang="ts">
 	export let src: string;
-	export let size = 50;
+	export let size = 1;
 </script>
 
-<img {src} alt="profile img" class="rounded" width={size} height={size} />
+<img {src} alt="profile img" style="width: {size}em; height: {size}em" />
 
 <style>
-	img.rounded {
+	img {
 		object-fit: cover;
 		border-radius: 50%;
+		border: 1px solid black;
 	}
 </style>

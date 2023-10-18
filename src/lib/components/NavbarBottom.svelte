@@ -2,15 +2,15 @@
 	export let userID: string;
 </script>
 
-<div class="navbar-bottom">
-	<a href="/app/home"><img src="/icons/home.png" alt="home-icon" class="icon" /></a>
-	<a href="/app/friends"><img src="/icons/users.png" alt="users-icon" class="icon" /></a>
-	<a href="/app/user/{userID}"><img src="/icons/user.png" alt="user-icon" class="icon" /></a>
-	<a href="app/settings"><img src="/icons/settings.png" alt="settings-icon" class="icon" /></a>
-</div>
+<nav>
+	<a href="/app/home"><img src="/icons/home.png" alt="home-icon" /></a>
+	<a href="/app/friends"><img src="/icons/users.png" alt="users-icon" /></a>
+	<a href="/app/user/{userID}"><img src="/icons/user.png" alt="user-icon" /></a>
+	<a href="app/settings"><img src="/icons/settings.png" alt="settings-icon" /></a>
+</nav>
 
 <style>
-	.navbar-bottom {
+	nav {
 		background-color: black;
 		overflow: hidden;
 
@@ -25,7 +25,7 @@
 		grid-template-columns: repeat(4, 1fr);
 		place-items: center;
 	}
-	.icon {
+	img {
 		width: 2.5rem;
 	}
 </style>

@@ -3,14 +3,11 @@
 	import NavbarTop from '$lib/components/NavbarTop.svelte';
 
 	export let data;
-	$: innerHeight = 0;
 </script>
-
-<svelte:window bind:innerHeight />
 
 <NavbarTop />
 
-<div class="content-container" style="--window-height: {innerHeight}px">
+<div class="content-container">
 	<slot />
 </div>
 
@@ -19,7 +16,7 @@
 <style>
 	.content-container {
 		margin: 5rem 0 5rem 0;
-		min-height: calc(var(--window-height) - 10rem);
+		min-height: calc(var(--window-height) - var(--navbar-top-height) - var(--navbar-bottom-height));
 		background-color: white;
 	}
 </style>

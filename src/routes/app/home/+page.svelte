@@ -1,13 +1,13 @@
 <script lang="ts">
+	import { browser } from '$app/environment';
+	import { invalidateAll } from '$app/navigation';
 	import BlurBgImg from '$lib/components/BlurBGImg.svelte';
 	import Button from '$lib/components/Button.svelte';
-	import '$lib/style.css';
-
-	$: innerHeight = 0;
 
 	// this is the data returned from the load function
 	export let data;
-	$: ({ user, currentTheme, alreadySubmitted, nextTheme } = data);
+	console.log(data.hasFriends);
+	$: ({ currentTheme, alreadySubmitted, nextTheme } = data);
 
 	let remaining: { days: number; hours: number; minutes: number; seconds: number } | undefined = undefined;
 
@@ -20,7 +20,13 @@
 		let minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
 		let seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
 		remaining = { days, hours, minutes, seconds };
+
+		// patch to make sure nothing can be negative
+		if (Object.values(remaining).every((x) => x <= 0)) remaining = { days: 0, hours: 0, minutes: 0, seconds: 0 };
 	}
+
+	// if 'remaining' goes below or equal to zero, refresh the page
+	$: if (remaining && browser && Object.values(remaining).every((x) => x <= 0)) invalidateAll();
 
 	$: {
 		if (currentTheme && !alreadySubmitted) {
@@ -34,16 +40,14 @@
 	}
 </script>
 
-<svelte:window bind:innerHeight />
-
-<div class="wrapper" style="--window-height: {innerHeight}px">
+<div class="wrapper">
 	<div class="orange">
 		{#if !currentTheme}
-			<p class="small-text">There is no current theme.</p>
+			<p>There is no current theme.</p>
 		{/if}
 
 		{#if remaining && (currentTheme || nextTheme)}
-			<p class="small-text">
+			<p>
 				There
 				{remaining.days == 1 ||
 				(!remaining.days && remaining.hours == 1) ||
@@ -52,7 +56,7 @@
 					? 'is'
 					: 'are'}:
 			</p>
-			<p class="large-text">
+			<h2>
 				{#if remaining.days}
 					{remaining.days} {remaining.days == 1 ? 'day' : 'days'},
 				{/if}
@@ -66,42 +70,63 @@
 				{#if !remaining.days && remaining.hours && remaining.minutes}<br />{/if}
 				{remaining.seconds}
 				{remaining.seconds == 1 ? 'second' : 'seconds'}
-			</p>
+			</h2>
 		{/if}
 
 		{#if currentTheme}
-			<p class="small-text">until photo submission!</p>
+			<p>until photo submission!</p>
 			<div class="submit-container">
-				<Button fontSize={2} link="/app/upload" invertColor={true}>Submit now</Button>
+				<Button link="/app/upload" invertColor={true}>Submit now</Button>
 			</div>
 		{:else if nextTheme}
-			<p class="small-text">until the next theme starts!</p>
+			<p>until the next theme starts!</p>
 		{/if}
 	</div>
 	<div class="blurbg-container">
-		<BlurBgImg url={data.randomSubmission}>
-			<div>
-				<p class="medium-text">View & vote on your friends' submissions for last week</p>
-				<br />
-			</div>
-			<Button fontSize={2} link="/app/vote" invertColor={true}>Start voting</Button>
-		</BlurBgImg>
+		{#if data.randomSubmission}
+			<BlurBgImg url={data.randomSubmission}>
+				<div>
+					<h3>View & vote on your friends' submissions for last week</h3>
+					<br />
+				</div>
+				<Button link="/app/vote" invertColor={true}>Start voting</Button>
+			</BlurBgImg>
+		{:else}
+			<h3>You don't have any friends.</h3>
+			<p>Get some friends to vote on your submissions!</p>
+			<h3>
+				Click the <img src="/icons/users.png" alt="friends-icon" class="friends-icon" /> icon below...
+			</h3>
+		{/if}
 	</div>
 </div>
 
 <style>
 	.wrapper {
+		line-height: 3rem;
+		text-align: center;
 		display: flex;
 		flex-flow: column;
-		height: calc(var(--window-height) - 10rem);
+		height: calc(var(--window-height) - var(--navbar-top-height) - var(--navbar-bottom-height));
 	}
 	.orange {
 		flex: 0 1 auto;
 	}
+
 	.blurbg-container {
 		flex: 1 1 auto;
+		color: black;
+
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		flex-direction: column;
 	}
 	.submit-container {
 		padding: 1rem;
+	}
+	.friends-icon {
+		height: 1em;
+		filter: brightness(0);
 	}
 </style>

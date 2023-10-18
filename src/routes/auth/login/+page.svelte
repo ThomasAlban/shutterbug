@@ -2,7 +2,6 @@
 	import Button from '$lib/components/Button.svelte';
 	import { Form } from 'formsnap';
 	import { loginSchema } from './schema';
-	import '$lib/style.css';
 	import { page } from '$app/stores';
 	import { toasts } from 'svelte-toasts';
 
@@ -21,8 +20,8 @@
 	let loading = false;
 </script>
 
-<div class="wrapper">
-	<h1>Login</h1>
+<div class="auth-wrapper">
+	<h1 class="orange-text">Login</h1>
 
 	<Form.Root
 		form={data.form}
@@ -50,7 +49,7 @@
 		<Button type="submit" fontSize={2} {loading} width={9}>Log in</Button>
 	</Form.Root>
 
-	<div class="links">
+	<div class="auth-links">
 		<Button fontSize={1.5} link="/auth/register" invertColor={true}>Register</Button>
 		<br />
 		<Button fontSize={1.5} link="/auth/forgot" invertColor={true}>Forgot credentials</Button>

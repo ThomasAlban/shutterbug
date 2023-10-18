@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { Form } from 'formsnap';
-	import '$lib/style.css';
 	import { usernameSchema, passwordSchema } from './schema';
 	import Button from '$lib/components/Button.svelte';
 	import { page } from '$app/stores';
@@ -12,8 +11,8 @@
 	let userID = $page.url.searchParams.get('userID');
 </script>
 
-<div class="wrapper">
-	<h1>Reset Credentials</h1>
+<div class="auth-wrapper">
+	<h1 class="orange-text">Reset Credentials</h1>
 
 	<Form.Root
 		form={data.usernameForm}
@@ -64,7 +63,7 @@
 		<Button type="submit" fontSize={2} loading={passwordLoading} width={9}>Submit</Button>
 	</Form.Root>
 
-	<div class="links">
+	<div class="auth-links">
 		<Button fontSize={1.5} link="/auth/login" invertColor={true}>Back to login</Button>
 	</div>
 </div>

@@ -2,15 +2,14 @@
 	import { registerSchema } from './schema.js';
 	import { Form } from 'formsnap';
 	import Button from '$lib/components/Button.svelte';
-	import '$lib/style.css';
 
 	export let data;
 
 	let loading = false;
 </script>
 
-<div class="wrapper">
-	<h1>Register</h1>
+<div class="auth-wrapper">
+	<h1 class="orange-text">Register</h1>
 
 	<Form.Root
 		form={data.form}
@@ -59,7 +58,7 @@
 		<Button type="submit" fontSize={2} {loading} width={10}>Register</Button>
 	</Form.Root>
 
-	<div class="links">
+	<div class="auth-links">
 		<Button fontSize={1.5} link="/auth/login" invertColor={true}>Back to login</Button>
 	</div>
 </div>

@@ -4,17 +4,14 @@
 
 <NavbarTop />
 
-<div class="container">
+<div class="content-container">
 	<slot />
 </div>
 
 <style>
-	.container {
-		margin-top: 5rem;
-		height: calc(100vh - 10rem);
-		height: calc(-webkit-fill-available - 10rem);
-
-		overflow-y: auto;
-		overflow-x: hidden;
+	.content-container {
+		margin: var(--navbar-top-height) 0 0 0;
+		min-height: calc(var(--window-height) - var(--navbar-top-height));
+		background-color: white;
 	}
 </style>

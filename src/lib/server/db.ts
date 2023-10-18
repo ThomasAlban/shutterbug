@@ -726,11 +726,11 @@ export async function getClientUser(userID: string) {
 type ClientUserFriendDataAndPhotos =
 	| { user: ClientUser; friendStatus: 'none' | 'outgoingRequest'; reported: 'none' | 'reporter' | 'culprit' }
 	| {
-		user: ClientUser;
-		photoSubmissions: { photo: Photo; theme: Theme; overallVote: Vote | null }[];
-		friendStatus: 'incomingRequest' | 'friends' | 'self';
-		reported: 'none' | 'reporter' | 'culprit';
-	};
+			user: ClientUser;
+			photoSubmissions: { photo: Photo; theme: Theme; overallVote: Vote | null }[];
+			friendStatus: 'incomingRequest' | 'friends' | 'self';
+			reported: 'none' | 'reporter' | 'culprit';
+	  };
 
 export async function getClientUserFriendDataAndPhotos(
 	userID: string,

@@ -1,119 +1,90 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
+	import Button from '$lib/components/Button.svelte';
 	import ProfilePicture from '$lib/components/ProfilePicture.svelte';
-	import { superForm } from 'sveltekit-superforms/client';
+	import UserWidget from '$lib/components/UserWidget.svelte';
+	import { acceptSchema, removeSchema, searchSchema, sendRequestSchema } from './schema.js';
+	import { Form } from 'formsnap';
 
 	export let data;
 	export let form;
 	$: ({ friends, incomingFriendRequests, outgoingFriendRequests } = data);
-	const { form: searchForm, enhance: searchEnhance, constraints: searchConstraints } = superForm(data.searchForm);
 </script>
 
-<a href="/app/home">Home</a>
+<div class="orange">
+	<div class="search-container">
+		<Form.Root form={data.searchForm} schema={searchSchema} action="?/search" let:config style="display: contents;">
+			<Form.Field {config} name="search">
+				<Form.Input type="text" placeholder="find friends..." />
+			</Form.Field>
+			<Button type="submit" invertColor={true}>Go</Button>
+		</Form.Root>
+	</div>
 
-<form method="post" action="?/search" use:searchEnhance>
-	<label for="search">Find friends</label>
-	<input
-		type="text"
-		placeholder="enter username..."
-		name="search"
-		bind:value={$searchForm.search}
-		{...$searchConstraints.search}
-	/>
-	<input type="submit" value="Go" />
-</form>
-<br />
+	<div class="results-container">
+		{#if form?.searchResult}
+			{#each form.searchResult as sr}
+				{#if sr.user.profilePhoto}
+					<ProfilePicture src={sr.user.profilePhoto} />
+				{/if}
+				<a href="/app/user/{sr.user.userID}">{sr.user.username}</a>
 
-{#if form?.searchResult}
-	{#each form.searchResult as sr}
-		{#if sr.user.profilePhoto}
-			<ProfilePicture src={sr.user.profilePhoto} />
-		{/if}
-		<a href="/app/user/{sr.user.userID}">{sr.user.username}</a>
+				{#if sr.friendStatus === 'friends'}
+					<br />
+					already friends
+				{:else if sr.friendStatus === 'incomingRequest'}
+					<Form.Root form={data.acceptForm} schema={acceptSchema} action="?/accept" let:config>
+						<Form.Field {config} name="ID">
+							<Form.Input type="hidden" value={sr.user.userID} />
+						</Form.Field>
+						<button type="submit">Accept</button>
+					</Form.Root>
 
-		{#if sr.friendStatus === 'friends'}
+					<Form.Root form={data.removeForm} schema={removeSchema} action="?/remove" let:config>
+						<Form.Field {config} name="ID">
+							<Form.Input type="hidden" value={sr.user.userID} />
+						</Form.Field>
+						<button type="submit">Remove</button>
+					</Form.Root>
+				{:else if sr.friendStatus === 'outgoingRequest'}
+					<Form.Root form={data.removeForm} schema={removeSchema} action="?/remove" let:config>
+						<Form.Field {config} name="ID">
+							<Form.Input type="hidden" value={sr.user.userID} />
+						</Form.Field>
+						<button type="submit">Remove</button>
+					</Form.Root>
+				{:else}
+					<Form.Root form={data.sendRequestForm} schema={sendRequestSchema} action="?/sendRequest" let:config>
+						<Form.Field {config} name="ID">
+							<Form.Input type="hidden" value={sr.user.userID} />
+						</Form.Field>
+						<button type="submit">Send Friend Request</button>
+					</Form.Root>
+				{/if}
+			{:else}
+				<i>No results</i>
+			{/each}
 			<br />
-			already friends
-		{:else if sr.friendStatus === 'incomingRequest'}
-			<form
-				method="post"
-				action="?/accept"
-				use:enhance={({ submitter }) => {
-					submitter?.setAttribute('disabled', 'true');
-					return ({ update }) => update().then(() => submitter?.removeAttribute('disabled'));
-				}}
-			>
-				<input type="hidden" value={form.searchResult} />
-				<input type="hidden" name="ID" value={sr.user.userID} />
-				<input type="submit" value="Accept" />
-			</form>
-
-			<form
-				method="post"
-				action="?/remove"
-				use:enhance={({ submitter }) => {
-					submitter?.setAttribute('disabled', 'true');
-					return ({ update }) => update().then(() => submitter?.removeAttribute('disabled'));
-				}}
-			>
-				<input type="hidden" value={form.searchResult} />
-				<input type="hidden" name="ID" value={sr.user.userID} />
-				<input type="submit" value="Remove" />
-			</form>
-		{:else if sr.friendStatus === 'outgoingRequest'}
-			<form
-				method="post"
-				action="?/remove"
-				use:enhance={({ submitter }) => {
-					submitter?.setAttribute('disabled', 'true');
-					return ({ update }) => update().then(() => submitter?.removeAttribute('disabled'));
-				}}
-			>
-				<input type="hidden" value={form.searchResult} />
-				<input type="hidden" name="ID" value={sr.user.userID} />
-				<input type="submit" value="Remove" />
-			</form>
-		{:else}
-			<form
-				method="post"
-				action="?/sendRequest"
-				use:enhance={({ submitter }) => {
-					submitter?.setAttribute('disabled', 'true');
-					return ({ update }) => update().then(() => submitter?.removeAttribute('disabled'));
-				}}
-			>
-				<input type="hidden" value={form.searchResult} />
-				<input type="hidden" name="ID" value={sr.user.userID} />
-				<input type="submit" value="Send Friend Request" />
-			</form>
 		{/if}
-	{:else}
-		<i>No results</i>
-	{/each}
-	<br />
-{/if}
+	</div>
+</div>
 
-<!-- continued... -->
+<br />
 
 <h2>Friends</h2>
 
-{#each friends as user}
-	{#if user.profilePhoto}
-		<ProfilePicture src={user.profilePhoto} />
+{#each friends as friend}
+	<UserWidget user={friend} friendStatus="friends" />
+	<!-- {#if friend.profilePhoto}
+		<ProfilePicture src={friend.profilePhoto} />
 	{/if}
-	<a href="/app/user/{user.userID}">{user.username}</a>
+	<a href="/app/user/{friend.userID}">{friend.username}</a>
 
-	<form
-		method="post"
-		action="?/remove"
-		use:enhance={({ submitter }) => {
-			submitter?.setAttribute('disabled', 'true');
-			return ({ update }) => update().then(() => submitter?.removeAttribute('disabled'));
-		}}
-	>
-		<input type="hidden" name="ID" value={user.userID} />
-		<input type="submit" value="Remove" />
-	</form>
+	<Form.Root form={data.removeForm} schema={removeSchema} action="?/remove" let:config>
+		<Form.Field {config} name="ID">
+			<Form.Input type="hidden" value={friend.userID} />
+		</Form.Field>
+		<button type="submit">Remove</button>
+	</Form.Root> -->
 	<br />
 {:else}
 	None
@@ -121,35 +92,26 @@
 
 <h2>Incoming Friend Requests</h2>
 {#if incomingFriendRequests.length > 0}
-	{#each incomingFriendRequests as user}
-		{#if user.profilePhoto}
-			<ProfilePicture src={user.profilePhoto} />
+	{#each incomingFriendRequests as incomingFR}
+		{#if incomingFR.profilePhoto}
+			<ProfilePicture src={incomingFR.profilePhoto} />
 		{/if}
-		<a href="/app/user/{user.userID}">{user.username}</a>
+		<a href="/app/user/{incomingFR.userID}">{incomingFR.username}</a>
 
-		<form
-			method="post"
-			action="?/accept"
-			use:enhance={({ submitter }) => {
-				submitter?.setAttribute('disabled', 'true');
-				return ({ update }) => update().then(() => submitter?.removeAttribute('disabled'));
-			}}
-		>
-			<input type="hidden" name="ID" value={user.userID} />
-			<input type="submit" value="Accept" />
-		</form>
+		<Form.Root form={data.acceptForm} schema={acceptSchema} action="?/accept" let:config>
+			<Form.Field {config} name="ID">
+				<Form.Input type="hidden" value={incomingFR.userID} />
+			</Form.Field>
+			<button type="submit">Accept</button>
+		</Form.Root>
 
-		<form
-			method="post"
-			action="?/remove"
-			use:enhance={({ submitter }) => {
-				submitter?.setAttribute('disabled', 'true');
-				return ({ update }) => update().then(() => submitter?.removeAttribute('disabled'));
-			}}
-		>
-			<input type="hidden" name="ID" value={user.userID} />
-			<input type="submit" value="Remove" />
-		</form>
+		<Form.Root form={data.removeForm} schema={removeSchema} action="?/remove" let:config>
+			<Form.Field {config} name="ID">
+				<Form.Input type="hidden" value={incomingFR.userID} />
+			</Form.Field>
+			<button type="submit">Remove</button>
+		</Form.Root>
+
 		<br />
 	{/each}
 {:else}
@@ -158,25 +120,38 @@
 
 <h2>Outgoing Friend Requests</h2>
 {#if outgoingFriendRequests.length > 0}
-	{#each outgoingFriendRequests as user}
-		{#if user.profilePhoto}
-			<ProfilePicture src={user.profilePhoto} />
+	{#each outgoingFriendRequests as outgoingFR}
+		{#if outgoingFR.profilePhoto}
+			<ProfilePicture src={outgoingFR.profilePhoto} />
 		{/if}
-		<a href="/app/user/{user.userID}">{user.username}</a>
+		<a href="/app/user/{outgoingFR.userID}">{outgoingFR.username}</a>
 
-		<form
-			method="post"
-			action="?/remove"
-			use:enhance={({ submitter }) => {
-				submitter?.setAttribute('disabled', 'true');
-				return ({ update }) => update().then(() => submitter?.removeAttribute('disabled'));
-			}}
-		>
-			<input type="hidden" name="ID" value={user.userID} />
-			<input type="submit" value="Remove" />
-		</form>
+		<Form.Root form={data.removeForm} schema={removeSchema} action="?/remove" let:config>
+			<Form.Field {config} name="ID">
+				<Form.Input type="hidden" value={outgoingFR.userID} />
+			</Form.Field>
+			<button type="submit">Remove</button>
+		</Form.Root>
 		<br />
 	{/each}
 {:else}
 	None
 {/if}
+
+<style>
+	.search-container {
+		padding: 1rem;
+		display: flex;
+		gap: 1rem;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.results-container {
+		padding: 1rem;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		flex-direction: column;
+	}
+</style>
