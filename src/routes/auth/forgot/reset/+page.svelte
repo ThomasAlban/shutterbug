@@ -31,7 +31,9 @@
 		</Form.Field>
 		<br />
 
-		<Button type="submit" fontSize={2} loading={usernameLoading} width={9}>Submit</Button>
+		<div class="auth-submit-container">
+			<Button type="submit" loading={usernameLoading}>Submit</Button>
+		</div>
 	</Form.Root>
 
 	<br />
@@ -59,11 +61,12 @@
 			<Form.Input type="password" />
 		</Form.Field>
 		<br />
-
-		<Button type="submit" fontSize={2} loading={passwordLoading} width={9}>Submit</Button>
+		<div class="auth-submit-container">
+			<Button type="submit" loading={passwordLoading}>Submit</Button>
+		</div>
 	</Form.Root>
 
 	<div class="auth-links">
-		<Button fontSize={1.5} link="/auth/login" invertColor={true}>Back to login</Button>
+		<Button link="/auth/login" invertColor={true}>Back to login</Button>
 	</div>
 </div>

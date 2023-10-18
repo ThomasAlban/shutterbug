@@ -139,3 +139,7 @@
 		</form>
 	{/if}
 {/if}
+
+<form action="/auth/logout" method="post">
+	<button type="submit">Log Out</button>
+</form>

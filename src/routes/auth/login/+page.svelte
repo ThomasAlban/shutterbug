@@ -46,12 +46,14 @@
 		</Form.Field>
 		<br />
 
-		<Button type="submit" fontSize={2} {loading} width={9}>Log in</Button>
+		<div class="auth-submit-container">
+			<Button type="submit" {loading}>Log in</Button>
+		</div>
 	</Form.Root>
 
 	<div class="auth-links">
-		<Button fontSize={1.5} link="/auth/register" invertColor={true}>Register</Button>
+		<Button link="/auth/register" invertColor={true}>Register</Button>
 		<br />
-		<Button fontSize={1.5} link="/auth/forgot" invertColor={true}>Forgot credentials</Button>
+		<Button link="/auth/forgot" invertColor={true}>Forgot credentials</Button>
 	</div>
 </div>

@@ -104,7 +104,10 @@
 	}
 	:global(.auth-links) {
 		line-height: 1rem;
-		padding: 3rem;
+		padding: 3rem 0 3rem 0;
+	}
+	:global(.auth-submit-container) {
+		padding-top: 1rem;
 	}
 
 	:global(.orange) {
