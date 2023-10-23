@@ -107,7 +107,7 @@
 		text-align: center;
 		display: flex;
 		flex-flow: column;
-		height: calc(var(--window-height) - var(--navbar-top-height) - var(--navbar-bottom-height));
+		height: calc(100dvh - var(--navbar-top-height) - var(--navbar-bottom-height));
 	}
 	.orange {
 		flex: 0 1 auto;

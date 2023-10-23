@@ -11,7 +11,7 @@
 <style>
 	.content-container {
 		margin: var(--navbar-top-height) 0 0 0;
-		min-height: calc(var(--window-height) - var(--navbar-top-height));
+		min-height: calc(100dvh - var(--navbar-top-height));
 		background-color: white;
 	}
 </style>
