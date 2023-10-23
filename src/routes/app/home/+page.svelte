@@ -6,7 +6,7 @@
 
 	// this is the data returned from the load function
 	export let data;
-	console.log(data.hasFriends);
+
 	$: ({ currentTheme, alreadySubmitted, nextTheme } = data);
 
 	let remaining: { days: number; hours: number; minutes: number; seconds: number } | undefined = undefined;
@@ -33,7 +33,6 @@
 			updateRemaining(currentTheme.dateEnd);
 			setInterval(updateRemaining, 1000, currentTheme.dateEnd);
 		} else if (nextTheme) {
-			console.log(nextTheme);
 			updateRemaining(nextTheme.dateEnd);
 			setInterval(updateRemaining, 1000, nextTheme.dateEnd);
 		}
@@ -41,7 +40,7 @@
 </script>
 
 <div class="wrapper">
-	<div class="orange">
+	<!-- <div class="orange">
 		{#if !currentTheme}
 			<p>There is no current theme.</p>
 		{/if}
@@ -98,7 +97,7 @@
 				Click the <img src="/icons/users.png" alt="friends-icon" class="friends-icon" /> icon below...
 			</h3>
 		{/if}
-	</div>
+	</div> -->
 </div>
 
 <style>
@@ -108,6 +107,7 @@
 		display: flex;
 		flex-flow: column;
 		height: calc(100dvh - var(--navbar-top-height) - var(--navbar-bottom-height));
+		background-color: blue;
 	}
 	.orange {
 		flex: 0 1 auto;

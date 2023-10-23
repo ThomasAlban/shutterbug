@@ -685,7 +685,6 @@ export async function getUniqueUserByEmail(email: string) {
 		});
 		return user;
 	} catch (e) {
-		console.log(e);
 		throw error(500, { message: 'database error: ' + (e as string) });
 	}
 }
@@ -823,7 +822,6 @@ export async function getClientUserFriendDataAndPhotos(
 }
 
 export async function createReport(reporterID: string, culpritID: string, reason?: string | undefined) {
-	console.log(reporterID, culpritID, reason);
 	if (await checkReported(reporterID, culpritID)) {
 		throw error(500, { message: 'user has already reported' });
 	}
