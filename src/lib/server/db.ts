@@ -29,7 +29,7 @@ type Vote = {
 	creativity: number;
 	photography: number;
 };
-export type FriendStatus = 'friends' | 'outgoingRequest' | 'incomingRequest' | 'none';
+export type FriendStatus = 'friends' | 'outgoingRequest' | 'incomingRequest' | 'none' | 'self';
 
 const toClientUser = ({ userID, username, email, dateCreated, profilePhoto }: User): ClientUser => ({
 	userID,
@@ -163,6 +163,9 @@ export async function removeFriend(userID: string, friendID: string) {
 				requesteeID: userID
 			}
 		});
+		console.log('hell0o');
+		console.log(friendID);
+		console.log(userIsRequestee);
 		if (userIsRequestee) {
 			await db.friend.delete({
 				where: {
@@ -543,7 +546,7 @@ export async function searchUsersWithFriendStatus(searchQuery: string, userID: s
 	try {
 		query = await db.user.findMany({
 			where: {
-				username: { contains: searchQuery }
+				username: { contains: searchQuery, mode: 'insensitive' }
 			},
 			include: {
 				friendRequestsReceived: true,

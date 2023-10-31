@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import ProfilePicture from '$lib/components/ProfilePicture.svelte';
+	import UserWidget from '$lib/components/UserWidget.svelte';
+	import type { ClientUser } from '$lib/server/db.js';
 
 	export let data;
 	$: ({ userData } = data);
@@ -12,19 +14,14 @@
 <a href="/app/home">Home</a>
 <br /><br />
 
-<h1>
-	{userData.user.username}
-	{#if userData.user.profilePhoto}
-		<ProfilePicture src={userData.user.profilePhoto} size={100} />
-	{/if}
-</h1>
+<UserWidget user={userData.user} friendStatus={userData.friendStatus} />
 
 {#if userData.friendStatus === 'self'}
 	<a href="/app/user/edit">Edit Profile</a>
 {/if}
 
 {#if userData.reported === 'none'}
-	{#if userData.friendStatus === 'none'}
+	<!-- {#if userData.friendStatus === 'none'}
 		<form
 			method="post"
 			action="?/sendRequest"
@@ -78,7 +75,7 @@
 		>
 			<input type="submit" value="Remove Friend" />
 		</form>
-	{/if}
+	{/if} -->
 
 	{#if userData.friendStatus === 'incomingRequest' || userData.friendStatus === 'friends' || userData.friendStatus === 'self'}
 		<h2>Photo Submissions</h2>

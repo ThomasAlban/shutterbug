@@ -1,19 +1,21 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-
 	export let type: 'button' | 'submit' | 'reset' | null | undefined = 'button';
 
 	export let invertColor = false;
 	export let link: string | undefined = undefined;
 	export let loading = false;
 
+	export let size = 1.75;
+
 	let width: number | undefined = undefined;
 	let height: number | undefined = undefined;
-	onMount(() => {
-		let slot = document.getElementById('slot');
-		width = slot?.offsetWidth;
-		height = slot?.offsetHeight;
-	});
+
+	let slot: HTMLDivElement | undefined;
+
+	$: if (slot) {
+		width = slot.clientWidth;
+		height = slot.clientHeight;
+	}
 </script>
 
 <div
@@ -21,6 +23,7 @@
 	style="
         --background-color: {invertColor ? '#fff' : 'var(--orange)'}; 
         --text-color: {invertColor ? 'var(--orange)' : '#fff'};
+        --size: {size};
         line-height: 1;
     "
 >
@@ -35,7 +38,7 @@
 					<div class="loading-spinner" />
 				</div>
 			{:else}
-				<div id="slot">
+				<div id="slot" bind:this={slot}>
 					<slot />
 				</div>
 			{/if}
@@ -56,10 +59,8 @@
 	}
 
 	.btn {
-		--size: 1.75;
-		--line-height: 2.5;
 		font-size: min(calc(var(--size) * 1rem), calc(var(--size) * var(--rem-vw-ratio) * 1vw));
-		line-height: min(calc(var(--line-height) * 1rem), calc(var(--line-height) * var(--rem-vw-ratio) * 1vw));
+		line-height: min(calc(var(--size) * 1.4 * 1rem), calc(var(--size) * 1.4 * var(--rem-vw-ratio) * 1vw));
 
 		text-decoration: none;
 		font-family: 'Merriweather-BoldItalic';

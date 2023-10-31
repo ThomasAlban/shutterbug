@@ -1,12 +1,14 @@
-<script lang="ts">
-	$: innerHeight = 0;
+<script>
+	import { FlatToast, ToastContainer } from 'svelte-toasts';
 </script>
-
-<svelte:window bind:innerHeight />
 
 <div class="background">
 	<div class="app-container">
 		<slot />
+
+		<ToastContainer placement="bottom-center" let:data>
+			<FlatToast {data} />
+		</ToastContainer>
 	</div>
 </div>
 

@@ -10,12 +10,7 @@
 	let loading = false;
 
 	$: if (form?.success)
-		toasts.add({
-			title: 'Reset email sent',
-			description: 'Check your inbox and your spam folder...',
-			placement: 'bottom-center',
-			type: 'success'
-		});
+		toasts.success({ title: 'Reset email sent', description: 'Check your inbox and your spam folder...' });
 </script>
 
 <div class="auth-wrapper">

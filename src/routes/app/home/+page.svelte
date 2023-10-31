@@ -40,7 +40,7 @@
 </script>
 
 <div class="wrapper">
-	<!-- <div class="orange">
+	<div class="orange">
 		{#if !currentTheme}
 			<p>There is no current theme.</p>
 		{/if}
@@ -90,6 +90,14 @@
 				</div>
 				<Button link="/app/vote" invertColor={true}>Start voting</Button>
 			</BlurBgImg>
+		{:else if data.hasFriends}
+			<h3>None of your friends submitted anything last week.</h3>
+			{#if currentTheme}
+				<p>Check again once the current theme is over...</p>
+				<p>...Or get some more friends</p>
+			{:else}
+				<p>Check again soon!</p>
+			{/if}
 		{:else}
 			<h3>You don't have any friends.</h3>
 			<p>Get some friends to vote on your submissions!</p>
@@ -97,7 +105,7 @@
 				Click the <img src="/icons/users.png" alt="friends-icon" class="friends-icon" /> icon below...
 			</h3>
 		{/if}
-	</div> -->
+	</div>
 </div>
 
 <style>
@@ -107,7 +115,6 @@
 		display: flex;
 		flex-flow: column;
 		height: calc(100dvh - var(--navbar-top-height) - var(--navbar-bottom-height));
-		background-color: blue;
 	}
 	.orange {
 		flex: 0 1 auto;

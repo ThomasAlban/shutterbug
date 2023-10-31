@@ -1,36 +1,74 @@
 <script lang="ts">
 	import type { ClientUser, FriendStatus } from '$lib/server/db';
 	import ProfilePicture from './ProfilePicture.svelte';
+	import FormButton from './FormButton.svelte';
+	import { toasts } from 'svelte-toasts';
 
 	export let user: ClientUser;
 
-	if (user.profilePhoto == null) {
-		user.profilePhoto = '';
-	} else {
+	export let friendStatus: FriendStatus;
+
+	if (user.profilePhoto) {
+		// add cloudinary url params
 		let urlArr = user.profilePhoto.split('/');
 		let uploadIx = urlArr.findIndex((e) => e === 'upload');
 		urlArr.splice(uploadIx + 1, 0, 'w_75,q_auto:good,f_auto');
 		user.profilePhoto = urlArr.join('/');
 	}
-
-	export let friendStatus: FriendStatus;
+	function toast(title: string, description: string = '') {
+		toasts.info({
+			title,
+			description
+		});
+	}
 </script>
 
-<a href="/app/user/{user.userID}">
+<div class="user-widget">
 	<div class="content">
-		<ProfilePicture src={user.profilePhoto ?? ''} size={1.5} />
-		{user.username}
+		<ProfilePicture src={user.profilePhoto} size={1.5} />
+		<a href="/app/user/{user.userID}">
+			{user.username}
+		</a>
+		{#if friendStatus === 'friends'}
+			<FormButton action="?/remove&id={user.userID}" fn={() => toast(`${user.username} removed from your friends`)}>
+				Remove
+			</FormButton>
+		{:else if friendStatus === 'incomingRequest'}
+			<FormButton
+				action="?/accept&id={user.userID}"
+				fn={() => toast(`Friend request from ${user.username} accepted`, 'You are now friends!')}
+			>
+				Accept
+			</FormButton>
+			<FormButton action="?/remove&id={user.userID}" fn={() => toast(`Friend request from ${user.username} removed`)}>
+				Remove
+			</FormButton>
+		{:else if friendStatus === 'outgoingRequest'}
+			<FormButton action="?/remove&id={user.userID}" fn={() => toast(`Friend request to ${user.username} cancelled`)}>
+				Unrequest
+			</FormButton>
+		{:else if friendStatus === 'none'}
+			<FormButton action="?/sendRequest&id={user.userID}" fn={() => toast(`Friend request sent to ${user.username}`)}>
+				Request
+			</FormButton>
+		{/if}
 	</div>
-</a>
+</div>
 
 <style>
+	a {
+		color: inherit;
+		text-decoration: none;
+	}
 	.content {
 		display: flex;
-		gap: 1rem;
+		--gap: 1;
+		gap: min(calc(var(--gap) * 1rem), calc(var(--gap) * var(--rem-vw-ratio) * 1vw));
+
 		justify-content: center;
 		align-items: center;
 	}
-	a {
+	.user-widget {
 		--background-color: #fff;
 		--text-color: var(--orange);
 
@@ -58,6 +96,11 @@
 
 		box-shadow: 0 calc(var(--size) * 0.2rem) calc(var(--size) * 0.3rem) 1px rgb(50, 50, 50);
 
-		padding: 0.2rem 1rem 0.2rem 1rem;
+		--p-hor-val: 1;
+		--p-vert-val: 0.2;
+		--p-hor: min(calc(var(--p-hor-val) * 1rem), calc(var(--p-hor-val) * var(--rem-vw-ratio) * 1vw));
+		--p-vert: min(calc(var(--p-vert-val) * 1rem), calc(var(--p-vert-val) * var(--rem-vw-ratio) * 1vw));
+
+		padding: var(--p-vert) var(--p-hor) var(--p-vert) var(--p-hor);
 	}
 </style>
