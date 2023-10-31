@@ -30,6 +30,7 @@
 			{user.username}
 		</a>
 		{#if friendStatus === 'friends'}
+			<img src="/icons/users.png" alt="friends-icon" class="friends-icon" />
 			<FormButton action="?/remove&id={user.userID}" fn={() => toast(`${user.username} removed from your friends`)}>
 				Remove
 			</FormButton>
@@ -102,5 +103,11 @@
 		--p-vert: min(calc(var(--p-vert-val) * 1rem), calc(var(--p-vert-val) * var(--rem-vw-ratio) * 1vw));
 
 		padding: var(--p-vert) var(--p-hor) var(--p-vert) var(--p-hor);
+	}
+	.friends-icon {
+		height: 1em;
+		/* https://codepen.io/sosuke/pen/Pjoqqp */
+		/* used this website to generate a set of filters that will make the color of the icon be the exact orange we want */
+		filter: invert(52%) sepia(76%) saturate(2892%) hue-rotate(10deg) brightness(98%) contrast(102%);
 	}
 </style>

@@ -163,9 +163,6 @@ export async function removeFriend(userID: string, friendID: string) {
 				requesteeID: userID
 			}
 		});
-		console.log('hell0o');
-		console.log(friendID);
-		console.log(userIsRequestee);
 		if (userIsRequestee) {
 			await db.friend.delete({
 				where: {

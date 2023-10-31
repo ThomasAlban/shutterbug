@@ -93,8 +93,7 @@
 		{:else if data.hasFriends}
 			<h3>None of your friends submitted anything last week.</h3>
 			{#if currentTheme}
-				<p>Check again once the current theme is over...</p>
-				<p>...Or get some more friends</p>
+				<p>Check again once the current theme is over!</p>
 			{:else}
 				<p>Check again soon!</p>
 			{/if}

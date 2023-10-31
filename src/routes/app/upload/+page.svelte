@@ -1,5 +1,6 @@
 <script>
 	import { enhance } from '$app/forms';
+	import UploadWidget from '$lib/components/UploadWidget.svelte';
 
 	export let form;
 	export let data;
@@ -19,18 +20,7 @@
 	{:else if data.alreadySubmitted}
 		You have already submitted a photo for this theme.
 	{:else}
-		<form
-			method="post"
-			action="?/upload"
-			enctype="multipart/form-data"
-			use:enhance={({ submitter }) => {
-				submitter?.setAttribute('disabled', 'true');
-				return ({ update }) => update().then(() => submitter?.removeAttribute('disabled'));
-			}}
-		>
-			<input type="file" name="image" accept="image/*" required />
-			<input type="submit" value="Upload" />
-		</form>
+		<UploadWidget>Upload</UploadWidget>
 		{#if form?.message}
 			Upload failed - {form.message}
 		{/if}

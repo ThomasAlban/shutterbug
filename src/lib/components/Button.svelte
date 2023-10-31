@@ -4,6 +4,7 @@
 	export let invertColor = false;
 	export let link: string | undefined = undefined;
 	export let loading = false;
+	export let disabled = false;
 
 	export let size = 1.75;
 
@@ -28,11 +29,11 @@
     "
 >
 	{#if link}
-		<a class="btn" href={link}>
+		<a class="btn" href={link} style="cursor: pointer;">
 			<slot />
 		</a>
 	{:else}
-		<button disabled={loading} class="btn" {type}>
+		<button disabled={loading || disabled} class="btn" {type} style={loading || disabled ? '' : 'cursor: pointer;'}>
 			{#if loading}
 				<div class="spinner-container" style={width && height ? `width: ${width}px; height: ${height}px` : ''}>
 					<div class="loading-spinner" />
@@ -47,11 +48,6 @@
 </div>
 
 <style>
-	a,
-	button {
-		cursor: pointer;
-	}
-
 	.spinner-container {
 		display: flex;
 		justify-content: center;
@@ -67,8 +63,6 @@
 		display: inline-block;
 
 		border-radius: 500px;
-
-		transition-property: width;
 
 		border: 1px solid transparent;
 		letter-spacing: 0.05rem;
