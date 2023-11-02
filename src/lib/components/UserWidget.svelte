@@ -31,7 +31,12 @@
 		</a>
 		{#if friendStatus === 'friends'}
 			<img src="/icons/users.png" alt="friends-icon" class="friends-icon" />
-			<FormButton action="?/remove&id={user.userID}" fn={() => toast(`${user.username} removed from your friends`)}>
+			<FormButton
+				action="?/remove&id={user.userID}"
+				fn={() => {
+					toast(`${user.username} removed from your friends`);
+				}}
+			>
 				Remove
 			</FormButton>
 		{:else if friendStatus === 'incomingRequest'}
@@ -41,7 +46,12 @@
 			>
 				Accept
 			</FormButton>
-			<FormButton action="?/remove&id={user.userID}" fn={() => toast(`Friend request from ${user.username} removed`)}>
+			<FormButton
+				action="?/remove&id={user.userID}"
+				fn={() => {
+					toast(`Friend request from ${user.username} removed`);
+				}}
+			>
 				Remove
 			</FormButton>
 		{:else if friendStatus === 'outgoingRequest'}

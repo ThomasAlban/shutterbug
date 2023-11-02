@@ -20,11 +20,12 @@
 		{method}
 		use:enhance={() => {
 			loading = true;
-			return (e) =>
-				e.update().then(() => {
-					loading = false;
-					fn();
-				});
+			return (e) => {
+				// this used to be e.update().then(() => {...}) but this caused issues so I've now put loading=false and fn() before e.update() to see if it fixes them
+				loading = false;
+				fn();
+				e.update();
+			};
 		}}
 	>
 		<Button {loading} {invertColor} {size} type="submit">
