@@ -16,8 +16,8 @@
 	/* css variables used throughout the app */
 	:global(*) {
 		--orange: #e27d00;
-		--navbar-top-height: 5rem;
-		--navbar-bottom-height: 5rem;
+		--navbar-top-height: 4rem;
+		--navbar-bottom-height: 4rem;
 
 		/* how many times bigger 1 rem has to be than 1% of the viewport width for units to use rem rather than be based off viewport width */
 		/* this means that if the viewport width is small enough, everything that uses this ratio will start to shrink proportional to the viewport width */
@@ -122,6 +122,11 @@
 		position: relative;
 		/* cut off shadow everywhere but the bottom */
 		clip-path: inset(0 0 -5rem 0);
+	}
+
+	:global(.wrapper) {
+		background-color: white;
+		text-align: center;
 	}
 
 	.background {

@@ -1,29 +1,10 @@
 import { error, fail } from '@sveltejs/kit';
 import * as db from '$lib/server/db';
 import * as jwt from '$lib/server/jwt';
-import { z } from 'zod';
+
 import { setError, superValidate } from 'sveltekit-superforms/server';
 import bcrypt from 'bcrypt';
-
-const usernameSchema = z.object({
-	username: z.string({ required_error: 'Username is required' }).min(1, { message: 'Username is required' }).trim(),
-	password: z.string({ required_error: 'Password is required' }).min(1, { message: 'Password is required' })
-});
-const emailSchema = z.object({
-	oldEmail: z.string({ invalid_type_error: 'Invalid email', required_error: 'email is required' }).email(),
-	newEmail: z.string({ invalid_type_error: 'Invalid email', required_error: 'email is required' }).email(),
-	newEmail2: z.string({ invalid_type_error: 'Invalid email', required_error: 'email is required' }).email(),
-	password: z.string({ required_error: 'Password is required' }).min(1, { message: 'Password is required' })
-});
-const passwordSchema = z.object({
-	oldPassword: z.string({ required_error: 'Password is required' }).min(1, { message: 'Password is required' }),
-	newPassword: z
-		.string({ required_error: 'Password is required' })
-		.min(6, { message: 'Password must be at least 6 characters' }),
-	newPassword2: z
-		.string({ required_error: 'Password is required' })
-		.min(6, { message: 'Password must be at least 6 characters' })
-});
+import { usernameSchema, emailSchema, passwordSchema } from './schema';
 
 export async function load(event) {
 	const [usernameForm, emailForm, passwordForm] = await Promise.all([
@@ -55,6 +36,8 @@ export const actions = {
 		const userData = { ...event.locals.user!, username: form.data.username };
 
 		await jwt.setUserToken(event, userData);
+
+		return { usernameSuccess: true, newUsername: form.data.username, form };
 	},
 	async email(event) {
 		const form = await superValidate(event, emailSchema);
@@ -66,6 +49,8 @@ export const actions = {
 		if (userWithSameEmail) return setError(form, 'newEmail', 'User with the same email already exists');
 
 		await db.updateEmail(event.locals.user!.userID, form.data.newEmail);
+
+		return { emailSuccess: true, newEmail: form.data.newEmail, form };
 	},
 	async password(event) {
 		const form = await superValidate(event, passwordSchema);
@@ -85,6 +70,8 @@ export const actions = {
 			return setError(form, 'newPassword', 'Password has not changed');
 
 		await db.updatePassword(event.locals.user!.userID, form.data.newPassword);
+
+		return { passwordSuccess: true, form };
 	},
 	async upload(event) {
 		const form = Object.fromEntries(await event.request.formData());
@@ -105,6 +92,6 @@ export const actions = {
 
 		await db.updateProfilePicture(img, event.locals.user!.userID);
 
-		return { success: true };
+		return { uploadSuccess: true };
 	}
 };

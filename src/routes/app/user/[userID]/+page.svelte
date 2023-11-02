@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import ProfilePicture from '$lib/components/ProfilePicture.svelte';
 	import UserWidget from '$lib/components/UserWidget.svelte';
-	import type { ClientUser } from '$lib/server/db.js';
 
 	export let data;
 	$: ({ userData } = data);
@@ -15,10 +13,6 @@
 <br /><br />
 
 <UserWidget user={userData.user} friendStatus={userData.friendStatus} />
-
-{#if userData.friendStatus === 'self'}
-	<a href="/app/user/edit">Edit Profile</a>
-{/if}
 
 {#if userData.reported === 'none'}
 	<!-- {#if userData.friendStatus === 'none'}

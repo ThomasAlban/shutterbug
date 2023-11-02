@@ -24,7 +24,7 @@ export type ClientUser = {
 	dateCreated: Date;
 	profilePhoto: string | null;
 };
-type Vote = {
+export type Vote = {
 	humour: number;
 	creativity: number;
 	photography: number;
@@ -256,7 +256,12 @@ export async function getFriends(userID: string) {
 	}
 }
 
-export async function getFriendsWithSubmissions(userID: string, themeID: string) {
+export async function getFriendsWithSubmissions(
+	userID: string,
+	themeID: string,
+	includeAll: boolean = false,
+	includeVotes: boolean = true
+) {
 	try {
 		const user = await db.user.findUnique({
 			where: { userID: userID },
@@ -276,7 +281,7 @@ export async function getFriendsWithSubmissions(userID: string, themeID: string)
 
 		const friendsWithPhotos: {
 			user: ClientUser;
-			photoSubmission: string;
+			photoSubmission: string | null;
 			vote: { userVote: Vote; overallVote: Vote } | null;
 		}[] = [];
 
@@ -292,13 +297,20 @@ export async function getFriendsWithSubmissions(userID: string, themeID: string)
 					themeID: themeID
 				}
 			});
-			if (!photoSubmission) continue;
-			if (friend.requesteeID != user.userID)
+			if (photoSubmission) {
+				if (friend.requesteeID != user.userID)
+					friendsWithPhotos.push({
+						user: toClientUser(friend.requestee),
+						photoSubmission: photoSubmission.photo,
+						vote: null
+					});
+			} else if (includeAll) {
 				friendsWithPhotos.push({
 					user: toClientUser(friend.requestee),
-					photoSubmission: photoSubmission.photo,
+					photoSubmission: null,
 					vote: null
 				});
+			}
 		}
 		// then go through all the friends where the friend sent the request
 		for (const friend of user.friendRequestsReceived) {
@@ -312,30 +324,39 @@ export async function getFriendsWithSubmissions(userID: string, themeID: string)
 					themeID: themeID
 				}
 			});
-			if (!photoSubmission) continue;
-			if (friend.requesterID != user.userID)
+			if (photoSubmission) {
 				friendsWithPhotos.push({
 					user: toClientUser(friend.requester),
 					photoSubmission: photoSubmission.photo,
 					vote: null
 				});
+			} else if (includeAll) {
+				friendsWithPhotos.push({
+					user: toClientUser(friend.requester),
+					photoSubmission: null,
+					vote: null
+				});
+			}
 		}
 
-		// iterate through all the user's votes
-		for (const vote of user.voter) {
-			for (const friend of friendsWithPhotos) {
-				if (friend.user.userID === vote.voteeID) {
-					const userVote = {
-						humour: vote.voteHumour,
-						creativity: vote.voteCreativity,
-						photography: vote.votePhotography
-					};
-					const overallVote = await getOverallVoteScore(vote.voteeID, themeID);
-					if (!overallVote) throw error(500, { message: 'overallVote was null' });
-					friend.vote = { userVote, overallVote };
+		if (includeVotes) {
+			// iterate through all the user's votes
+			for (const vote of user.voter) {
+				for (const friend of friendsWithPhotos) {
+					if (friend.user.userID === vote.voteeID) {
+						const userVote = {
+							humour: vote.voteHumour,
+							creativity: vote.voteCreativity,
+							photography: vote.votePhotography
+						};
+						const overallVote = await getOverallVoteScore(vote.voteeID, themeID);
+						if (!overallVote) throw error(500, { message: 'overallVote was null' });
+						friend.vote = { userVote, overallVote };
+					}
 				}
 			}
 		}
+
 		return friendsWithPhotos;
 	} catch (e) {
 		throw error(500, { message: 'database error: ' + (e as string) });
@@ -978,14 +999,30 @@ export async function validateResetToken(userID: string, token: string) {
 	}
 }
 
-export async function getRandomFriendPhotoSubmission(userID: string) {
-	const prevTheme = await getPreviousTheme();
-	if (!prevTheme) return null;
+export async function getRandomFriendPhotoSubmission(
+	userID: string,
+	prevTheme: {
+		themeID: string;
+		theme: string;
+		dateStart: Date;
+		dateEnd: Date;
+	},
+	friendsWithSubmissions: {
+		user: ClientUser;
+		photoSubmission: string | null;
+		vote: {
+			userVote: Vote;
+			overallVote: Vote;
+		} | null;
+	}[]
+) {
+	if (friendsWithSubmissions.length == 0) return null;
 
-	const friends = await getFriendsWithSubmissions(userID, prevTheme.themeID);
-	if (friends.length == 0) return null;
+	let photoSubmission: string | null = null;
 
-	const photo = friends[Math.floor(Math.random() * friends.length)];
+	while (!photoSubmission) {
+		photoSubmission = friendsWithSubmissions[Math.floor(Math.random() * friendsWithSubmissions.length)].photoSubmission;
+	}
 
-	return photo.photoSubmission;
+	return photoSubmission;
 }

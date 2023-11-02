@@ -74,6 +74,8 @@
 
 		{#if currentTheme}
 			<p>until photo submission!</p>
+			<p>The theme is:</p>
+			<h2>{currentTheme.theme}÷</h2>
 			<div class="submit-container">
 				<Button link="/app/upload" invertColor={true}>Submit now</Button>
 			</div>
@@ -113,7 +115,7 @@
 		text-align: center;
 		display: flex;
 		flex-flow: column;
-		height: calc(100dvh - var(--navbar-top-height) - var(--navbar-bottom-height));
+		min-height: calc(100dvh - var(--navbar-top-height) - var(--navbar-bottom-height));
 	}
 	.orange {
 		flex: 0 1 auto;

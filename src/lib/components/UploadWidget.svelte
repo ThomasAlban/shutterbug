@@ -2,6 +2,11 @@
 	import { enhance } from '$app/forms';
 	import Button from './Button.svelte';
 
+	export let success = false;
+	export let successMsg = 'Upload successful!';
+	export let successFn: VoidFunction = () => {};
+	export let errorMsg: string | undefined = undefined;
+
 	let loading = false;
 
 	let fileSelected = false;
@@ -14,33 +19,54 @@
 		};
 </script>
 
-<form
-	method="post"
-	action="?/upload"
-	enctype="multipart/form-data"
-	use:enhance={() => {
-		loading = true;
-		return (e) => e.update().then(() => (loading = false));
-	}}
->
-	<label for="image-upload" id="image-upload-label" style={loading ? '' : 'cursor: pointer;'}>
-		{fileSelected ? 'File Selected!' : 'Choose Image'}
-	</label>
-	<input
-		id="image-upload"
-		type="file"
-		name="image"
-		accept="image/*"
-		required
-		bind:this={imageUpload}
-		disabled={loading}
-	/>
-	<Button {loading} type="submit" disabled={!fileSelected}>
-		<slot />
-	</Button>
-</form>
+<div class="upload-widget">
+	<form
+		method="post"
+		action="?/upload"
+		enctype="multipart/form-data"
+		use:enhance={() => {
+			loading = true;
+			return (e) =>
+				e.update().then(() => {
+					loading = false;
+					successFn();
+				});
+		}}
+	>
+		<label for="image-upload" id="image-upload-label" style={loading || success ? '' : 'cursor: pointer;'}>
+			{#if success}
+				{successMsg}
+			{:else if errorMsg}
+				{errorMsg}
+			{:else if fileSelected}
+				File selected!
+			{:else}
+				Choose image
+			{/if}
+		</label>
+		<input
+			id="image-upload"
+			type="file"
+			name="image"
+			accept="image/*"
+			required
+			bind:this={imageUpload}
+			disabled={loading || success}
+		/>
+		{#if !success}
+			<Button {loading} type="submit" disabled={!fileSelected}>Upload</Button>
+		{/if}
+	</form>
+</div>
 
 <style>
+	form {
+		display: flex;
+		align-items: center;
+		flex-direction: column;
+		gap: 0;
+	}
+
 	input[type='file'] {
 		/* done this instead of setting display to none so you can still tab to the element */
 		position: absolute;

@@ -6,25 +6,35 @@
 
 	export let size = 1.25;
 	export let invertColor = false;
+	export let useEnhance = true;
+	export let method = 'post';
 
 	let loading = false;
 
 	export let fn: VoidFunction = () => {};
 </script>
 
-<form
-	{action}
-	method="post"
-	use:enhance={() => {
-		loading = true;
-		return (e) =>
-			e.update().then(() => {
-				loading = false;
-				fn();
-			});
-	}}
->
-	<Button {loading} {invertColor} {size} type="submit">
-		<slot />
-	</Button>
-</form>
+{#if useEnhance}
+	<form
+		{action}
+		{method}
+		use:enhance={() => {
+			loading = true;
+			return (e) =>
+				e.update().then(() => {
+					loading = false;
+					fn();
+				});
+		}}
+	>
+		<Button {loading} {invertColor} {size} type="submit">
+			<slot />
+		</Button>
+	</form>
+{:else}
+	<form {action} {method}>
+		<Button {loading} {invertColor} {size} type="submit">
+			<slot />
+		</Button>
+	</form>
+{/if}

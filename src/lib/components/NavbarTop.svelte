@@ -13,13 +13,13 @@
 		margin-left: auto;
 		margin-right: auto;
 		width: min(100%, 50rem);
-		height: 5rem;
+		height: var(--navbar-top-height);
 
 		display: flex;
 		justify-content: center;
 		align-items: center;
 	}
 	img {
-		height: 5rem;
+		height: var(--navbar-top-height);
 	}
 </style>

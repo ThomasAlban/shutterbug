@@ -1,5 +1,4 @@
 <script>
-	import { enhance } from '$app/forms';
 	import UploadWidget from '$lib/components/UploadWidget.svelte';
 
 	export let form;
@@ -9,26 +8,25 @@
 </script>
 
 <div class="wrapper">
-	<a href="/app/home">Home</a>
+	<div class="orange">
+		<h1>Submit photo</h1>
+		<p>The current theme is:</p>
+		<h2>{currentTheme.theme}</h2>
+	</div>
 
-	<h1>Upload Image</h1>
-
-	theme: {currentTheme.theme} <br /> <br />
-
-	{#if form?.success}
-		Upload successful!
-	{:else if data.alreadySubmitted}
-		You have already submitted a photo for this theme.
-	{:else}
-		<UploadWidget>Upload</UploadWidget>
-		{#if form?.message}
-			Upload failed - {form.message}
-		{/if}
-	{/if}
+	<div class="upload-widget">
+		<UploadWidget
+			success={form?.success || data.alreadySubmitted}
+			successMsg="Photo submitted!"
+			errorMsg={form?.message}>Upload</UploadWidget
+		>
+	</div>
 </div>
 
 <style>
-	.wrapper {
-		background-color: white;
+	.upload-widget {
+		display: flex;
+		justify-content: center;
+		padding: 3rem;
 	}
 </style>

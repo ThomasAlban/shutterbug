@@ -29,11 +29,17 @@
     "
 >
 	{#if link}
-		<a class="btn" href={link} style="cursor: pointer;">
+		<a on:click class="btn" href={link} style="cursor: pointer;">
 			<slot />
 		</a>
 	{:else}
-		<button disabled={loading || disabled} class="btn" {type} style={loading || disabled ? '' : 'cursor: pointer;'}>
+		<button
+			on:click
+			disabled={loading || disabled}
+			class="btn"
+			{type}
+			style={loading || disabled ? '' : 'cursor: pointer;'}
+		>
 			{#if loading}
 				<div class="spinner-container" style={width && height ? `width: ${width}px; height: ${height}px` : ''}>
 					<div class="loading-spinner" />

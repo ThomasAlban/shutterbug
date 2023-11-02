@@ -31,12 +31,12 @@
 		color: white;
 		line-height: 2rem;
 		overflow: hidden;
+		display: flex;
+		flex: 1 1 auto;
 	}
 	.blur {
 		backdrop-filter: blur(10px) brightness(75%);
-		/* -webkit-backdrop-filter: blur(10px) brightness(75%); */
 		width: 100%;
-		height: 100%;
 		padding: 3rem;
 		box-sizing: border-box;
 

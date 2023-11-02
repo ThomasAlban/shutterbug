@@ -10,7 +10,12 @@ export type jwtUser = {
 };
 
 // run this function in your login form action, after you have successfully validated everything
-export async function setUserToken(event: RequestEvent, userData: jwtUser) {
+export async function setUserToken(
+	event: RequestEvent,
+	userData: { userID: string; username: string; admin: boolean; exp?: number }
+) {
+	// if you don't do this, then passing in an object with an 'exp' property creates an error in the jwt sign function
+	delete userData.exp;
 	// generate a JWT token, which will be stored on the client and used to authenticate the user
 	// JWT_ACCESS_SECRET is an environment variable containing a secret string (which can be anything)
 	// which is stored on the server and used to sign the JWT token
