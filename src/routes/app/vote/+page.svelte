@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import Vote from './Vote.svelte';
 
 	export let data;
@@ -43,8 +44,9 @@
 
 <style>
 	.votes-container {
-		scroll-snap-type: y mandatory;
+		scroll-snap-type: y proximity;
 		overflow-y: scroll;
+		scroll-behavior: smooth;
 	}
 	.vote-container {
 		scroll-snap-align: start;
