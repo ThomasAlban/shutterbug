@@ -45,6 +45,6 @@
 <style>
 	.vote-container {
 		scroll-snap-align: start;
-		scroll-margin: 5rem;
+		scroll-margin: var(--navbar-top-height);
 	}
 </style>
