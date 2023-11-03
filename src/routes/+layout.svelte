@@ -16,6 +16,12 @@
 	/* css variables used throughout the app */
 	:global(*) {
 		--orange: #e27d00;
+		--dark-orange: #754100;
+		--light-orange: #ffb860;
+		--grey-orange: #ac7737;
+
+		/* --blue: */
+
 		--navbar-top-height: 4rem;
 		--navbar-bottom-height: 4rem;
 

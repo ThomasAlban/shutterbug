@@ -1,15 +1,17 @@
 <script lang="ts">
+	import Vote from './Vote.svelte';
+
 	export let data;
 	$: ({ friendsWithSubmissions, previousTheme } = data);
 </script>
 
-<a href="/app/home">Home</a> <br /> <br />
-
-Last week's theme was: {previousTheme.theme} <br /><br />
-
-{#each friendsWithSubmissions as user}
-	{#if user.photoSubmission}
-		{user.user.username}
+<div class="votes-container">
+	{#each friendsWithSubmissions as user}
+		{#if user.photoSubmission}
+			<div class="vote-container">
+				<Vote photo={user.photoSubmission} />
+			</div>
+			<!-- {user.user.username}
 		<br />
 		<img src={user.photoSubmission} referrerpolicy="no-referrer" width="200px" alt={user.user.username} />
 		<br /> <br />
@@ -32,10 +34,19 @@ Last week's theme was: {previousTheme.theme} <br /><br />
 				<br />
 				<input type="submit" value="Submit vote" />
 			</form>
+		{/if} -->
 		{/if}
+	{:else}
+		There are no submissions.
+	{/each}
+</div>
 
-		<br />
-	{/if}
-{:else}
-	There are no submissions.
-{/each}
+<style>
+	.votes-container {
+		scroll-snap-type: y mandatory;
+		overflow-y: scroll;
+	}
+	.vote-container {
+		scroll-snap-align: start;
+	}
+</style>

@@ -12,6 +12,7 @@
 	let loading = false;
 
 	export let fn: VoidFunction = () => {};
+	export let fnPostUpdate: VoidFunction = () => {};
 </script>
 
 {#if useEnhance}
@@ -21,10 +22,9 @@
 		use:enhance={() => {
 			loading = true;
 			return (e) => {
-				// this used to be e.update().then(() => {...}) but this caused issues so I've now put loading=false and fn() before e.update() to see if it fixes them
 				loading = false;
 				fn();
-				e.update();
+				e.update().then(fnPostUpdate);
 			};
 		}}
 	>

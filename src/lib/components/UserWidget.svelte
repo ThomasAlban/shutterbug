@@ -3,6 +3,7 @@
 	import ProfilePicture from './ProfilePicture.svelte';
 	import FormButton from './FormButton.svelte';
 	import { toasts } from 'svelte-toasts';
+	import { onMount } from 'svelte';
 
 	export let user: ClientUser;
 
@@ -21,9 +22,18 @@
 			description
 		});
 	}
+
+	let windowWidth: number;
+	let widget: HTMLDivElement;
+	let widgetWidth: number;
+	let wrapButtons = false;
+	onMount(() => (widgetWidth = widget.clientWidth));
+	$: wrapButtons = widgetWidth > windowWidth;
 </script>
 
-<div class="user-widget">
+<svelte:window bind:outerWidth={windowWidth} />
+
+<div class="user-widget" bind:this={widget}>
 	<div class="content">
 		<ProfilePicture src={user.profilePhoto} size={1.5} />
 		<a href="/app/user/{user.userID}">
@@ -31,29 +41,21 @@
 		</a>
 		{#if friendStatus === 'friends'}
 			<img src="/icons/users.png" alt="friends-icon" class="friends-icon" />
-			<FormButton
-				action="?/remove&id={user.userID}"
-				fn={() => {
-					toast(`${user.username} removed from your friends`);
-				}}
-			>
+			<FormButton action="?/remove&id={user.userID}" fn={() => toast(`${user.username} removed from your friends`)}>
 				Remove
 			</FormButton>
 		{:else if friendStatus === 'incomingRequest'}
-			<FormButton
-				action="?/accept&id={user.userID}"
-				fn={() => toast(`Friend request from ${user.username} accepted`, 'You are now friends!')}
-			>
-				Accept
-			</FormButton>
-			<FormButton
-				action="?/remove&id={user.userID}"
-				fn={() => {
-					toast(`Friend request from ${user.username} removed`);
-				}}
-			>
-				Remove
-			</FormButton>
+			<div class={wrapButtons ? 'incoming-request-btns-wrap' : 'incoming-request-btns'}>
+				<FormButton
+					action="?/accept&id={user.userID}"
+					fn={() => toast(`Friend request from ${user.username} accepted`, 'You are now friends!')}
+				>
+					Accept
+				</FormButton>
+				<FormButton action="?/remove&id={user.userID}" fn={() => toast(`Friend request from ${user.username} removed`)}>
+					Remove
+				</FormButton>
+			</div>
 		{:else if friendStatus === 'outgoingRequest'}
 			<FormButton action="?/remove&id={user.userID}" fn={() => toast(`Friend request to ${user.username} cancelled`)}>
 				Unrequest
@@ -119,5 +121,19 @@
 		/* https://codepen.io/sosuke/pen/Pjoqqp */
 		/* used this website to generate a set of filters that will make the color of the icon be the exact orange we want */
 		filter: invert(52%) sepia(76%) saturate(2892%) hue-rotate(10deg) brightness(98%) contrast(102%);
+	}
+
+	.incoming-request-btns {
+		display: flex;
+		gap: 1rem;
+	}
+
+	.incoming-request-btns-wrap {
+		display: flex;
+		gap: 0.5rem;
+		padding: 0.2rem;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
 	}
 </style>
