@@ -43,12 +43,8 @@
 </div>
 
 <style>
-	.votes-container {
-		scroll-snap-type: y proximity;
-		overflow-y: scroll;
-		scroll-behavior: smooth;
-	}
 	.vote-container {
 		scroll-snap-align: start;
+		scroll-margin: 5rem;
 	}
 </style>
