@@ -13,7 +13,24 @@ export async function load(event) {
 	const previousTheme = await db.getPreviousTheme();
 	if (!previousTheme) throw redirect(303, '/app/home');
 
-	const friendsWithSubmissions = await db.getFriendsWithSubmissions(event.locals.user!.userID, previousTheme.themeID);
+	const friends = await db.getFriendsWithSubmissions(event.locals.user!.userID, previousTheme.themeID);
+
+	let friendsWithSubmissions: {
+		user: db.ClientUser;
+		photoSubmission: string;
+		vote: {
+			userVote: db.Vote;
+			overallVote: db.Vote;
+		} | null;
+	}[] = [];
+	for (const friend of friends) {
+		if (friend.photoSubmission)
+			friendsWithSubmissions.push({
+				user: friend.user,
+				photoSubmission: friend.photoSubmission,
+				vote: friend.vote
+			});
+	}
 
 	return { friendsWithSubmissions, previousTheme };
 }

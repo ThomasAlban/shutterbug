@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import VoteSliders from './VoteSliders.svelte';
 
 	export let data;
@@ -9,20 +10,66 @@
 		creativity: number;
 		photography: number;
 	};
+
+	let votesContainer: HTMLDivElement;
+	let scrollTop: number;
+	let scrollHeight: number;
+
+	onMount(() => {
+		votesContainer.addEventListener('scroll', (e) => {
+			scrollTop = votesContainer.scrollTop;
+			scrollHeight = votesContainer.scrollHeight;
+		});
+		for (let i = 0; i < friendsWithSubmissions?.length; i++) {
+			votes.push({ humour: 50, creativity: 50, photography: 50 });
+		}
+	});
+
+	let currentPhotoIndex: number = -1;
+	$: currentPhotoIndex = (scrollTop / scrollHeight) * friendsWithSubmissions.length;
+	$: currentPhotoIndexFloor = Math.floor(currentPhotoIndex);
+
+	let votes: { humour: number; creativity: number; photography: number }[] = [];
+
+	const updateVoteSliderValues = () => (voteSliderValues = votes[currentPhotoIndexFloor]);
+	const updateVotesCurrentIndex = () => (votes[currentPhotoIndexFloor] = voteSliderValues);
+
+	$: currentPhotoIndexFloor, currentPhotoIndex == currentPhotoIndexFloor && updateVoteSliderValues();
+	$: voteSliderValues, currentPhotoIndex == currentPhotoIndexFloor && updateVotesCurrentIndex();
+
+	function lerp(a: number, b: number, alpha: number) {
+		return a + alpha * (b - a);
+	}
+
+	$: if (
+		currentPhotoIndex != currentPhotoIndexFloor &&
+		voteSliderValues?.humour &&
+		votes[currentPhotoIndexFloor] &&
+		votes[currentPhotoIndexFloor + 1]
+	) {
+		let amountScrolled = currentPhotoIndex - currentPhotoIndexFloor;
+		let voteBefore = votes[currentPhotoIndexFloor];
+		let voteAfter = votes[currentPhotoIndexFloor + 1];
+		voteSliderValues = {
+			humour: lerp(voteBefore.humour, voteAfter.humour, amountScrolled),
+			creativity: lerp(voteBefore.creativity, voteAfter.creativity, amountScrolled),
+			photography: lerp(voteBefore.photography, voteAfter.photography, amountScrolled)
+		};
+	}
 </script>
 
-<div class="votes-container">
+<div class="votes-container" bind:this={votesContainer}>
 	{#each friendsWithSubmissions as user}
-		{#if user.photoSubmission}
-			<div class="photo" style="background-image: url({user.photoSubmission});" />
-		{/if}
+		<div class="photo" style="background-image: url({user.photoSubmission});" />
 	{:else}
 		There are no submissions.
 	{/each}
 </div>
 
 <div class="sliders-container">
-	<VoteSliders bind:values={voteSliderValues} />
+	{#if currentPhotoIndex != null}
+		<VoteSliders bind:values={voteSliderValues} />
+	{/if}
 </div>
 
 <style>
