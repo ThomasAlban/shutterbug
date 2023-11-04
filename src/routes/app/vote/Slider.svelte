@@ -1,3 +1,5 @@
+<svelte:options accessors />
+
 <script lang="ts">
 	import { onMount } from 'svelte';
 	export let max: number = 100;
@@ -6,7 +8,6 @@
 	export let width = '11rem';
 	export let outerBorderSize = '0.4rem';
 	export let innerBorderSize = '0.15rem';
-	export let unit = 'rem';
 
 	export let colors = {
 		gradZero: '#b66909',
@@ -14,7 +15,7 @@
 		gradHundred: '#f8c381'
 	};
 
-	let value: number = 0;
+	export let value: number = 50;
 	let rangeControl: HTMLInputElement;
 	onMount(() => {
 		value = Number(rangeControl.value);
