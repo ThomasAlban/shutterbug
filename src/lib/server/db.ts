@@ -479,6 +479,7 @@ async function cloudinaryUploadImg(
 
 export async function submitPhoto(img: File, userID: string, themeID: string) {
 	const response = await cloudinaryUploadImg(img);
+
 	if (!response.success) throw error(500, { message: 'image upload error: ' + response.error.message });
 
 	try {

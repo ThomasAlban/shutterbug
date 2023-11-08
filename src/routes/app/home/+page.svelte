@@ -41,46 +41,52 @@
 
 <div class="wrapper">
 	<div class="orange">
-		{#if !currentTheme}
-			<p>There is no current theme.</p>
-		{/if}
+		{#if !alreadySubmitted}
+			{#if !currentTheme}
+				<p>There is no current theme.</p>
+			{/if}
 
-		{#if remaining && (currentTheme || nextTheme)}
-			<p>
-				There
-				{remaining.days == 1 ||
-				(!remaining.days && remaining.hours == 1) ||
-				(!remaining.days && !remaining.hours && remaining.minutes == 1) ||
-				(!remaining.days && !remaining.hours && !remaining.minutes && remaining.seconds == 1)
-					? 'is'
-					: 'are'}:
-			</p>
-			<h2>
-				{#if remaining.days}
-					{remaining.days} {remaining.days == 1 ? 'day' : 'days'},
-				{/if}
-				{#if remaining.hours}
-					{remaining.hours} {remaining.hours == 1 ? 'hour' : 'hours'},
-				{/if}
-				{#if remaining.days && remaining.hours}<br />{/if}
-				{#if remaining.minutes}
-					{remaining.minutes} {remaining.minutes == 1 ? 'minute' : 'minutes'},
-				{/if}
-				{#if !remaining.days && remaining.hours && remaining.minutes}<br />{/if}
-				{remaining.seconds}
-				{remaining.seconds == 1 ? 'second' : 'seconds'}
-			</h2>
-		{/if}
+			{#if remaining && (currentTheme || nextTheme)}
+				<p>
+					There
+					{remaining.days == 1 ||
+					(!remaining.days && remaining.hours == 1) ||
+					(!remaining.days && !remaining.hours && remaining.minutes == 1) ||
+					(!remaining.days && !remaining.hours && !remaining.minutes && remaining.seconds == 1)
+						? 'is'
+						: 'are'}:
+				</p>
+				<h2>
+					{#if remaining.days}
+						{remaining.days} {remaining.days == 1 ? 'day' : 'days'},
+					{/if}
+					{#if remaining.hours}
+						{remaining.hours} {remaining.hours == 1 ? 'hour' : 'hours'},
+					{/if}
+					{#if remaining.days && remaining.hours}<br />{/if}
+					{#if remaining.minutes}
+						{remaining.minutes} {remaining.minutes == 1 ? 'minute' : 'minutes'},
+					{/if}
+					{#if !remaining.days && remaining.hours && remaining.minutes}<br />{/if}
+					{remaining.seconds}
+					{remaining.seconds == 1 ? 'second' : 'seconds'}
+				</h2>
+			{/if}
 
-		{#if currentTheme}
-			<p>until photo submission!</p>
+			{#if currentTheme}
+				<p>until photo submission!</p>
+				<p>The theme is:</p>
+				<h2>{currentTheme.theme}</h2>
+				<div class="submit-container">
+					<Button link="/app/upload" invertColor={true}>Submit now</Button>
+				</div>
+			{:else if nextTheme}
+				<p>until the next theme starts!</p>
+			{/if}
+		{:else if currentTheme}
 			<p>The theme is:</p>
-			<h2>{currentTheme.theme}÷</h2>
-			<div class="submit-container">
-				<Button link="/app/upload" invertColor={true}>Submit now</Button>
-			</div>
-		{:else if nextTheme}
-			<p>until the next theme starts!</p>
+			<h2>{currentTheme.theme}</h2>
+			<p>You've already submitted a photo for this theme.</p>
 		{/if}
 	</div>
 	<div class="blurbg-container">
