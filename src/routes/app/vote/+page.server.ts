@@ -3,11 +3,12 @@ import { fail, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
 
 const voteSchema = z.object({
-	ID: z.string().min(1).trim(),
-	humour: z.coerce.number().min(0).max(10),
-	creativity: z.coerce.number().min(0).max(10),
-	photography: z.coerce.number().min(0).max(10)
+	userID: z.string().min(1).trim(),
+	humour: z.coerce.number().min(0).max(100),
+	creativity: z.coerce.number().min(0).max(100),
+	photography: z.coerce.number().min(0).max(100)
 });
+const votesSchema = z.array(voteSchema);
 
 export async function load(event) {
 	const previousTheme = await db.getPreviousTheme();
@@ -24,7 +25,7 @@ export async function load(event) {
 		} | null;
 	}[] = [];
 	for (const friend of friends) {
-		if (friend.photoSubmission)
+		if (friend.photoSubmission && !friend.vote?.userVote)
 			friendsWithSubmissions.push({
 				user: friend.user,
 				photoSubmission: friend.photoSubmission,
@@ -37,18 +38,24 @@ export async function load(event) {
 
 export const actions = {
 	async vote(event) {
-		const [previousTheme, formData] = await Promise.all([db.getPreviousTheme(), event.request.formData()]);
-		if (!previousTheme) throw redirect(303, '/app/home');
-		const form = Object.fromEntries(formData);
+		const votesString = event.url.searchParams.get('votes');
+		if (votesString === null) return fail(400, { message: 'no votes url param' });
+		const votes = JSON.parse(votesString);
 
-		let vote: { humour: number; creativity: number; photography: number }, friendID: string;
-
+		let votesParsed;
 		try {
-			({ ID: friendID, ...vote } = voteSchema.parse(form));
-		} catch (e) {
-			return fail(400);
+			votesParsed = votesSchema.parse(votes);
+		} catch (_) {
+			return fail(400, { message: 'unable to parse votes' });
 		}
+		console.log(votes);
 
-		await db.createVote(event.locals.user!.userID, friendID, previousTheme.themeID, vote);
+		const previousTheme = await db.getPreviousTheme();
+		if (!previousTheme) return fail(400, { message: 'no previous theme' });
+
+		for (const vote of votesParsed) {
+			await db.createVote(event.locals.user!.userID, vote.userID, previousTheme.themeID, vote);
+		}
+		return { voteSuccess: true };
 	}
 };

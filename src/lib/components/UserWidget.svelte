@@ -9,6 +9,14 @@
 
 	export let friendStatus: FriendStatus;
 
+	export let showButtons = true;
+
+	export let size = 2;
+
+	export let maxAllowedWidth = 400;
+
+	let fontSize = size;
+
 	if (user.profilePhoto) {
 		// add cloudinary url params
 		let urlArr = user.profilePhoto.split('/');
@@ -27,40 +35,57 @@
 	let widget: HTMLDivElement;
 	let widgetWidth: number;
 	let wrapButtons = false;
-	onMount(() => (widgetWidth = widget.clientWidth));
+	onMount(() => {
+		widgetWidth = widget.clientWidth;
+
+		if (widgetWidth > maxAllowedWidth) {
+			let shrinkFactor = 1;
+			shrinkFactor = 1 - (widget.clientWidth - maxAllowedWidth) / 500;
+			if (shrinkFactor < 0.1) shrinkFactor = 0.1;
+			fontSize *= shrinkFactor;
+		}
+	});
+
 	$: wrapButtons = widgetWidth > windowWidth;
 </script>
 
 <svelte:window bind:outerWidth={windowWidth} />
 
-<div class="user-widget" bind:this={widget}>
+<div class="user-widget" bind:this={widget} style="--size: {size}; --font-size: {fontSize};">
 	<div class="content">
 		<ProfilePicture src={user.profilePhoto} size={1.5} />
-		<a href="/app/user/{user.userID}">
+		<a href="/app/user/{user.userID}" class="friend-name">
 			{user.username}
 		</a>
 		{#if friendStatus === 'friends'}
 			<img src="/icons/users.png" alt="friends-icon" class="friends-icon" />
-			<FormButton action="?/remove&id={user.userID}" fn={() => toast(`${user.username} removed from your friends`)}>
-				Remove
-			</FormButton>
-		{:else if friendStatus === 'incomingRequest'}
-			<div class={wrapButtons ? 'incoming-request-btns-wrap' : 'incoming-request-btns'}>
-				<FormButton
-					action="?/accept&id={user.userID}"
-					fn={() => toast(`Friend request from ${user.username} accepted`, 'You are now friends!')}
-				>
-					Accept
-				</FormButton>
-				<FormButton action="?/remove&id={user.userID}" fn={() => toast(`Friend request from ${user.username} removed`)}>
+			{#if showButtons}
+				<FormButton action="?/remove&id={user.userID}" fn={() => toast(`${user.username} removed from your friends`)}>
 					Remove
 				</FormButton>
+			{/if}
+		{:else if friendStatus === 'incomingRequest' && showButtons}
+			<div class={wrapButtons ? 'incoming-request-btns-wrap' : 'incoming-request-btns'}>
+				{#if showButtons}
+					<FormButton
+						action="?/accept&id={user.userID}"
+						fn={() => toast(`Friend request from ${user.username} accepted`, 'You are now friends!')}
+					>
+						Accept
+					</FormButton>
+					<FormButton
+						action="?/remove&id={user.userID}"
+						fn={() => toast(`Friend request from ${user.username} removed`)}
+					>
+						Remove
+					</FormButton>
+				{/if}
 			</div>
-		{:else if friendStatus === 'outgoingRequest'}
+		{:else if friendStatus === 'outgoingRequest' && showButtons}
 			<FormButton action="?/remove&id={user.userID}" fn={() => toast(`Friend request to ${user.username} cancelled`)}>
 				Unrequest
 			</FormButton>
-		{:else if friendStatus === 'none'}
+		{:else if friendStatus === 'none' && showButtons}
 			<FormButton action="?/sendRequest&id={user.userID}" fn={() => toast(`Friend request sent to ${user.username}`)}>
 				Request
 			</FormButton>
@@ -85,10 +110,8 @@
 		--background-color: #fff;
 		--text-color: var(--orange);
 
-		--size: 2;
-		--line-height: 2.5;
 		font-size: min(calc(var(--size) * 1rem), calc(var(--size) * var(--rem-vw-ratio) * 1vw));
-		line-height: min(calc(var(--line-height) * 1rem), calc(var(--line-height) * var(--rem-vw-ratio) * 1vw));
+		line-height: min(calc(var(--size) * 1.4 * 1rem), calc(var(--size) * 1.4 * var(--rem-vw-ratio) * 1vw));
 
 		text-decoration: none;
 		font-family: 'Merriweather-BoldItalic';
@@ -135,5 +158,8 @@
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
+	}
+	.friend-name {
+		font-size: min(calc(var(--font-size) * 1rem), calc(var(--font-size) * var(--rem-vw-ratio) * 1vw));
 	}
 </style>

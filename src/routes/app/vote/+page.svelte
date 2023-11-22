@@ -1,9 +1,16 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import VoteSliders from './VoteSliders.svelte';
+
+	import FormButton from '$lib/components/FormButton.svelte';
+	import { toasts } from 'svelte-toasts';
+	import { goto } from '$app/navigation';
 	import Button from '$lib/components/Button.svelte';
+	import UserWidget from '$lib/components/UserWidget.svelte';
+	import type { ClientUser } from '$lib/server/db';
 
 	export let data;
+	export let form;
 	$: ({ friendsWithSubmissions } = data);
 
 	let voteSliderValues: {
@@ -17,26 +24,36 @@
 	let scrollHeight: number;
 
 	onMount(() => {
-		votesContainer.addEventListener('scroll', (e) => {
+		votesContainer.addEventListener('scroll', (_) => {
 			scrollTop = votesContainer.scrollTop;
 			scrollHeight = votesContainer.scrollHeight;
 		});
-		for (let i = 0; i < friendsWithSubmissions?.length; i++) {
-			votes.push({ humour: 50, creativity: 50, photography: 50 });
+
+		for (const friend of friendsWithSubmissions) {
+			votes.push({ userID: friend.user.userID, humour: 50, creativity: 50, photography: 50 });
 		}
 	});
 
 	let currentPhotoIndex: number = -1;
 
 	$: currentPhotoIndex = (scrollTop / scrollHeight) * (friendsWithSubmissions.length + 1);
+	$: if (isNaN(currentPhotoIndex)) currentPhotoIndex = 0;
 	$: currentPhotoIndexFloor = Math.floor(currentPhotoIndex);
 
 	$: onExactPhoto = Math.abs(currentPhotoIndex - currentPhotoIndexFloor) < 0.01;
 
-	let votes: { humour: number; creativity: number; photography: number }[] = [];
+	let votes: { userID: string; humour: number; creativity: number; photography: number }[] = [];
+	let JSONVotesString: string;
+	$: JSONVotesString = JSON.stringify(votes);
 
-	const updateVoteSliderValues = () => (voteSliderValues = votes[currentPhotoIndexFloor]);
-	const updateVotesCurrentIndex = () => (votes[currentPhotoIndexFloor] = voteSliderValues);
+	const updateVoteSliderValues = () => {
+		voteSliderValues = votes[currentPhotoIndexFloor];
+	};
+	const updateVotesCurrentIndex = () => {
+		votes[currentPhotoIndexFloor].humour = voteSliderValues.humour;
+		votes[currentPhotoIndexFloor].creativity = voteSliderValues.creativity;
+		votes[currentPhotoIndexFloor].photography = voteSliderValues.photography;
+	};
 
 	$: currentPhotoIndexFloor, onExactPhoto && votes[currentPhotoIndex] && updateVoteSliderValues();
 	$: voteSliderValues, onExactPhoto && votes[currentPhotoIndex] && updateVotesCurrentIndex();
@@ -66,8 +83,25 @@
 	} else {
 		slidersOffset = 0;
 	}
-	$: console.log(slidersOffset);
+
+	$: if (form?.voteSuccess) {
+		toasts.success({ title: 'Successfully submitted votes', description: '' });
+		goto('/app/home');
+	}
+	let currentUser: ClientUser | null;
+	$: currentUser = data.friendsWithSubmissions[currentPhotoIndexFloor]?.user;
 </script>
+
+<div class="upper-info-container" style="opacity: {(1 - slidersOffset) * 100}%">
+	<div class="info-item-left-align">
+		{#if currentUser}
+			<UserWidget user={currentUser} friendStatus="friends" showButtons={false} size={1.5} maxAllowedWidth={200} />
+		{/if}
+	</div>
+	<div class="info-item-right-align">
+		<Button invertColor={true} disabled={true} size={1.5}>{data.previousTheme.theme}</Button>
+	</div>
+</div>
 
 <div class="votes-container" bind:this={votesContainer}>
 	{#each friendsWithSubmissions as user}
@@ -85,7 +119,11 @@
 		{/if}
 	</div>
 	<div class="submit-btn-container">
-		<Button invertColor={true}>Submit</Button>
+		{#if friendsWithSubmissions.length > 0}
+			<FormButton action="?/vote&votes={JSONVotesString}" invertColor={true} size={3}>Submit</FormButton>
+		{:else}
+			<Button link="/app/home" invertColor={true} size={3}>Go Home</Button>
+		{/if}
 	</div>
 </div>
 
@@ -124,7 +162,7 @@
 		bottom: var(--navbar-bottom-height);
 		margin-left: auto;
 		margin-right: auto;
-		width: min(100%, 50rem);
+		width: min(100%, var(--max-app-width));
 		background-color: black;
 	}
 	.vote-sliders {
@@ -138,5 +176,28 @@
 		top: 50%;
 		left: 50%;
 		transform: translate(-50%, -50%);
+	}
+	.upper-info-container {
+		height: 5rem;
+		position: absolute;
+		top: var(--navbar-top-height);
+
+		width: min(100%, var(--max-app-width));
+		z-index: 1;
+
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+	}
+	.info-item-left-align {
+		padding-left: 0.5rem;
+		display: flex;
+		justify-content: left;
+		align-items: center;
+	}
+	.info-item-right-align {
+		padding-right: 0.5rem;
+		display: flex;
+		justify-content: right;
+		align-items: center;
 	}
 </style>

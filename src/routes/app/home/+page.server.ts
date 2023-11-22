@@ -1,7 +1,6 @@
 import * as db from '$lib/server/db';
 
 export async function load(event) {
-	console.time();
 	const currentTheme = await db.getCurrentTheme();
 	const previousTheme = await db.getPreviousTheme();
 
@@ -26,7 +25,7 @@ export async function load(event) {
 
 		// check if there are any photo submissions from the user's friends
 		for (const friend of friends) {
-			if (friend.photoSubmission) {
+			if (friend.photoSubmission && !friend.vote?.userVote) {
 				submissionsToVoteOn = true;
 				break;
 			}

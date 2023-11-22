@@ -9,18 +9,39 @@
 	export let outerBorderSize = '0.4rem';
 	export let innerBorderSize = '0.15rem';
 
-	export let colors = {
-		gradZero: '#b66909',
-		gradFifty: 'var(--orange)',
-		gradHundred: '#f8c381'
-	};
+	export let color: 'orange' | 'purple' | 'green' = 'orange';
+
+	export let editable = true;
 
 	export let value: number = 50;
 	let rangeControl: HTMLInputElement;
 	onMount(() => {
+		if (!editable) return;
 		value = Number(rangeControl.value);
 		rangeControl.addEventListener('input', (e) => (value = Number((e.target as HTMLInputElement).value)));
 	});
+
+	const orangeColors = {
+		gradZero: '#b66909',
+		gradFifty: 'var(--orange)',
+		gradHundred: '#f8c381'
+	};
+	const purpleColors = {
+		gradZero: '#38028a',
+		gradFifty: '#702fcf',
+		gradHundred: '#ba8efb'
+	};
+	const greenColors = {
+		gradZero: '#02791c',
+		gradFifty: '#17c23d',
+		gradHundred: '#90fea9'
+	};
+
+	let gradColors: { gradZero: string; gradFifty: string; gradHundred: string };
+
+	if (color === 'orange') gradColors = orangeColors;
+	else if (color === 'purple') gradColors = purpleColors;
+	else gradColors = greenColors;
 </script>
 
 <div
@@ -32,22 +53,24 @@
         --max: {max}; 
         --outer-border-size: {outerBorderSize};
         --inner-border-size: {innerBorderSize};
-        --grad-zero: {colors.gradZero};
-        --grad-fifty: {colors.gradFifty};
-        --grad-hundred: {colors.gradHundred};
+        --grad-zero: {gradColors.gradZero};
+        --grad-fifty: {gradColors.gradFifty};
+        --grad-hundred: {gradColors.gradHundred};
     "
 >
-	<div class="input-container">
-		<input
-			id="range-control"
-			type="range"
-			class="vertical"
-			orient="vertical"
-			min="0"
-			max="100"
-			bind:this={rangeControl}
-		/>
-	</div>
+	{#if editable}
+		<div class="input-container">
+			<input
+				id="range-control"
+				type="range"
+				class="vertical"
+				orient="vertical"
+				min="0"
+				max="100"
+				bind:this={rangeControl}
+			/>
+		</div>
+	{/if}
 	<div class="slider-visual-container">
 		<div class="slider-visual" />
 	</div>

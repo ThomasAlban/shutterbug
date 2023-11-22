@@ -7,7 +7,7 @@
 	// this is the data returned from the load function
 	export let data;
 
-	$: ({ currentTheme, alreadySubmitted, nextTheme } = data);
+	$: ({ currentTheme, alreadySubmitted, nextTheme, submissionsToVoteOn } = data);
 
 	let remaining: { days: number; hours: number; minutes: number; seconds: number } | undefined = undefined;
 
@@ -92,11 +92,15 @@
 	<div class="blurbg-container">
 		{#if data.randomSubmission}
 			<BlurBgImg url={data.randomSubmission}>
-				<div>
-					<h3>View & vote on your friends' submissions for last week</h3>
-					<br />
-				</div>
-				<Button link="/app/vote" invertColor={true}>Start voting</Button>
+				{#if submissionsToVoteOn}
+					<div>
+						<h3>View & vote on your friends' submissions for last week</h3>
+						<br />
+					</div>
+					<Button link="/app/vote" invertColor={true}>Start voting</Button>
+				{:else}
+					<h3>You've already voted on all the submissions for last week.</h3>
+				{/if}
 			</BlurBgImg>
 		{:else if data.hasFriends}
 			<h3>None of your friends submitted anything last week.</h3>

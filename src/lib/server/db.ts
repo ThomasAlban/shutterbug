@@ -422,11 +422,11 @@ export async function getPreviousTheme() {
 
 export async function createVote(voterID: string, voteeID: string, themeID: string, vote: Vote) {
 	if (
-		vote.humour > 10 ||
+		vote.humour > 100 ||
 		vote.humour < 0 ||
-		vote.creativity > 10 ||
+		vote.creativity > 100 ||
 		vote.creativity < 0 ||
-		vote.photography > 10 ||
+		vote.photography > 100 ||
 		vote.photography < 0
 	)
 		throw error(500, { message: 'vote not within range' });
@@ -776,7 +776,8 @@ export async function getClientUserFriendDataAndPhotos(
 		try {
 			photoSubmissionsQuery = await db.photo.findMany({
 				where: { userID },
-				include: { theme: true }
+				include: { theme: true },
+				orderBy: { dateCreated: 'desc' }
 			});
 		} catch (e) {
 			throw error(500, { message: 'database error: ' + (e as string) });

@@ -16,14 +16,11 @@
 	/* css variables used throughout the app */
 	:global(*) {
 		--orange: #e27d00;
-		--dark-orange: #754100;
-		--light-orange: #ffb860;
-		--grey-orange: #ac7737;
-
-		/* --blue: */
 
 		--navbar-top-height: 4rem;
 		--navbar-bottom-height: 4rem;
+
+		--max-app-width: 50rem;
 
 		/* how many times bigger 1 rem has to be than 1% of the viewport width for units to use rem rather than be based off viewport width */
 		/* this means that if the viewport width is small enough, everything that uses this ratio will start to shrink proportional to the viewport width */
@@ -141,7 +138,7 @@
 		align-items: center;
 	}
 	.app-container {
-		width: min(100%, 50rem);
+		width: min(100%, var(--max-app-width));
 		min-height: 100dvh;
 		box-shadow: 0 0 3rem 0.5rem;
 		line-height: 2rem;

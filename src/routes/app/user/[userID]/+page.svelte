@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import UserWidget from '$lib/components/UserWidget.svelte';
+	import PhotoSubmission from '$lib/components/PhotoSubmission.svelte';
 
 	export let data;
 	$: ({ userData } = data);
@@ -9,84 +10,19 @@
 	let reportReasonVisible = false;
 </script>
 
-<a href="/app/home">Home</a>
-<br /><br />
-
 <UserWidget user={userData.user} friendStatus={userData.friendStatus} />
 
 {#if userData.reported === 'none'}
-	<!-- {#if userData.friendStatus === 'none'}
-		<form
-			method="post"
-			action="?/sendRequest"
-			use:enhance={({ submitter }) => {
-				submitter?.setAttribute('disabled', 'true');
-				return ({ update }) => update().then(() => submitter?.removeAttribute('disabled'));
-			}}
-		>
-			<input type="submit" value="Send Friend Request" />
-		</form>
-	{:else if userData.friendStatus === 'outgoingRequest'}
-		<form
-			method="post"
-			action="?/remove"
-			use:enhance={({ submitter }) => {
-				submitter?.setAttribute('disabled', 'true');
-				return ({ update }) => update().then(() => submitter?.removeAttribute('disabled'));
-			}}
-		>
-			<input type="submit" value="Remove Friend Request" />
-		</form>
-	{:else if userData.friendStatus === 'incomingRequest'}
-		<form
-			method="post"
-			action="?/accept"
-			use:enhance={({ submitter }) => {
-				submitter?.setAttribute('disabled', 'true');
-				return ({ update }) => update().then(() => submitter?.removeAttribute('disabled'));
-			}}
-		>
-			<input type="submit" value="Accept Friend Request" />
-		</form>
-		<form
-			method="post"
-			action="?/remove"
-			use:enhance={({ submitter }) => {
-				submitter?.setAttribute('disabled', 'true');
-				return ({ update }) => update().then(() => submitter?.removeAttribute('disabled'));
-			}}
-		>
-			<input type="submit" value="Decline Friend Request" />
-		</form>
-	{:else if userData.friendStatus === 'friends'}
-		<form
-			method="post"
-			action="?/remove"
-			use:enhance={({ submitter }) => {
-				submitter?.setAttribute('disabled', 'true');
-				return ({ update }) => update().then(() => submitter?.removeAttribute('disabled'));
-			}}
-		>
-			<input type="submit" value="Remove Friend" />
-		</form>
-	{/if} -->
-
 	{#if userData.friendStatus === 'incomingRequest' || userData.friendStatus === 'friends' || userData.friendStatus === 'self'}
 		<h2>Photo Submissions</h2>
-		{#each userData.photoSubmissions as photoSubmission}
-			theme: {photoSubmission.theme.theme} <br />
 
-			{#if photoSubmission.overallVote}
-				overall score: <br />
-				humour: {photoSubmission.overallVote.humour} creativity: {photoSubmission.overallVote.creativity} photography:
-				{photoSubmission.overallVote.photography}
-			{:else}
-				<i>No one has voted on this post yet.</i>
-			{/if}
-
-			<br />
-			<img src={photoSubmission.photo.photo} alt="img submission" width="300px" /> <br /> <br />
-		{/each}
+		<div class="photo-submissions-container">
+			{#each userData.photoSubmissions as photoSubmission}
+				<div class="grid-item">
+					<PhotoSubmission {photoSubmission} />
+				</div>
+			{/each}
+		</div>
 	{/if}
 {/if}
 <br />
@@ -131,6 +67,20 @@
 	{/if}
 {/if}
 
-<form action="/auth/logout" method="post">
-	<button type="submit">Log Out</button>
-</form>
+<style>
+	.photo-submissions-container {
+		display: grid;
+		grid-template-columns: auto auto auto;
+
+		/* this means that the grid will have 2 columns when the screen width is larger than 35 rem, but 1 column otherwise */
+		grid-template-columns: repeat(1, minmax(0, 1fr));
+		@media (min-width: 35rem) {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+	.grid-item {
+		background-color: rgba(255, 255, 255, 0.8);
+		text-align: center;
+		border: 1px solid black;
+	}
+</style>

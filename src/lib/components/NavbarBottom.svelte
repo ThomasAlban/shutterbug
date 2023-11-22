@@ -18,7 +18,7 @@
 		bottom: 0;
 		margin-left: auto;
 		margin-right: auto;
-		width: min(100%, 50rem);
+		width: min(100%, var(--max-app-width));
 		height: var(--navbar-bottom-height);
 
 		display: grid;

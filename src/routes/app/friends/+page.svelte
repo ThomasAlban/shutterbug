@@ -23,7 +23,7 @@
 		{#if form.searchResult.length > 0}
 			<div class="users-container">
 				{#each form.searchResult as { user, friendStatus }}
-					<UserWidget {user} {friendStatus} />
+					<UserWidget {user} {friendStatus} maxAllowedWidth={300} />
 				{/each}
 			</div>
 		{:else}
@@ -39,7 +39,7 @@
 	<div class="users-container">
 		<h3>Incoming Friend Requests</h3>
 		{#each incomingFriendRequests as user}
-			<UserWidget {user} friendStatus="incomingRequest" />
+			<UserWidget {user} friendStatus="incomingRequest" maxAllowedWidth={300} />
 		{/each}
 	</div>
 {/if}
@@ -48,7 +48,7 @@
 	<h3>Friends</h3>
 
 	{#each friends as user}
-		<UserWidget {user} friendStatus="friends" />
+		<UserWidget {user} friendStatus="friends" maxAllowedWidth={300} />
 	{:else}
 		None
 	{/each}
