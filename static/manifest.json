@@ -3,7 +3,7 @@
     "short_name": "Shutterbug",
     "start_url": "/",
     "display": "standalone",
-    "orientation": "portrait",
+    "orientation": "fullscreen",
     "theme_color": "#000000",
     "background_color": "#000000",
     "icons": [
