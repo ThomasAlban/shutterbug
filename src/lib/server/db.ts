@@ -1020,6 +1020,15 @@ export async function getRandomFriendPhotoSubmission(
 ) {
 	if (friendsWithSubmissions.length == 0) return null;
 
+	let thereAreSubmissions = false;
+	for (const friend of friendsWithSubmissions) {
+		if (friend.photoSubmission) {
+			thereAreSubmissions = true;
+			break;
+		}
+	}
+	if (!thereAreSubmissions) return null;
+
 	let photoSubmission: string | null = null;
 
 	while (!photoSubmission) {
