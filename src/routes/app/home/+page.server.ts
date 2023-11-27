@@ -48,6 +48,15 @@ export async function load(event) {
 		alreadySubmitted = await db.userAlreadySubmittedPhoto(event.locals.user!.userID, currentTheme.themeID);
 	else nextTheme = await db.getNextTheme();
 
+	console.log({
+		currentTheme,
+		alreadySubmitted,
+		nextTheme,
+		randomSubmission,
+		hasFriends: friends.length > 0,
+		submissionsToVoteOn
+	});
+
 	return {
 		currentTheme,
 		alreadySubmitted,
