@@ -14,6 +14,12 @@
 		photoSubmission.overallVote.humour *= 10;
 	}
 
+	// add cloudinary url params
+	let urlArr = photoSubmission.photo.photo.split('/');
+	let uploadIx = urlArr.findIndex((e) => e === 'upload');
+	urlArr.splice(uploadIx + 1, 0, 'w_750,q_auto:good,f_auto');
+	photoSubmission.photo.photo = urlArr.join('/');
+
 	const borderSize = '0.4rem';
 
 	export let slidersHeight = 'min(12rem, calc(var(--rem-vw-ratio) * 12vw))';
@@ -26,7 +32,9 @@
 	<!-- theme: {photoSubmission.theme.theme} <br /> -->
 
 	<div class="photo-submission-container">
-		<div class="photo" style="background-image: url({photoSubmission.photo.photo});" />
+		<!-- <div class="photo" style="background-image: url({photoSubmission.photo.photo});" /> -->
+		<div class="photo-submission-loading-text"><h3>Loading photo...</h3></div>
+
 		<!-- <img src={photoSubmission.photo.photo} alt="img submission" width="300px" /> -->
 	</div>
 
@@ -84,6 +92,7 @@
 		width: 100%;
 		padding-bottom: 100%;
 		position: relative;
+		background-color: grey;
 	}
 	.sliders-container {
 		display: grid;
@@ -126,7 +135,16 @@
 		background-size: cover;
 		background-clip: border-box;
 		background-position: center;
-		background-color: red;
+		z-index: 1;
+	}
+	.photo-submission-loading-text {
+		position: absolute;
+		top: 50%;
+		left: 0;
+		right: 0;
+		transform: translate(0, -50%);
+		text-align: center;
+		color: white;
 	}
 	.no-votes-container {
 		background-color: black;

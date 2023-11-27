@@ -18,8 +18,8 @@
 		<UploadWidget
 			success={form?.success || data.alreadySubmitted}
 			successMsg="Photo submitted!"
-			errorMsg={form?.message}>Upload</UploadWidget
-		>
+			errorMsg={form?.message}
+		/>
 	</div>
 </div>
 

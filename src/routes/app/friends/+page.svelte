@@ -58,7 +58,7 @@
 	<div class="users-container">
 		<h3>Outgoing Friend Requests</h3>
 		{#each outgoingFriendRequests as user}
-			<UserWidget {user} friendStatus="outgoingRequest" />
+			<UserWidget {user} friendStatus="outgoingRequest" maxAllowedWidth={300} />
 		{/each}
 	</div>
 {/if}
@@ -79,5 +79,6 @@
 		align-items: center;
 		flex-direction: column;
 		gap: 1.5rem;
+		overflow-x: hidden;
 	}
 </style>
