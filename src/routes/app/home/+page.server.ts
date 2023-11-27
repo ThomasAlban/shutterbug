@@ -1,8 +1,11 @@
 import * as db from '$lib/server/db';
 
 export async function load(event) {
+	console.log('a');
 	const currentTheme = await db.getCurrentTheme();
+	console.log('b');
 	const previousTheme = await db.getPreviousTheme();
+	console.log('c');
 
 	let randomSubmission: string | null = null;
 	let friends:
@@ -17,11 +20,13 @@ export async function load(event) {
 		| db.ClientUser[];
 
 	let submissionsToVoteOn = false;
+	console.log('d');
 
 	if (previousTheme) {
 		friends = await db.getFriendsWithSubmissions(event.locals.user!.userID, previousTheme.themeID, true, true);
-		console.log(friends);
+		console.log('e');
 		randomSubmission = await db.getRandomFriendPhotoSubmission(event.locals.user!.userID, previousTheme, friends);
+		console.log('f');
 
 		// check if there are any photo submissions from the user's friends
 		for (const friend of friends) {
@@ -32,7 +37,9 @@ export async function load(event) {
 		}
 	} else {
 		friends = await db.getFriends(event.locals.user!.userID);
+		console.log('g');
 	}
+	console.log('h');
 
 	let alreadySubmitted = false;
 
@@ -42,11 +49,13 @@ export async function load(event) {
 		dateStart: Date;
 		dateEnd: Date;
 	} | null = null;
+	console.log('i');
 	// don't bother getting the next theme unless there isn't a current theme
 	// because we don't care about the next theme unless there is no current theme
 	if (currentTheme)
 		alreadySubmitted = await db.userAlreadySubmittedPhoto(event.locals.user!.userID, currentTheme.themeID);
 	else nextTheme = await db.getNextTheme();
+	console.log('j');
 
 	console.log({
 		currentTheme,
