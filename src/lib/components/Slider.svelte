@@ -69,6 +69,10 @@
 </div>
 
 <style>
+	:root {
+		overflow-y: hidden;
+	}
+
 	.slider-container {
 		overflow: hidden;
 		position: relative;
@@ -77,7 +81,7 @@
 	}
 	.input-container {
 		z-index: 10;
-		opacity: 0;
+		opacity: 100%;
 		position: absolute;
 		top: 0;
 		left: 0;
@@ -92,8 +96,6 @@
 	input[type='range'] {
 		z-index: 10;
 		appearance: none;
-
-		opacity: 100%;
 
 		position: absolute;
 
@@ -111,19 +113,19 @@
 
 		/* make the hitbox of the slider thumb bigger so that it's not so finicky */
 		&::-webkit-slider-thumb {
-			transform: scale(4, 10);
+			transform: scale(7, 10);
 		}
 		&::-moz-range-thumb {
-			transform: scale(4, 10);
+			transform: scale(7, 10);
 		}
 	}
 	/* if the container's smaller, make the hitbox smaller so it doesn't overlap outside of itself */
 	@container (max-width: 10rem) {
 		input[type='range']::-webkit-slider-thumb {
-			transform: scale(2, 4);
+			transform: scale(5, 6);
 		}
 		input[type='range']::-moz-range-thumb {
-			transform: scale(2, 4);
+			transform: scale(5, 6);
 		}
 	}
 
