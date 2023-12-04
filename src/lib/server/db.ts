@@ -363,9 +363,8 @@ export async function getFriendsWithSubmissions(
 	}
 }
 
-export async function getCurrentTheme() {
+export async function getCurrentTheme(currentDate: Date) {
 	try {
-		const currentDate = new Date();
 		const theme = await db.theme.findFirst({
 			where: {
 				dateStart: {
@@ -382,9 +381,8 @@ export async function getCurrentTheme() {
 	}
 }
 
-export async function getNextTheme() {
+export async function getNextTheme(currentDate: Date) {
 	try {
-		const currentDate = new Date();
 		const theme = await db.theme.findFirst({
 			where: {
 				dateStart: {
@@ -401,7 +399,7 @@ export async function getNextTheme() {
 	}
 }
 
-export async function getPreviousTheme() {
+export async function getPreviousTheme(currentDate: Date) {
 	try {
 		const currentDate = new Date();
 		const theme = await db.theme.findFirst({

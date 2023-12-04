@@ -1,8 +1,11 @@
 import * as db from '$lib/server/db';
 
 export async function load(event) {
-	const currentTheme = await db.getCurrentTheme();
-	const previousTheme = await db.getPreviousTheme();
+	const currentDate = new Date();
+	const [currentTheme, previousTheme] = await Promise.all([
+		db.getCurrentTheme(currentDate),
+		db.getPreviousTheme(currentDate)
+	]);
 
 	let randomSubmission: string | null = null;
 	let friends:
@@ -47,7 +50,7 @@ export async function load(event) {
 	// because we don't care about the next theme unless there is no current theme
 	if (currentTheme)
 		alreadySubmitted = await db.userAlreadySubmittedPhoto(event.locals.user!.userID, currentTheme.themeID);
-	else nextTheme = await db.getNextTheme();
+	else nextTheme = await db.getNextTheme(currentDate);
 
 	return {
 		currentTheme,

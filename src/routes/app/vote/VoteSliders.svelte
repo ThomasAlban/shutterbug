@@ -40,6 +40,7 @@
 
 <style>
 	.sliders-container {
+		overflow: hidden;
 		display: grid;
 		padding: var(--border-size);
 		background-color: black;

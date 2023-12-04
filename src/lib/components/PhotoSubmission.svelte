@@ -8,11 +8,6 @@
 		theme: Theme;
 		overallVote: Vote | null;
 	};
-	if (photoSubmission.overallVote) {
-		photoSubmission.overallVote.creativity *= 10;
-		photoSubmission.overallVote.photography *= 10;
-		photoSubmission.overallVote.humour *= 10;
-	}
 
 	// add cloudinary url params
 	let urlArr = photoSubmission.photo.photo.split('/');

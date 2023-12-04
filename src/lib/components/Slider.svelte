@@ -60,15 +60,7 @@
 >
 	{#if editable}
 		<div class="input-container">
-			<input
-				id="range-control"
-				type="range"
-				class="vertical"
-				orient="vertical"
-				min="0"
-				max="100"
-				bind:this={rangeControl}
-			/>
+			<input type="range" min="0" max="100" bind:this={rangeControl} />
 		</div>
 	{/if}
 	<div class="slider-visual-container">
@@ -78,12 +70,14 @@
 
 <style>
 	.slider-container {
+		overflow: hidden;
 		position: relative;
 		height: var(--height);
 		width: var(--width);
 	}
 	.input-container {
 		z-index: 10;
+		opacity: 0;
 		position: absolute;
 		top: 0;
 		left: 0;
@@ -91,16 +85,48 @@
 		margin: 0;
 		height: 100%;
 		width: 100%;
+
+		container-type: size;
 	}
-	input {
-		opacity: 0;
-		appearance: slider-vertical;
-		height: 100%;
-		width: 100%;
+
+	input[type='range'] {
+		z-index: 10;
+		appearance: none;
+
+		opacity: 100%;
+
+		position: absolute;
+
+		top: 50%;
+		left: 50%;
+
+		height: 100cqw;
+		width: 100cqh;
+
+		transform: translate(-50%, -50%) rotate(270deg);
+
 		padding: 0;
 		margin: 0;
 		cursor: pointer;
+
+		/* make the hitbox of the slider thumb bigger so that it's not so finicky */
+		&::-webkit-slider-thumb {
+			transform: scale(4, 10);
+		}
+		&::-moz-range-thumb {
+			transform: scale(4, 10);
+		}
 	}
+	/* if the container's smaller, make the hitbox smaller so it doesn't overlap outside of itself */
+	@container (max-width: 10rem) {
+		input[type='range']::-webkit-slider-thumb {
+			transform: scale(2, 4);
+		}
+		input[type='range']::-moz-range-thumb {
+			transform: scale(2, 4);
+		}
+	}
+
 	.slider-visual-container {
 		position: absolute;
 		top: 0;

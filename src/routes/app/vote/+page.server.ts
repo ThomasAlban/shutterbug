@@ -11,7 +11,8 @@ const voteSchema = z.object({
 const votesSchema = z.array(voteSchema);
 
 export async function load(event) {
-	const previousTheme = await db.getPreviousTheme();
+	const currentDate = new Date();
+	const previousTheme = await db.getPreviousTheme(currentDate);
 	if (!previousTheme) throw redirect(303, '/app/home');
 
 	const friends = await db.getFriendsWithSubmissions(event.locals.user!.userID, previousTheme.themeID);
@@ -48,9 +49,10 @@ export const actions = {
 		} catch (_) {
 			return fail(400, { message: 'unable to parse votes' });
 		}
-		console.log(votes);
 
-		const previousTheme = await db.getPreviousTheme();
+		const currentDate = new Date();
+
+		const previousTheme = await db.getPreviousTheme(currentDate);
 		if (!previousTheme) return fail(400, { message: 'no previous theme' });
 
 		for (const vote of votesParsed) {

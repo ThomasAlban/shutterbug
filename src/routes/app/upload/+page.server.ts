@@ -2,7 +2,8 @@ import * as db from '$lib/server/db';
 import { fail, redirect } from '@sveltejs/kit';
 
 export async function load(event) {
-	const currentTheme = await db.getCurrentTheme();
+	const currentDate = new Date();
+	const currentTheme = await db.getCurrentTheme(currentDate);
 	if (!currentTheme) throw redirect(303, '/app/home');
 
 	const alreadySubmitted = await db.userAlreadySubmittedPhoto(event.locals.user!.userID, currentTheme.themeID);
@@ -12,7 +13,8 @@ export async function load(event) {
 
 export const actions = {
 	async upload(event) {
-		const currentTheme = await db.getCurrentTheme();
+		const currentDate = new Date();
+		const currentTheme = await db.getCurrentTheme(currentDate);
 		if (!currentTheme) return fail(400, { message: 'No current theme found' });
 
 		const [alreadySubmitted, formData] = await Promise.all([
