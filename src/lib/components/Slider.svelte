@@ -81,7 +81,7 @@
 	}
 	.input-container {
 		z-index: 10;
-		opacity: 100%;
+		opacity: 0;
 		position: absolute;
 		top: 0;
 		left: 0;
