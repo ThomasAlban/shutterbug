@@ -3,6 +3,7 @@
 	import { invalidateAll } from '$app/navigation';
 	import BlurBgImg from '$lib/components/BlurBGImg.svelte';
 	import Button from '$lib/components/Button.svelte';
+	import { getTimeFromOrToNow } from '$lib/util';
 
 	// this is the data returned from the load function
 	export let data;
@@ -13,14 +14,7 @@
 
 	// this function runs every second and updates the remaining variable above
 	function updateRemaining(dateUntil: Date) {
-		let currentDate = new Date();
-		let timeDiff = dateUntil.getTime() - currentDate.getTime();
-		let days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
-		let hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-		let minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
-		let seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
-		remaining = { days, hours, minutes, seconds };
-
+		remaining = getTimeFromOrToNow(dateUntil, true);
 		// patch to make sure nothing can be negative
 		if (Object.values(remaining).every((x) => x <= 0)) remaining = { days: 0, hours: 0, minutes: 0, seconds: 0 };
 	}

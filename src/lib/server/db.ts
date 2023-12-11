@@ -743,12 +743,18 @@ export async function getClientUser(userID: string) {
 }
 
 type ClientUserFriendDataAndPhotos =
-	| { user: ClientUser; friendStatus: 'none' | 'outgoingRequest'; reported: 'none' | 'reporter' | 'culprit' }
+	| {
+			user: ClientUser;
+			friendStatus: 'none' | 'outgoingRequest';
+			reported: 'none' | 'reporter' | 'culprit';
+			submissionsCount: number;
+	  }
 	| {
 			user: ClientUser;
 			photoSubmissions: { photo: Photo; theme: Theme; overallVote: Vote | null }[];
 			friendStatus: 'incomingRequest' | 'friends' | 'self';
 			reported: 'none' | 'reporter' | 'culprit';
+			submissionsCount: number;
 	  };
 
 export async function getClientUserFriendDataAndPhotos(
@@ -795,6 +801,18 @@ export async function getClientUserFriendDataAndPhotos(
 		return photoSubmissions;
 	};
 
+	const countPhotoSubmissions = async () => {
+		let photoSubmissionsQuery;
+		try {
+			photoSubmissionsQuery = await db.photo.count({
+				where: { userID }
+			});
+		} catch (e) {
+			throw error(500, { message: 'database error: ' + (e as string) });
+		}
+		return photoSubmissionsQuery;
+	};
+
 	// if the user is the logged in user
 	if (userID === loggedInUserID) {
 		const photoSubmissions = await getPhotoSubmissions();
@@ -802,7 +820,8 @@ export async function getClientUserFriendDataAndPhotos(
 			user,
 			photoSubmissions,
 			friendStatus: 'self',
-			reported
+			reported,
+			submissionsCount: photoSubmissions.length
 		};
 	}
 
@@ -811,7 +830,7 @@ export async function getClientUserFriendDataAndPhotos(
 	// check if the logged-in user has an outgoing friend request to the user
 	for (const outgoingFR of loggedInUserFriendData.outgoingFriendRequests) {
 		if (outgoingFR.userID === userID) {
-			return { user, friendStatus: 'outgoingRequest', reported };
+			return { user, friendStatus: 'outgoingRequest', reported, submissionsCount: await countPhotoSubmissions() };
 		}
 	}
 	// check if the logged-in user has an incoming friend request from the user
@@ -822,7 +841,8 @@ export async function getClientUserFriendDataAndPhotos(
 				user,
 				photoSubmissions,
 				friendStatus: 'incomingRequest',
-				reported
+				reported,
+				submissionsCount: photoSubmissions.length
 			};
 		}
 	}
@@ -834,12 +854,13 @@ export async function getClientUserFriendDataAndPhotos(
 				user,
 				photoSubmissions,
 				friendStatus: 'friends',
-				reported
+				reported,
+				submissionsCount: photoSubmissions.length
 			};
 		}
 	}
 
-	return { user, friendStatus: 'none', reported };
+	return { user, friendStatus: 'none', reported, submissionsCount: await countPhotoSubmissions() };
 }
 
 export async function createReport(reporterID: string, culpritID: string, reason?: string | undefined) {

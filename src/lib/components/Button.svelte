@@ -26,6 +26,8 @@
         --text-color: {invertColor ? 'var(--orange)' : '#fff'};
         --size: {size};
         line-height: 1;
+        display: flex;
+        justify-content: center
     "
 >
 	{#if link}
@@ -45,7 +47,7 @@
 					<div class="loading-spinner" />
 				</div>
 			{:else}
-				<div id="slot" bind:this={slot}>
+				<div class="slot" bind:this={slot}>
 					<slot />
 				</div>
 			{/if}
@@ -101,5 +103,11 @@
 		100% {
 			transform: rotate(360deg);
 		}
+	}
+
+	.slot {
+		display: flex;
+		justify-content: center;
+		align-items: center;
 	}
 </style>

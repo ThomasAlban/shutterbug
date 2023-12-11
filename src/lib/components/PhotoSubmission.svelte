@@ -20,17 +20,12 @@
 	export let slidersHeight = 'min(12rem, calc(var(--rem-vw-ratio) * 12vw))';
 
 	let width: number;
-	let windowWidth: number;
 </script>
 
 <div class="wrapper" bind:clientWidth={width} style="--width: {width}px">
-	<!-- theme: {photoSubmission.theme.theme} <br /> -->
-
 	<div class="photo-submission-container">
 		<div class="photo" style="background-image: url({photoSubmission.photo.photo});" />
 		<div class="photo-submission-loading-text"><h3>Loading photo...</h3></div>
-
-		<!-- <img src={photoSubmission.photo.photo} alt="img submission" width="300px" /> -->
 	</div>
 
 	{#if photoSubmission.overallVote}

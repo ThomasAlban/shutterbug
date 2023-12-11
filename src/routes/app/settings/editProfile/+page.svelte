@@ -3,7 +3,7 @@
 	import { Form } from 'formsnap';
 	import { emailSchema, usernameSchema, passwordSchema } from './schema';
 	import Button from '$lib/components/Button.svelte';
-	import { toasts } from 'svelte-toasts';
+	import { successToast } from '$lib/util';
 	export let form;
 
 	export let data;
@@ -15,17 +15,10 @@
 	};
 
 	let edit: 'profilePicture' | 'username' | 'email' | 'password' | undefined = undefined;
-
-	function toast(title: string) {
-		toasts.success({
-			title,
-			description: ''
-		});
-	}
-	$: if (form?.uploadSuccess) toast('Successfully updated profile picture');
-	$: if (form?.usernameSuccess) toast(`Successfully updated username to ${form.newUsername}`);
-	$: if (form?.emailSuccess) toast('`Successfully updated email to ${form.newEmail}`');
-	$: if (form?.passwordSuccess) toast('Successfully updated password');
+	$: if (form?.uploadSuccess) successToast('Successfully updated profile picture');
+	$: if (form?.usernameSuccess) successToast(`Successfully updated username to ${form.newUsername}`);
+	$: if (form?.emailSuccess) successToast('`Successfully updated email to ${form.newEmail}`');
+	$: if (form?.passwordSuccess) successToast('Successfully updated password');
 
 	$: if (form?.uploadSuccess || form?.usernameSuccess || form?.emailSuccess || form?.passwordSuccess) edit = undefined;
 </script>

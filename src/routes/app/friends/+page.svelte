@@ -7,6 +7,8 @@
 	export let data;
 	export let form;
 	$: ({ friends, incomingFriendRequests, outgoingFriendRequests } = data);
+
+	let maxWidthRem = 25;
 </script>
 
 <div class="orange" style="text-align: center;">
@@ -23,7 +25,7 @@
 		{#if form.searchResult.length > 0}
 			<div class="users-container">
 				{#each form.searchResult as { user, friendStatus }}
-					<UserWidget {user} {friendStatus} maxAllowedWidth={300} />
+					<UserWidget {user} {friendStatus} {maxWidthRem} />
 				{/each}
 			</div>
 		{:else}
@@ -39,7 +41,7 @@
 	<div class="users-container">
 		<h3>Incoming Friend Requests</h3>
 		{#each incomingFriendRequests as user}
-			<UserWidget {user} friendStatus="incomingRequest" maxAllowedWidth={300} />
+			<UserWidget {user} friendStatus="incomingRequest" {maxWidthRem} />
 		{/each}
 	</div>
 {/if}
@@ -48,7 +50,7 @@
 	<h3>Friends</h3>
 
 	{#each friends as user}
-		<UserWidget {user} friendStatus="friends" maxAllowedWidth={300} />
+		<UserWidget {user} friendStatus="friends" {maxWidthRem} />
 	{:else}
 		None
 	{/each}
@@ -58,7 +60,7 @@
 	<div class="users-container">
 		<h3>Outgoing Friend Requests</h3>
 		{#each outgoingFriendRequests as user}
-			<UserWidget {user} friendStatus="outgoingRequest" maxAllowedWidth={300} />
+			<UserWidget {user} friendStatus="outgoingRequest" {maxWidthRem} />
 		{/each}
 	</div>
 {/if}

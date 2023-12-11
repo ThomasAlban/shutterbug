@@ -6,7 +6,7 @@
 	<div class="app-container">
 		<slot />
 
-		<ToastContainer placement="bottom-center" let:data>
+		<ToastContainer placement="top-center" let:data>
 			<FlatToast {data} />
 		</ToastContainer>
 	</div>

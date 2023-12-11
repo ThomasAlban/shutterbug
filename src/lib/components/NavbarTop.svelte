@@ -6,7 +6,7 @@
 	.navbar {
 		background-color: black;
 		overflow: hidden;
-		z-index: 1;
+		z-index: 10;
 
 		position: fixed;
 		top: 0;

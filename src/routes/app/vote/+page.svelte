@@ -95,7 +95,16 @@
 <div class="upper-info-container" style="opacity: {(1 - slidersOffset) * 100}%">
 	<div class="info-item-left-align">
 		{#if currentUser}
-			<UserWidget user={currentUser} friendStatus="friends" showButtons={false} size={1.5} maxAllowedWidth={200} />
+			{#key currentUser.username}
+				<UserWidget
+					user={currentUser}
+					friendStatus="friends"
+					showButtons={false}
+					size={1.5}
+					maxWidthRem={14.5}
+					maxWidthVW={50}
+				/>
+			{/key}
 		{/if}
 	</div>
 	<div class="info-item-right-align">

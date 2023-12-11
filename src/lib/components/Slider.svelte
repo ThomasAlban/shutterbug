@@ -69,10 +69,6 @@
 </div>
 
 <style>
-	:root {
-		overflow-y: hidden;
-	}
-
 	.slider-container {
 		overflow: hidden;
 		position: relative;

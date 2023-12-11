@@ -11,6 +11,7 @@
 
 <style>
 	nav {
+		z-index: 10;
 		background-color: black;
 		overflow: hidden;
 
