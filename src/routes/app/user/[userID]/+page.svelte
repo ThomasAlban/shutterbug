@@ -1,17 +1,16 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import FormButton from '$lib/components/FormButton.svelte';
 	import FriendButtons from '$lib/components/FriendButtons.svelte';
 	import PhotoSubmission from '$lib/components/PhotoSubmission.svelte';
 	import ProfilePicture from '$lib/components/ProfilePicture.svelte';
+	import ReportButton from '$lib/components/ReportButton.svelte';
 	import { getTimeFromOrToNow, vw2px } from '$lib/util';
 	import { onMount } from 'svelte';
 
 	export let data;
 	$: ({ userData } = data);
 	$: ({ friendStatus, user, submissionsCount } = userData);
-
-	let reportFormVisible = false;
-	let reportReasonVisible = false;
 
 	$: accountCreated = (() => {
 		if (!userData) return undefined;
@@ -60,7 +59,9 @@
 	<div>
 		<h1 class="username" style="--font-sub: {fontSub}rem;" bind:clientWidth={h1Width}>
 			{user.username}
-			<img src="/icons/users.png" alt="friends-icon" style="height: 1em;" />
+			{#if friendStatus === 'friends'}
+				<img src="/icons/users.png" alt="friends-icon" style="height: 1em;" />
+			{/if}
 		</h1>
 	</div>
 
@@ -97,43 +98,12 @@
 {/if}
 
 {#if userData.reported === 'reporter'}
-	<i>You have reported this user.</i>
-	<form
-		method="post"
-		action="?/deleteReport"
-		use:enhance={({ submitter }) => {
-			submitter?.setAttribute('disabled', 'true');
-			return ({ update }) => update().then(() => submitter?.removeAttribute('disabled'));
-		}}
-	>
-		<input type="submit" value="Delete Report" />
-	</form>
+	<div class="report-info-container">
+		<p>You have reported this user.</p>
+		<FormButton invertColor={true} size={0.75} action="?/deleteReport">Withdraw Report</FormButton>
+	</div>
 {:else if userData.friendStatus !== 'self'}
-	<button hidden={reportFormVisible} on:click={() => (reportFormVisible = true)}>Report User</button>
-
-	{#if reportFormVisible}
-		<h2>Report User</h2>
-		<button hidden={reportReasonVisible} on:click={() => (reportReasonVisible = true)}>Include Reason</button>
-		{#if reportReasonVisible}
-			<textarea form="reportform" name="reason" placeholder="reason..." />
-		{/if}
-		<form
-			method="post"
-			action="?/report"
-			id="reportform"
-			use:enhance={({ submitter }) => {
-				submitter?.setAttribute('disabled', 'true');
-				return ({ update }) =>
-					update().then(() => {
-						submitter?.removeAttribute('disabled');
-						reportFormVisible = false;
-						reportReasonVisible = false;
-					});
-			}}
-		>
-			<input type="submit" value="Send Report" />
-		</form>
-	{/if}
+	<ReportButton />
 {/if}
 
 <style>
@@ -146,7 +116,7 @@
 		@media (min-width: 35rem) {
 			grid-template-columns: repeat(2, minmax(0, 1fr));
 		}
-		background-color: lightgray;
+		background-color: rgb(235, 235, 235);
 	}
 	.grid-item {
 		background-color: rgba(255, 255, 255, 0.8);
@@ -172,5 +142,13 @@
 		--size: 3;
 
 		font-size: calc(min(calc(var(--size) * 1rem), calc(var(--size) * var(--rem-vw-ratio) * 1vw)) - var(--font-sub));
+	}
+	.report-info-container {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		flex-direction: column;
+		padding: 1rem;
+		gap: 0.5rem;
 	}
 </style>
