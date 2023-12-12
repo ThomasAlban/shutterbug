@@ -5,7 +5,7 @@
 	import PhotoSubmission from '$lib/components/PhotoSubmission.svelte';
 	import ProfilePicture from '$lib/components/ProfilePicture.svelte';
 	import ReportButton from '$lib/components/ReportButton.svelte';
-	import { getTimeFromOrToNow, vw2px } from '$lib/util';
+	import { getTimeFromOrToNow } from '$lib/util';
 	import { onMount } from 'svelte';
 
 	export let data;

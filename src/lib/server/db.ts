@@ -751,7 +751,16 @@ type ClientUserFriendDataAndPhotos =
 	  }
 	| {
 			user: ClientUser;
-			photoSubmissions: { photo: Photo; theme: Theme; overallVote: Vote | null }[];
+			photoSubmissions: {
+				photo: Photo;
+				theme: Theme;
+				overallVote: {
+					humour: number;
+					creativity: number;
+					photography: number;
+					votes: number;
+				} | null;
+			}[];
 			friendStatus: 'incomingRequest' | 'friends' | 'self';
 			reported: 'none' | 'reporter' | 'culprit';
 			submissionsCount: number;
@@ -912,7 +921,7 @@ export async function getOverallVoteScore(voteeID: string, themeID: string) {
 		creativity = +creativity.toFixed(2);
 		photography = +photography.toFixed(2);
 
-		return { humour, creativity, photography };
+		return { humour, creativity, photography, votes: votes.length };
 	} catch (e) {
 		throw error(500, { message: 'database error: ' + (e as string) });
 	}

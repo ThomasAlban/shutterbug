@@ -1,12 +1,17 @@
 <script lang="ts">
-	import type { Vote } from '$lib/server/db';
 	import type { Photo, Theme } from '@prisma/client';
-	import Slider from './Slider.svelte';
+	import Slider from '$lib/components/Slider.svelte';
+	import Button from '$lib/components/Button.svelte';
 
 	export let photoSubmission: {
 		photo: Photo;
 		theme: Theme;
-		overallVote: Vote | null;
+		overallVote: {
+			humour: number;
+			creativity: number;
+			photography: number;
+			votes: number;
+		} | null;
 	};
 
 	// add cloudinary url params
@@ -23,12 +28,23 @@
 </script>
 
 <div class="wrapper" bind:clientWidth={width} style="--width: {width}px">
+	<div class="info-container">
+		<Button disabled={true} size={1.2} invertColor={true}>
+			{photoSubmission.photo.dateCreated.toLocaleDateString()}
+		</Button>
+		<Button disabled={true} size={1.2} invertColor={true}>{photoSubmission.theme.theme}</Button>
+	</div>
 	<div class="photo-submission-container">
 		<div class="photo" style="background-image: url({photoSubmission.photo.photo});" />
 		<div class="photo-submission-loading-text"><h3>Loading photo...</h3></div>
 	</div>
 
 	{#if photoSubmission.overallVote}
+		<div class="vote-text-container">
+			<p class="vote-text">
+				{photoSubmission.overallVote.votes} votes &nbsp·&nbsp overall score:
+			</p>
+		</div>
 		<div class="sliders-container" style="--border-size: {borderSize}; --sliders-height: {slidersHeight};">
 			<div class="slider-container">
 				<div class="slider-text-container">
@@ -136,6 +152,22 @@
 		text-align: center;
 		color: white;
 	}
+	.vote-text-container {
+		background-color: black;
+		color: white;
+		padding-top: 0.5rem;
+		container-type: inline-size;
+	}
+	.vote-text {
+		line-height: 1;
+		font-size: 1em;
+	}
+	@container (max-width: 24rem) {
+		.vote-text {
+			font-size: 0.7em;
+		}
+	}
+
 	.no-votes-container {
 		background-color: black;
 		padding: var(--border-size);
@@ -144,5 +176,14 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
+	}
+	.info-container {
+		display: flex;
+		position: absolute;
+		z-index: 2;
+		--padding: 0.5rem;
+		width: calc(100% - 2 * var(--padding));
+		padding: var(--padding);
+		justify-content: space-between;
 	}
 </style>
