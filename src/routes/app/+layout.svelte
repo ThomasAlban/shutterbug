@@ -15,7 +15,7 @@
 
 <style>
 	.content-container {
-		padding: var(--navbar-top-height) 0 var(--navbar-bottom-height) 0;
+		margin: var(--navbar-top-height) 0 var(--navbar-bottom-height) 0;
 		min-height: calc(100dvh - var(--navbar-top-height) - var(--navbar-bottom-height));
 		background-color: white;
 	}
