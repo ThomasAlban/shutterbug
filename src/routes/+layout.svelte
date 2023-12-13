@@ -145,4 +145,10 @@
 		/* if you overscroll you will see black */
 		background-color: black;
 	}
+	:global(#noscroll) {
+		display: none;
+	}
+	:global(body:has(#noscroll)) {
+		overflow: hidden;
+	}
 </style>

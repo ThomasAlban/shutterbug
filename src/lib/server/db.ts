@@ -456,8 +456,7 @@ export async function createVote(voterID: string, voteeID: string, themeID: stri
 }
 
 async function cloudinaryUploadImg(
-	img: File,
-	cropToSquare: boolean
+	img: File
 ): Promise<{ success: false; error: UploadApiErrorResponse } | { success: true; result: UploadApiResponse }> {
 	try {
 		const arrayBuffer = await img.arrayBuffer();

@@ -92,6 +92,8 @@
 	$: currentUser = data.friendsWithSubmissions[currentPhotoIndexFloor]?.user;
 </script>
 
+<div id="noscroll" />
+
 <div class="upper-info-container" style="opacity: {(1 - slidersOffset) * 100}%">
 	<div class="info-item-left-align">
 		{#if currentUser}
