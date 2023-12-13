@@ -742,7 +742,7 @@ export async function getClientUser(userID: string) {
 	}
 }
 
-type ClientUserFriendDataAndPhotos =
+export type ClientUserFriendDataAndPhotos =
 	| {
 			user: ClientUser;
 			friendStatus: 'none' | 'outgoingRequest';
@@ -768,7 +768,8 @@ type ClientUserFriendDataAndPhotos =
 
 export async function getClientUserFriendDataAndPhotos(
 	userID: string,
-	loggedInUserID: string
+	loggedInUserID: string,
+	includeCurrentThemeSubmission: true | { themeID: string } = true
 ): Promise<ClientUserFriendDataAndPhotos> {
 	let user;
 	try {
@@ -784,6 +785,8 @@ export async function getClientUserFriendDataAndPhotos(
 	else if (await checkReported(userID, loggedInUserID)) reported = 'culprit';
 	else reported = 'none';
 
+	let uploadedForCurrentTheme = false;
+
 	const getPhotoSubmissions = async () => {
 		let photoSubmissionsQuery;
 		try {
@@ -794,6 +797,20 @@ export async function getClientUserFriendDataAndPhotos(
 			});
 		} catch (e) {
 			throw error(500, { message: 'database error: ' + (e as string) });
+		}
+
+		if (includeCurrentThemeSubmission != true) {
+			let deleteIndex = undefined;
+			for (let i = 0; i < photoSubmissionsQuery.length; i++) {
+				if (photoSubmissionsQuery[i].themeID === includeCurrentThemeSubmission.themeID) {
+					deleteIndex = i;
+					break;
+				}
+			}
+			if (deleteIndex !== undefined) {
+				uploadedForCurrentTheme = true;
+				photoSubmissionsQuery.splice(deleteIndex, 1);
+			}
 		}
 
 		const photoSubmissionsResult = photoSubmissionsQuery.map(async (photo) => {
@@ -851,7 +868,7 @@ export async function getClientUserFriendDataAndPhotos(
 				photoSubmissions,
 				friendStatus: 'incomingRequest',
 				reported,
-				submissionsCount: photoSubmissions.length
+				submissionsCount: uploadedForCurrentTheme ? photoSubmissions.length + 1 : photoSubmissions.length
 			};
 		}
 	}
@@ -864,7 +881,7 @@ export async function getClientUserFriendDataAndPhotos(
 				photoSubmissions,
 				friendStatus: 'friends',
 				reported,
-				submissionsCount: photoSubmissions.length
+				submissionsCount: uploadedForCurrentTheme ? photoSubmissions.length + 1 : photoSubmissions.length
 			};
 		}
 	}

@@ -2,7 +2,15 @@ import * as db from '$lib/server/db';
 import { fail } from '@sveltejs/kit';
 
 export async function load(event) {
-	const userData = await db.getClientUserFriendDataAndPhotos(event.params.userID, event.locals.user!.userID);
+	const currentTheme = await db.getCurrentTheme(new Date());
+	let userData: db.ClientUserFriendDataAndPhotos;
+	if (currentTheme) {
+		userData = await db.getClientUserFriendDataAndPhotos(event.params.userID, event.locals.user!.userID, {
+			themeID: currentTheme.themeID
+		});
+	} else {
+		userData = await db.getClientUserFriendDataAndPhotos(event.params.userID, event.locals.user!.userID);
+	}
 	return { userData };
 }
 
