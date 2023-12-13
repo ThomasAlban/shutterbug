@@ -1,4 +1,5 @@
 import * as db from '$lib/server/db';
+import { fail } from '@sveltejs/kit';
 
 export async function load(event) {
 	const currentDate = new Date();
@@ -61,3 +62,12 @@ export async function load(event) {
 		submissionsToVoteOn
 	};
 }
+
+export const actions = {
+	async deleteSubmission(event) {
+		const themeID = event.url.searchParams.get('themeID');
+		if (!themeID) return fail(400);
+
+		await db.deleteSubmission(event.locals.user!.userID, themeID);
+	}
+};

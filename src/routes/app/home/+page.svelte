@@ -3,6 +3,7 @@
 	import { invalidateAll } from '$app/navigation';
 	import BlurBgImg from '$lib/components/BlurBGImg.svelte';
 	import Button from '$lib/components/Button.svelte';
+	import FormButton from '$lib/components/FormButton.svelte';
 	import { getTimeFromOrToNow } from '$lib/util';
 
 	// this is the data returned from the load function
@@ -31,6 +32,7 @@
 			setInterval(updateRemaining, 1000, nextTheme.dateEnd);
 		}
 	}
+	let deleteSubmissionConfirm = false;
 </script>
 
 <div class="wrapper">
@@ -70,7 +72,7 @@
 			{#if currentTheme}
 				<p>until photo submission!</p>
 				<p>The theme is:</p>
-				<h2>{currentTheme.theme}</h2>
+				<h1>{currentTheme.theme}</h1>
 				<div class="submit-container">
 					<Button link="/app/upload" invertColor={true}>Submit now</Button>
 				</div>
@@ -81,6 +83,22 @@
 			<p>The theme is:</p>
 			<h2>{currentTheme.theme}</h2>
 			<p>You've already submitted a photo for this theme.</p>
+
+			<div class="delete-submission-container">
+				{#if deleteSubmissionConfirm}
+					<p>Are you sure you want to delete your submission?</p>
+					<div class="delete-submission-buttons">
+						<FormButton action="?/deleteSubmission&themeID={currentTheme.themeID}" invertColor={true} size={1}>
+							Yes
+						</FormButton>
+						<Button invertColor={true} size={1} on:click={() => (deleteSubmissionConfirm = false)}>No</Button>
+					</div>
+				{:else}
+					<Button size={1} invertColor={true} on:click={() => (deleteSubmissionConfirm = true)}
+						>Delete Submission</Button
+					>
+				{/if}
+			</div>
 		{/if}
 	</div>
 	<div class="blurbg-container">
@@ -140,5 +158,14 @@
 	.friends-icon {
 		height: 1em;
 		filter: brightness(0);
+	}
+	.delete-submission-container {
+		padding: 0.5rem;
+	}
+	.delete-submission-buttons {
+		display: flex;
+		gap: 0.5rem;
+		justify-content: center;
+		align-items: center;
 	}
 </style>

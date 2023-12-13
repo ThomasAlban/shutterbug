@@ -6,20 +6,43 @@
 	export let successMsg = 'Upload successful!';
 	export let successFn: VoidFunction = () => {};
 	export let errorMsg: string | undefined = undefined;
+	export let previewShape: 'circle' | 'square' = 'square';
 
 	let loading = false;
 
 	let fileSelected = false;
 
-	let imageUpload: HTMLInputElement;
-	$: if (imageUpload)
-		imageUpload.onchange = () => {
-			const fileName = imageUpload.files?.item(0)?.name;
-			if (fileName) fileSelected = true;
-		};
+	let input: HTMLInputElement;
+	let imgSrc: string | null;
+
+	let showImage = false;
+
+	function onChange() {
+		if (!input?.files) return;
+		const file = input.files[0];
+
+		if (file) {
+			showImage = true;
+			fileSelected = true;
+
+			const reader = new FileReader();
+			reader.addEventListener('load', () => {
+				let result = reader.result;
+				if (typeof result !== 'string') return;
+				imgSrc = result;
+			});
+			reader.readAsDataURL(file);
+
+			return;
+		}
+		showImage = false;
+	}
 </script>
 
 <div class="upload-widget">
+	{#if imgSrc}
+		<div class="photo {previewShape == 'circle' ? 'circle' : ''}" style="background-image: url({imgSrc});" />
+	{/if}
 	<form
 		method="post"
 		action="?/upload"
@@ -39,7 +62,7 @@
 			{:else if errorMsg}
 				{errorMsg}
 			{:else if fileSelected}
-				File selected!
+				Change image
 			{:else}
 				Choose image
 			{/if}
@@ -50,7 +73,8 @@
 			name="image"
 			accept="image/*"
 			required
-			bind:this={imageUpload}
+			bind:this={input}
+			on:change={onChange}
 			disabled={loading || success}
 		/>
 		{#if !success}
@@ -60,6 +84,11 @@
 </div>
 
 <style>
+	.upload-widget {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+	}
 	form {
 		display: flex;
 		align-items: center;
@@ -108,5 +137,18 @@
 	form {
 		display: flex;
 		gap: 1rem;
+	}
+
+	.photo {
+		border: 2px solid black;
+		width: 100%;
+		aspect-ratio: 1;
+		background-repeat: no-repeat;
+		background-size: cover;
+		background-clip: border-box;
+		background-position: center;
+	}
+	.circle {
+		border-radius: 5000px;
 	}
 </style>

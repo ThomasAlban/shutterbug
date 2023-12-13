@@ -456,7 +456,8 @@ export async function createVote(voterID: string, voteeID: string, themeID: stri
 }
 
 async function cloudinaryUploadImg(
-	img: File
+	img: File,
+	cropToSquare: boolean
 ): Promise<{ success: false; error: UploadApiErrorResponse } | { success: true; result: UploadApiResponse }> {
 	try {
 		const arrayBuffer = await img.arrayBuffer();
@@ -1064,4 +1065,15 @@ export async function getRandomFriendPhotoSubmission(
 	}
 
 	return photoSubmission;
+}
+export async function deleteSubmission(userID: string, themeID: string) {
+	try {
+		await db.photo.delete({
+			where: {
+				userID_themeID: { userID, themeID }
+			}
+		});
+	} catch (e) {
+		throw error(500, { message: 'database error: ' + (e as string) });
+	}
 }

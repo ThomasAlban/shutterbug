@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
 	import FormButton from '$lib/components/FormButton.svelte';
 	import FriendButtons from '$lib/components/FriendButtons.svelte';
 	import PhotoSubmission from '$lib/components/PhotoSubmission.svelte';
@@ -64,8 +63,9 @@
 			{/if}
 		</h1>
 	</div>
-
-	<FriendButtons {user} {friendStatus} type="text" />
+	{#if friendStatus !== 'self'}
+		<FriendButtons {user} {friendStatus} type="text" />
+	{/if}
 
 	<p>
 		{#if accountCreated}
@@ -80,11 +80,12 @@
 			{/if}
 			ago
 		{/if}
-		{#if submissionsCount}
-			<!-- note: &nbsp means whitespace character -->
-			&nbsp·&nbsp {submissionsCount} submission{submissionsCount > 1 ? 's' : ''}
-		{/if}
+		<!-- note: &nbsp means whitespace character -->
+		&nbsp·&nbsp {submissionsCount > 0 ? submissionsCount : 'No'} submission{submissionsCount == 1 ? '' : 's'}
 	</p>
+	{#if (friendStatus === 'friends' || friendStatus === 'incomingRequest' || friendStatus === 'self') && submissionsCount}
+		<p>Past submissions:</p>
+	{/if}
 </div>
 
 {#if userData.reported === 'none' && (userData.friendStatus === 'incomingRequest' || userData.friendStatus === 'friends' || userData.friendStatus === 'self')}

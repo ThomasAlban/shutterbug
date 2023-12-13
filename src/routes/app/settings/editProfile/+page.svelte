@@ -32,7 +32,12 @@
 		<h2>Profile picture</h2>
 		{#if edit === 'profilePicture'}
 			<div class="form-container">
-				<UploadWidget success={form?.uploadSuccess} successMsg="Profile picture changed!" errorMsg={form?.message} />
+				<UploadWidget
+					success={form?.uploadSuccess}
+					successMsg="Profile picture changed!"
+					errorMsg={form?.message}
+					previewShape="circle"
+				/>
 			</div>
 		{:else}
 			<Button invertColor={true} on:click={() => (edit = 'profilePicture')}>Edit</Button>
@@ -162,6 +167,8 @@
 		padding: 1rem;
 	}
 	.form-container {
+		display: flex;
+		justify-content: center;
 		padding: 1rem;
 		line-height: 3rem;
 	}
