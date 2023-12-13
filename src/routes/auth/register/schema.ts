@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+// this schema defines the structure of the register form, it will be used to check if the form the user submits is valid
 export const registerSchema = z.object({
 	username: z
 		.string({ required_error: 'Username is required' })

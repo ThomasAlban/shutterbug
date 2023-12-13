@@ -1065,6 +1065,15 @@ export async function getRandomFriendPhotoSubmission(
 
 	return photoSubmission;
 }
+export async function getRandomPhotoSubmission() {
+	try {
+		// select a random photo submission from the database, raw query because prisma doesn't support this
+		let result: Photo[] = await db.$queryRaw`SELECT * FROM "Photo" ORDER BY random() LIMIT 1`;
+		return result[0];
+	} catch (e) {
+		throw error(500, { message: 'database error: ' + (e as string) });
+	}
+}
 export async function deleteSubmission(userID: string, themeID: string) {
 	try {
 		await db.photo.delete({

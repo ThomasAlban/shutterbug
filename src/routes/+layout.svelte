@@ -4,8 +4,10 @@
 
 <div class="background">
 	<div class="app-container">
+		<!-- the app gets slotted in here -->
 		<slot />
 
+		<!-- this handles displaying any toasts which need to be displayed -->
 		<ToastContainer placement="top-center" let:data>
 			<FlatToast {data} />
 		</ToastContainer>
@@ -27,7 +29,7 @@
 		--rem-vw-ratio: 3.5;
 	}
 
-	/* formsnap stuff */
+	/* formsnap label */
 	:global([data-fs-label]) {
 		--size: 2;
 		--line-height: 2;
@@ -39,6 +41,7 @@
 
 		color: var(--orange);
 	}
+	/* formsnap text input */
 	:global([data-fs-input]) {
 		--size: 1.5;
 		font-size: min(calc(var(--size) * 1rem), calc(var(--size) * var(--rem-vw-ratio) * 1vw));
@@ -52,9 +55,11 @@
 		outline: none;
 		box-shadow: 0 0.2rem 0.5rem 0 rgb(0, 0, 0);
 	}
+	/* formsnap focussed text input */
 	:global([data-fs-input]:focus) {
 		border: 0.15rem solid #555;
 	}
+	/* formsnap validation error message */
 	:global([data-fs-validation]) {
 		--size: 1;
 		--line-height: 1;
@@ -66,6 +71,7 @@
 		font-family: 'Merriweather-BlackItalic';
 	}
 
+	/* global styles of commonly used stuff*/
 	:global(p) {
 		--size: 1.25;
 		--line-height: 2;
@@ -145,6 +151,8 @@
 		/* if you overscroll you will see black */
 		background-color: black;
 	}
+
+	/* if we add a div containing the id #noscroll, then scrolling won't work on this page */
 	:global(#noscroll) {
 		display: none;
 	}

@@ -1,5 +1,6 @@
 <script lang="ts">
 	export let url: string | null;
+	export let centerContents = true;
 	// this splits up the URL into an array containing each part seperated by a '/'
 	// then inserts an 'e_blur' url parameter so that cloudinary returns a blurred version of the img
 	// then puts the url back together into a string with '/' dividing each part of the url
@@ -14,7 +15,7 @@
 </script>
 
 <div class="background" style="--url: url({url})">
-	<div class="blur">
+	<div class="blur {centerContents ? 'center-contents' : ''}">
 		<slot />
 	</div>
 </div>
@@ -37,9 +38,10 @@
 	.blur {
 		backdrop-filter: blur(10px) brightness(75%);
 		width: 100%;
-		padding: 3rem;
+		/* padding: 3rem; */
 		box-sizing: border-box;
-
+	}
+	.center-contents {
 		display: flex;
 		justify-content: center;
 		align-items: center;

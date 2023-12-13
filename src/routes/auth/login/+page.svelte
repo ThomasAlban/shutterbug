@@ -5,8 +5,11 @@
 	import { page } from '$app/stores';
 	import { toasts } from 'svelte-toasts';
 
+	// set this variable to whether or not there is a 'registerSuccess' URL param
+	// this URL param is set when we are successfully redirected from the register page
 	const registerSuccess = $page.url.searchParams.has('registerSuccess');
 
+	// add a toast if there is a registerSuccess url param
 	if (registerSuccess)
 		toasts.add({
 			title: 'Regestration success',
@@ -17,12 +20,14 @@
 
 	export let data;
 
+	// variable set to true on form submit and false on result. Used to display a loading spinner on the button if true
 	let loading = false;
 </script>
 
 <div class="auth-wrapper">
 	<h1 class="orange-text">Login</h1>
 
+	<!-- this is the login form -->
 	<Form.Root
 		form={data.form}
 		schema={loginSchema}
@@ -33,8 +38,11 @@
 		}}
 	>
 		<Form.Field {config} name="username">
+			<!-- form field label -->
 			<Form.Label>Username:</Form.Label> <br />
+			<!-- if there are any validation errors, these will be displayed here -->
 			<Form.Validation />
+			<!-- form field input -->
 			<Form.Input type="text" />
 		</Form.Field>
 		<br />
@@ -46,6 +54,7 @@
 		</Form.Field>
 		<br />
 
+		<!-- submit button -->
 		<div class="auth-submit-container">
 			<Button type="submit" {loading}>Log in</Button>
 		</div>
@@ -55,5 +64,7 @@
 		<Button link="/auth/register" invertColor={true}>Register</Button>
 		<br />
 		<Button link="/auth/forgot" invertColor={true}>Forgot credentials</Button>
+		<br />
+		<Button link="/" invertColor={true}>Home</Button>
 	</div>
 </div>
