@@ -1,7 +1,9 @@
 <script lang="ts">
 	export let type: 'button' | 'submit' | 'reset' | null | undefined = 'button';
 
+	// various customisation options for the button
 	export let invertColor = false;
+	// the bnutton can act both as a button and a link (a tag)
 	export let link: string | undefined = undefined;
 	export let loading = false;
 	export let disabled = false;
@@ -13,12 +15,15 @@
 
 	let slot: HTMLDivElement | undefined;
 
+	// save the width and height of the button so that when we are loading we can retain the button's
+	// width and height even though the loading spinner will be smaller than that
 	$: if (slot) {
 		width = slot.clientWidth;
 		height = slot.clientHeight;
 	}
 </script>
 
+<!-- here we pass variables from javascript to css so they can be used to style the button accordingly -->
 <div
 	class="button-wrapper"
 	style="
@@ -31,10 +36,12 @@
     "
 >
 	{#if link}
+		<!-- if we have provided a link then the button needs to be an a tag -->
 		<a on:click class="btn" href={link} style="cursor: pointer;">
 			<slot />
 		</a>
 	{:else}
+		<!-- otherwise the button needs to be a button -->
 		<button
 			on:click
 			disabled={loading || disabled}
@@ -43,11 +50,13 @@
 			style={loading || disabled ? '' : 'cursor: pointer;'}
 		>
 			{#if loading}
+				<!-- display the loading spinner if we are loading -->
 				<div class="spinner-container" style={width && height ? `width: ${width}px; height: ${height}px` : ''}>
 					<div class="loading-spinner" />
 				</div>
 			{:else}
 				<div class="slot" bind:this={slot}>
+					<!-- if we are not loading, slot any sub components in here -->
 					<slot />
 				</div>
 			{/if}
@@ -70,6 +79,7 @@
 		font-family: 'Merriweather-BoldItalic';
 		display: inline-block;
 
+		/* make the button fully rounded */
 		border-radius: 500px;
 
 		border: 1px solid transparent;
@@ -84,6 +94,7 @@
 		padding: 0.2rem 1rem 0.2rem 1rem;
 	}
 
+	/* a loading spinner class that is displayed when 'loading' is set to true */
 	.loading-spinner {
 		height: 1em;
 		width: 1em;
@@ -96,6 +107,8 @@
 		animation: 0.75s linear 0s infinite normal none running rotate;
 		margin: 0;
 	}
+
+	/* rotates the loading spinner */
 	@keyframes rotate {
 		0% {
 			transform: rotate(0);
@@ -104,7 +117,7 @@
 			transform: rotate(360deg);
 		}
 	}
-
+	/* make sure any slotted items are center aligned */
 	.slot {
 		display: flex;
 		justify-content: center;

@@ -72,6 +72,8 @@
 	}
 
 	/* global styles of commonly used stuff*/
+	/* for all the text html tags, I define 'size' and 'line height' which are both calculated 
+    based on the rem-vw-ratio. This means the text will start to shrink when the viewport is below a certain width*/
 	:global(p) {
 		--size: 1.25;
 		--line-height: 2;
@@ -101,7 +103,6 @@
 		font-size: min(calc(var(--size) * 1rem), calc(var(--size) * var(--rem-vw-ratio) * 1vw));
 		line-height: min(calc(var(--line-height) * 1rem), calc(var(--line-height) * var(--rem-vw-ratio) * 1vw));
 		margin: 0;
-		color: --orange;
 	}
 
 	:global(.orange-text) {
@@ -144,7 +145,9 @@
 		align-items: center;
 	}
 	.app-container {
+		/* make sure the app container is no bigger than the maximum width defined */
 		width: min(100%, var(--max-app-width));
+		/* 100dvh (dynamic viewport height) accounts for ios and android devices having address bars */
 		min-height: 100dvh;
 		box-shadow: 0 0 3rem 0.5rem;
 		line-height: 2rem;
