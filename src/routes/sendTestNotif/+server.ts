@@ -5,11 +5,13 @@ export async function GET(event) {
 	let user = event.locals.user;
 	if (!user) return new Response('no user', { status: 400 });
 
+	console.log('a');
+
 	let subscription = await db.getPushSubscription(user.userID);
-
+	console.log('b');
 	if (!subscription) return new Response('no sub', { status: 400 });
-
-	sendNotification(subscription, 'hi');
-
+	console.log('c');
+	await sendNotification(subscription, 'hi');
+	console.log('d');
 	return new Response('success', { status: 200 });
 }
