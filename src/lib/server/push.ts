@@ -6,10 +6,12 @@ import * as db from '$lib/server/db';
 push.setVapidDetails('mailto:user@me.com', PUBLIC_VAPID_KEY, PRIVATE_VAPID_KEY);
 
 export async function sendNotification(userID: string, data: { title: string; body: string }) {
-	let subscription = await db.getPushSubscription(userID);
-	if (!subscription) return false;
+	let subscriptions = await db.getPushSubscriptions(userID);
+	if (!subscriptions) return false;
 
-	await push.sendNotification(subscription, JSON.stringify(data));
+	for (const subscription of subscriptions) {
+		await push.sendNotification(subscription, JSON.stringify(data));
+	}
 	return true;
 }
 

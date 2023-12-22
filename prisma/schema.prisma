@@ -112,8 +112,10 @@ model ResetToken {
 
 model PushSubscription {
     user     User   @relation(fields: [userID], references: [userID])
-    userID   String @id
+    userID   String
     endpoint String
     p256dh   String
     auth     String
+
+    @@id([userID, endpoint])
 }

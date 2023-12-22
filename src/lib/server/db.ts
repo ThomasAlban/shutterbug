@@ -1105,10 +1105,6 @@ export async function deleteSubmission(userID: string, themeID: string) {
 }
 export async function setPushSubscription(userID: string, subscription: push.PushSubscription) {
 	try {
-		let subscriptionExists = await db.pushSubscription.findUnique({ where: { userID } });
-		if (subscriptionExists) {
-			await db.pushSubscription.delete({ where: { userID } });
-		}
 		await db.pushSubscription.create({
 			data: {
 				userID,
@@ -1122,18 +1118,17 @@ export async function setPushSubscription(userID: string, subscription: push.Pus
 	}
 }
 
-export async function getPushSubscription(userID: string) {
+export async function getPushSubscriptions(userID: string) {
 	try {
-		let res = await db.pushSubscription.findUnique({ where: { userID } });
+		let res = await db.pushSubscription.findMany({ where: { userID } });
 		if (!res) return null;
-		let subscription = {
-			endpoint: res.endpoint,
-			keys: {
-				auth: res.auth,
-				p256dh: res.p256dh
-			}
-		};
-		return subscription;
+		let subscriptions = res.map((e) => {
+			return {
+				endpoint: e.endpoint,
+				keys: { auth: e.auth, p256dh: e.p256dh }
+			};
+		});
+		return subscriptions;
 	} catch (e) {
 		throw error(500, { message: 'database error: ' + (e as string) });
 	}
