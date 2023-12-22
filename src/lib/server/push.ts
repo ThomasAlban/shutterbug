@@ -22,18 +22,13 @@ export async function sendNotification(userID: string, data: { title: string; bo
 export async function sendNotificationToAll(data: { title: string; body: string }) {
 	let subscriptions = await db.getAllPushSubscriptions();
 
-	let sendNotifs = [];
 	for (const subscription of subscriptions) {
-		let sendNotif = async () => {
-			try {
-				await push.sendNotification(subscription, JSON.stringify(data));
-			} catch (e) {
-				await db.deletePushSubscription(subscription.userID, subscription.endpoint);
-			}
-		};
-		sendNotifs.push(sendNotif);
+		try {
+			await push.sendNotification(subscription, JSON.stringify(data));
+		} catch (e) {
+			await db.deletePushSubscription(subscription.userID, subscription.endpoint);
+		}
 	}
-	await Promise.all(sendNotifs);
 
 	return true;
 }

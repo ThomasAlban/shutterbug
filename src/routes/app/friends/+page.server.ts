@@ -2,6 +2,7 @@ import * as db from '$lib/server/db';
 import { fail } from '@sveltejs/kit';
 import { setError, superValidate } from 'sveltekit-superforms/server';
 import { searchSchema } from './schema';
+import { sendNotification } from '$lib/server/push';
 
 export async function load(event) {
 	const [friendData, searchForm] = await Promise.all([
@@ -51,5 +52,10 @@ export const actions = {
 		}
 
 		await db.sendFriendRequest(event.locals.user!.userID, id);
+
+		await sendNotification(id, {
+			title: `Friend request from ${event.locals.user!.username}`,
+			body: `Accept ${event.locals.user!.username}'s friend request!`
+		});
 	}
 };

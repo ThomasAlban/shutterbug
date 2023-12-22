@@ -56,10 +56,6 @@
 		notificationsAllowed = Notification.permission === 'granted';
 		successToast('Success', 'You can now receive notifications!');
 	}
-
-	async function sendNotification() {
-		const res = await fetch('/sendTestNotif');
-	}
 </script>
 
 <div class="wrapper">
@@ -103,8 +99,7 @@
 			{/if}
 
 			{#if currentTheme}
-				<!-- say 'until photo submission', and what the current theme is -->
-				<p>until photo submission!</p>
+				<p>until the photo submission deadline!</p>
 				<p>The theme is:</p>
 				<h1>{currentTheme.theme}</h1>
 				<!-- link to submit photo for theme -->
@@ -147,10 +142,6 @@
 			<Button on:click={allowNotifications}>Allow</Button>
 		</div>
 	{/if}
-
-	<div class="test">
-		<Button on:click={sendNotification}>Send Test Notification</Button>
-	</div>
 
 	<!-- blurred background section that takes up the rest of the page -->
 	<div class="blurbg-container">

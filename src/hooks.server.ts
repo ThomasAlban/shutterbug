@@ -1,5 +1,22 @@
 import * as jwt from '$lib/server/jwt';
 import { redirect } from '@sveltejs/kit';
+import { schedule } from 'node-cron';
+import * as db from '$lib/server/db';
+import { sendNotificationToAll } from '$lib/server/push';
+
+let prevCurrentThemeID: string;
+// run this function every hour to check if there is a new theme
+schedule('0 */1 * * *', async () => {
+	let currentTheme = await db.getCurrentTheme(new Date());
+	if (!currentTheme) return;
+	if (currentTheme.themeID !== prevCurrentThemeID) {
+		sendNotificationToAll({
+			title: `New theme: ${currentTheme.theme}`,
+			body: "You can now also vote on your friends' submissions from last week!"
+		});
+	}
+	prevCurrentThemeID = currentTheme.themeID;
+});
 
 // this function is run on every request
 export async function handle({ event, resolve }) {
