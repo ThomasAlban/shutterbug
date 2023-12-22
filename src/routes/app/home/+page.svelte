@@ -139,14 +139,14 @@
 		{/if}
 	</div>
 
-	<div class="notif-request">
+	<!-- <div class="notif-request">
 		<p>Allow notifications to keep up to date with themes!</p>
-		<!-- <Button on:click={allowNotifications}>Allow</Button> -->
+		<Button on:click={allowNotifications}>Allow</Button>
 	</div>
 
 	<div class="test">
-		<!-- <Button on:click={sendNotification}>Send Test Notification</Button> -->
-	</div>
+		<Button on:click={sendNotification}>Send Test Notification</Button>
+	</div> -->
 
 	<!-- blurred background section that takes up the rest of the page -->
 	<div class="blurbg-container">
