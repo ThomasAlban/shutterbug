@@ -10,7 +10,10 @@ export async function sendNotification(userID: string, data: { title: string; bo
 	if (!subscriptions) return false;
 
 	for (const subscription of subscriptions) {
-		await push.sendNotification(subscription, JSON.stringify(data));
+		let res = await push.sendNotification(subscription, JSON.stringify(data));
+		if (res.statusCode == 410) {
+			await db.deletePushSubscription(userID, subscription.endpoint);
+		}
 	}
 	return true;
 }

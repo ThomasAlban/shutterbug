@@ -1148,3 +1148,11 @@ export async function getAllPushSubscriptions() {
 		throw error(500, { message: 'database error: ' + (e as string) });
 	}
 }
+
+export async function deletePushSubscription(userID: string, endpoint: string) {
+	try {
+		await db.pushSubscription.delete({ where: { userID_endpoint: { userID, endpoint } } });
+	} catch (e) {
+		throw error(500, { message: 'database error: ' + (e as string) });
+	}
+}
