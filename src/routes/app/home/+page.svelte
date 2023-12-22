@@ -54,7 +54,9 @@
 	}
 
 	async function sendNotification() {
-		await fetch('/sendTestNotif');
+		console.log('fetching send notif');
+		const res = await fetch('/sendTestNotif');
+		console.log('res: ', res);
 	}
 </script>
 
