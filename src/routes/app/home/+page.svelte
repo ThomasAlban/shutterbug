@@ -4,7 +4,7 @@
 	import BlurBgImg from '$lib/components/BlurBGImg.svelte';
 	import Button from '$lib/components/Button.svelte';
 	import FormButton from '$lib/components/FormButton.svelte';
-	import { getTimeFromOrToNow } from '$lib/util';
+	import { getTimeFromOrToNow, successToast } from '$lib/util';
 	import { PUBLIC_VAPID_KEY } from '$env/static/public';
 
 	// this is the data returned from the load function
@@ -38,6 +38,8 @@
 	}
 	let deleteSubmissionConfirm = false;
 
+	$: notificationsAllowed = browser ? Notification.permission === 'granted' : true;
+
 	async function allowNotifications() {
 		let sw = await navigator.serviceWorker.ready;
 		let subscription = await sw.pushManager.subscribe({
@@ -51,12 +53,8 @@
 			},
 			body: JSON.stringify(subscription)
 		});
-	}
-
-	async function sendNotification() {
-		console.log('fetching send notif');
-		const res = await fetch('/sendTestNotif');
-		console.log('res: ', res);
+		notificationsAllowed = Notification.permission === 'granted';
+		successToast('Success', 'You can now receive notifications!');
 	}
 </script>
 
@@ -139,14 +137,12 @@
 		{/if}
 	</div>
 
-	<div class="notif-request">
-		<p>Allow notifications to keep up to date with themes!</p>
-		<Button on:click={allowNotifications}>Allow</Button>
-	</div>
-
-	<div class="test">
-		<Button on:click={sendNotification}>Send Test Notification</Button>
-	</div>
+	{#if !notificationsAllowed}
+		<div class="notif-request">
+			<p>Allow notifications to keep up to date with themes!</p>
+			<Button on:click={allowNotifications}>Allow</Button>
+		</div>
+	{/if}
 
 	<!-- blurred background section that takes up the rest of the page -->
 	<div class="blurbg-container">

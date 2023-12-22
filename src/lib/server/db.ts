@@ -1138,3 +1138,18 @@ export async function getPushSubscription(userID: string) {
 		throw error(500, { message: 'database error: ' + (e as string) });
 	}
 }
+
+export async function getAllPushSubscriptions() {
+	try {
+		let res = await db.pushSubscription.findMany();
+		let subscriptions = res.map((e) => {
+			return {
+				endpoint: e.endpoint,
+				keys: { auth: e.auth, p256dh: e.p256dh }
+			};
+		});
+		return subscriptions;
+	} catch (e) {
+		throw error(500, { message: 'database error: ' + (e as string) });
+	}
+}
