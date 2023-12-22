@@ -7,6 +7,6 @@ export async function GET(event) {
 	let subscription = await db.getPushSubscription(event.locals.user.userID);
 	if (!subscription) return new Response('no sub', { status: 400 });
 
-	await sendNotification(subscription, 'hi');
+	await sendNotification(subscription, { title: 'Test Notification', body: 'this is the body' });
 	return new Response('success', { status: 200 });
 }
