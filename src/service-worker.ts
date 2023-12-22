@@ -5,9 +5,16 @@ const sw = self as unknown as ServiceWorkerGlobalScope;
 
 sw.addEventListener('push', (e) => {
 	const payload = e.data?.text() ?? '';
-	sw.registration.showNotification('Shutterbug', {
+
+	let title = 'Shutterbug';
+	let body = '';
+
+	try {
+		({ title, body } = JSON.parse(payload));
+	} catch {}
+
+	sw.registration.showNotification(title, {
 		icon: 'icon192.png',
-		body: payload,
-		vibrate: [200, 200, 100, 100, 100, 100, 200, 200, 200, 200]
+		body
 	});
 });
