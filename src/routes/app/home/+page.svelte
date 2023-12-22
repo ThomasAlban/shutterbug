@@ -56,6 +56,10 @@
 		notificationsAllowed = Notification.permission === 'granted';
 		successToast('Success', 'You can now receive notifications!');
 	}
+
+	async function sendNotification() {
+		const res = await fetch('/sendTestNotif');
+	}
 </script>
 
 <div class="wrapper">
@@ -143,6 +147,10 @@
 			<Button on:click={allowNotifications}>Allow</Button>
 		</div>
 	{/if}
+
+	<div class="test">
+		<Button on:click={sendNotification}>Send Test Notification</Button>
+	</div>
 
 	<!-- blurred background section that takes up the rest of the page -->
 	<div class="blurbg-container">
