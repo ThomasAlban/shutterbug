@@ -1,8 +1,6 @@
 <script lang="ts">
 	import type { ClientUser, FriendStatus } from '$lib/server/db';
 	import ProfilePicture from './ProfilePicture.svelte';
-	import FormButton from './FormButton.svelte';
-	import { toasts } from 'svelte-toasts';
 	import { onMount } from 'svelte';
 	import FriendButtons from './FriendButtons.svelte';
 	import { vw2px } from '$lib/util';
@@ -53,6 +51,7 @@
 	}
 </script>
 
+<!-- get the outer width of the window -->
 <svelte:window bind:outerWidth={windowWidth} />
 
 <div
@@ -78,6 +77,7 @@
 	a {
 		color: inherit;
 		text-decoration: none;
+		/* calculate the font size based on the size prop, and how much needs to be subtracted (from the updateWidth function) */
 		font-size: calc(min(calc(var(--size) * 1rem), calc(var(--size) * var(--rem-vw-ratio) * 1vw)) - var(--font-sub));
 	}
 	.content {
@@ -96,6 +96,7 @@
 		font-size: min(calc(var(--size) * 1rem), calc(var(--size) * var(--rem-vw-ratio) * 1vw));
 		line-height: min(calc(var(--size) * 1.4 * 1rem), calc(var(--size) * 1.4 * var(--rem-vw-ratio) * 1vw));
 
+		/* make sure the user widget does not go above the max width prop */
 		max-width: var(--max-width);
 
 		font-family: 'Merriweather-BoldItalic';
@@ -103,6 +104,7 @@
 
 		color: var(--orange);
 
+		/* make corners rounded */
 		border-radius: 500px;
 
 		border: 1px solid transparent;
@@ -112,6 +114,7 @@
 		color: var(--text-color);
 		background-color: var(--background-color);
 
+		/* calculare the box shadow based on the size so that it scales correctly */
 		box-shadow: 0 calc(var(--size) * 0.2rem) calc(var(--size) * 0.3rem) 1px rgb(50, 50, 50);
 
 		--p-hor-val: 1;

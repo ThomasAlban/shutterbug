@@ -3,7 +3,6 @@
 </script>
 
 <!-- this displays the top navbar on all routes starting with '/auth' -->
-
 <NavbarTop />
 
 <div class="content-container">

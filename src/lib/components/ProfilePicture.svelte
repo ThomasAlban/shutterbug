@@ -4,7 +4,7 @@
 	export let imgWidth = 75;
 
 	if (src) {
-		// add cloudinary url params
+		// split the url and add url parameters so that the image is sent back from cloudinary at the specified width
 		let urlArr = src.split('/');
 		let uploadIx = urlArr.findIndex((e) => e === 'upload');
 		urlArr.splice(uploadIx + 1, 0, `w_${imgWidth},q_auto:good,f_auto`);
@@ -18,8 +18,10 @@
 <style>
 	img {
 		object-fit: cover;
+		/* make it into a circle */
 		border-radius: 50%;
 		border: 1px solid black;
+		/* fallback if the image hasn't loaded yet */
 		background-color: grey;
 	}
 </style>

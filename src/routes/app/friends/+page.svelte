@@ -11,6 +11,7 @@
 	let maxWidthRem = 25;
 </script>
 
+<!-- find friends search container -->
 <div class="orange" style="text-align: center;">
 	<div class="search-container">
 		<Form.Root form={data.searchForm} schema={searchSchema} action="?/search" let:config style="display: contents;">
@@ -20,7 +21,7 @@
 			<Button type="submit" invertColor={true}>Go</Button>
 		</Form.Root>
 	</div>
-
+	<!-- display the search results if there are any -->
 	{#if form?.searchResult}
 		{#if form.searchResult.length > 0}
 			<div class="users-container">
@@ -34,9 +35,8 @@
 		<br />
 	{/if}
 </div>
-
 <br />
-
+<!-- display incoming friend requests if there are any -->
 {#if incomingFriendRequests.length > 0}
 	<div class="users-container">
 		<h3>Incoming Friend Requests</h3>
@@ -45,17 +45,16 @@
 		{/each}
 	</div>
 {/if}
-
+<!-- display each of the user's friends -->
 <div class="users-container">
 	<h3>Friends</h3>
-
 	{#each friends as user}
 		<UserWidget {user} friendStatus="friends" {maxWidthRem} />
 	{:else}
 		None
 	{/each}
 </div>
-
+<!-- display outgoing friend requests if there are any -->
 {#if outgoingFriendRequests.length > 0}
 	<div class="users-container">
 		<h3>Outgoing Friend Requests</h3>

@@ -3,20 +3,14 @@
 	import { Form } from 'formsnap';
 	import { loginSchema } from './schema';
 	import { page } from '$app/stores';
-	import { toasts } from 'svelte-toasts';
+	import { successToast } from '$lib/util';
 
 	// set this variable to whether or not there is a 'registerSuccess' URL param
 	// this URL param is set when we are successfully redirected from the register page
 	const registerSuccess = $page.url.searchParams.has('registerSuccess');
 
 	// add a toast if there is a registerSuccess url param
-	if (registerSuccess)
-		toasts.add({
-			title: 'Regestration success',
-			description: 'Now you can log in!',
-			placement: 'bottom-center',
-			type: 'success'
-		});
+	if (registerSuccess) successToast('Registration success', 'Now you can log in!');
 
 	export let data;
 
@@ -60,6 +54,7 @@
 		</div>
 	</Form.Root>
 
+	<!-- links to register, forgot password, and home pages -->
 	<div class="auth-links">
 		<Button link="/auth/register" invertColor={true}>Register</Button>
 		<br />

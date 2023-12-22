@@ -31,7 +31,8 @@ model User {
     voter Vote[] @relation("voter")
     votee Vote[] @relation("votee")
 
-    ResetToken ResetToken?
+    ResetToken       ResetToken?
+    PushSubscription PushSubscription[]
 }
 
 model Friend {
@@ -107,4 +108,12 @@ model ResetToken {
 
     token  String
     expiry DateTime
+}
+
+model PushSubscription {
+    user     User   @relation(fields: [userID], references: [userID])
+    userID   String @id
+    endpoint String
+    p256dh   String
+    auth     String
 }

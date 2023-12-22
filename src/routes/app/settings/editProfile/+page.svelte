@@ -8,22 +8,28 @@
 
 	export let data;
 
+	// stores whether any of the forms are currently loading
 	let loading = {
 		username: false,
 		email: false,
 		password: false
 	};
 
+	// enum of which thing we are currently editing
 	let edit: 'profilePicture' | 'username' | 'email' | 'password' | undefined = undefined;
+
+	// create toasts if any form is successful
 	$: if (form?.uploadSuccess) successToast('Successfully updated profile picture');
 	$: if (form?.usernameSuccess) successToast(`Successfully updated username to ${form.newUsername}`);
 	$: if (form?.emailSuccess) successToast('`Successfully updated email to ${form.newEmail}`');
 	$: if (form?.passwordSuccess) successToast('Successfully updated password');
 
+	// set it so we are not currently editing anything when a form is successful
 	$: if (form?.uploadSuccess || form?.usernameSuccess || form?.emailSuccess || form?.passwordSuccess) edit = undefined;
 </script>
 
 <div class="wrapper">
+	<!-- heading -->
 	<div class="orange">
 		<h1>Edit Profile</h1>
 	</div>
@@ -44,6 +50,9 @@
 		{/if}
 	</div>
 
+	<!-- below are each edit form. Each one is only shown if the edit variable is set to that particular form -->
+	<!-- if the form is not shown, a button is instead shown which, when clicked, sets edit to be that form -->
+	<!-- this means only 1 part of the profile can be edited at once -->
 	<div class="edit-container">
 		<h2>Username</h2>
 		{#if edit === 'username'}

@@ -2,7 +2,8 @@
 	export let url: string | null;
 	export let centerContents = true;
 	// this splits up the URL into an array containing each part seperated by a '/'
-	// then inserts an 'e_blur' url parameter so that cloudinary returns a blurred version of the img
+	// then inserts url parameters to make cloudinary return a low quality version of the image
+	// (we don't need high quality as it will be blurred anyway)
 	// then puts the url back together into a string with '/' dividing each part of the url
 	if (url == null) {
 		url = '';
@@ -14,13 +15,17 @@
 	}
 </script>
 
+<!-- displaying a blurred background image requires 2 divs - background, and blur -->
+<!-- pass in the url as a css variable to the background div -->
 <div class="background" style="--url: url({url})">
+	<!-- add the 'center-contents' class to this div if the prop is set to true -->
 	<div class="blur {centerContents ? 'center-contents' : ''}">
 		<slot />
 	</div>
 </div>
 
 <style>
+	/* background div is responsible for displaying the image itself */
 	.background {
 		height: 100%;
 		background-image: var(--url);
@@ -35,6 +40,7 @@
 		display: flex;
 		flex: 1 1 auto;
 	}
+	/* blur is overlayed on top and is responsible for blurring the image */
 	.blur {
 		backdrop-filter: blur(10px) brightness(75%);
 		width: 100%;

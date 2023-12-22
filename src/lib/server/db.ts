@@ -1,4 +1,5 @@
 import { PrismaClient, type User, type Theme, type Photo } from '@prisma/client';
+import type push from 'web-push';
 
 import bcrypt from 'bcrypt';
 
@@ -1098,6 +1099,41 @@ export async function deleteSubmission(userID: string, themeID: string) {
 				userID_themeID: { userID, themeID }
 			}
 		});
+	} catch (e) {
+		throw error(500, { message: 'database error: ' + (e as string) });
+	}
+}
+export async function setPushSubscription(userID: string, subscription: push.PushSubscription) {
+	try {
+		let subscriptionExists = await db.pushSubscription.findUnique({ where: { userID } });
+		if (subscriptionExists) {
+			await db.pushSubscription.delete({ where: { userID } });
+		}
+		await db.pushSubscription.create({
+			data: {
+				userID,
+				endpoint: subscription.endpoint,
+				p256dh: subscription.keys.p256dh,
+				auth: subscription.keys.auth
+			}
+		});
+	} catch (e) {
+		throw error(500, { message: 'database error: ' + (e as string) });
+	}
+}
+
+export async function getPushSubscription(userID: string) {
+	try {
+		let res = await db.pushSubscription.findUnique({ where: { userID } });
+		if (!res) return null;
+		let subscription = {
+			endpoint: res.endpoint,
+			keys: {
+				auth: res.auth,
+				p256dh: res.p256dh
+			}
+		};
+		return subscription;
 	} catch (e) {
 		throw error(500, { message: 'database error: ' + (e as string) });
 	}

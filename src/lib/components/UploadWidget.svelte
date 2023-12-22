@@ -3,9 +3,12 @@
 	import Button from './Button.svelte';
 
 	export let success = false;
+	// allows the user of the component to define custom success/error messages
 	export let successMsg = 'Upload successful!';
-	export let successFn: VoidFunction = () => {};
 	export let errorMsg: string | undefined = undefined;
+	// function passed in which is called when the upload is successful
+	export let successFn: VoidFunction = () => {};
+	// show the preview either as a circle as a square
 	export let previewShape: 'circle' | 'square' = 'square';
 
 	let loading = false;
@@ -17,7 +20,9 @@
 
 	let showImage = false;
 
+	// this function is run when the input changes (i.e. a file is selected)
 	function onChange() {
+		// if there are no files return, else set 'file' to be the input file
 		if (!input?.files) return;
 		const file = input.files[0];
 
@@ -25,6 +30,7 @@
 			showImage = true;
 			fileSelected = true;
 
+			// read the file, and set the src of the preview image div to be this file
 			const reader = new FileReader();
 			reader.addEventListener('load', () => {
 				let result = reader.result;
@@ -40,23 +46,29 @@
 </script>
 
 <div class="upload-widget">
+	<!-- if there is a preview, show the preview -->
 	{#if imgSrc}
 		<div class="photo {previewShape == 'circle' ? 'circle' : ''}" style="background-image: url({imgSrc});" />
 	{/if}
+	<!-- form responsible for receiving the image-->
 	<form
 		method="post"
 		action="?/upload"
 		enctype="multipart/form-data"
 		use:enhance={() => {
+			// set loading to true when the form is submitted
 			loading = true;
 			return (e) =>
 				e.update().then(() => {
+					// when the form returns, set loading to false and call the passed in function
 					loading = false;
 					successFn();
 				});
 		}}
 	>
+		<!-- the label is the part which will be styled to look like a button -->
 		<label for="image-upload" id="image-upload-label" style={loading || success ? '' : 'cursor: pointer;'}>
+			<!-- display the appropriate message -->
 			{#if success}
 				{successMsg}
 			{:else if errorMsg}
@@ -67,6 +79,7 @@
 				Choose image
 			{/if}
 		</label>
+		<!-- this input will be hidden in the ui -->
 		<input
 			id="image-upload"
 			type="file"
@@ -84,6 +97,7 @@
 </div>
 
 <style>
+	/* overall container */
 	.upload-widget {
 		display: flex;
 		flex-direction: column;
@@ -95,7 +109,6 @@
 		flex-direction: column;
 		gap: 0;
 	}
-
 	input[type='file'] {
 		/* done this instead of setting display to none so you can still tab to the element */
 		position: absolute;
@@ -108,6 +121,7 @@
 		clip-path: inset(50%);
 		border: 0;
 	}
+	/* image upload label, the visible part of the ui */
 	#image-upload-label {
 		--size: 1.75;
 		--background-color: #fff;
@@ -120,6 +134,7 @@
 		font-family: 'Merriweather-BoldItalic';
 		display: inline-block;
 
+		/* rounded border */
 		border-radius: 500px;
 
 		border: 1px solid transparent;
@@ -138,7 +153,7 @@
 		display: flex;
 		gap: 1rem;
 	}
-
+	/* the preview photo, shown when the user selects an image for upload */
 	.photo {
 		border: 2px solid black;
 		width: 100%;
@@ -148,6 +163,7 @@
 		background-clip: border-box;
 		background-position: center;
 	}
+	/* this class is activated if the previewShape is set to 'circle' */
 	.circle {
 		border-radius: 5000px;
 	}
