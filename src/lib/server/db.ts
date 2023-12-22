@@ -1140,7 +1140,8 @@ export async function getAllPushSubscriptions() {
 		let subscriptions = res.map((e) => {
 			return {
 				endpoint: e.endpoint,
-				keys: { auth: e.auth, p256dh: e.p256dh }
+				keys: { auth: e.auth, p256dh: e.p256dh },
+				userID: e.userID
 			};
 		});
 		return subscriptions;

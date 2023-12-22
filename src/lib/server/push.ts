@@ -10,8 +10,9 @@ export async function sendNotification(userID: string, data: { title: string; bo
 	if (!subscriptions) return false;
 
 	for (const subscription of subscriptions) {
-		let res = await push.sendNotification(subscription, JSON.stringify(data));
-		if (res.statusCode == 410) {
+		try {
+			await push.sendNotification(subscription, JSON.stringify(data));
+		} catch (e) {
 			await db.deletePushSubscription(userID, subscription.endpoint);
 		}
 	}
@@ -23,7 +24,14 @@ export async function sendNotificationToAll(data: { title: string; body: string 
 
 	let sendNotifs = [];
 	for (const subscription of subscriptions) {
-		sendNotifs.push(push.sendNotification(subscription, JSON.stringify(data)));
+		let sendNotif = async () => {
+			try {
+				await push.sendNotification(subscription, JSON.stringify(data));
+			} catch (e) {
+				await db.deletePushSubscription(subscription.userID, subscription.endpoint);
+			}
+		};
+		sendNotifs.push(sendNotif);
 	}
 	await Promise.all(sendNotifs);
 
