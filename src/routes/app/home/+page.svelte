@@ -38,26 +38,26 @@
 	}
 	let deleteSubmissionConfirm = false;
 
-	// async function allowNotifications() {
-	// 	let sw = await navigator.serviceWorker.ready;
-	// 	let subscription = await sw.pushManager.subscribe({
-	// 		userVisibleOnly: true,
-	// 		applicationServerKey: PUBLIC_VAPID_KEY
-	// 	});
-	// 	await fetch('/app/home', {
-	// 		method: 'POST',
-	// 		headers: {
-	// 			'Content-Type': 'application/json'
-	// 		},
-	// 		body: JSON.stringify(subscription)
-	// 	});
-	// }
+	async function allowNotifications() {
+		let sw = await navigator.serviceWorker.ready;
+		let subscription = await sw.pushManager.subscribe({
+			userVisibleOnly: true,
+			applicationServerKey: PUBLIC_VAPID_KEY
+		});
+		await fetch('/app/home', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(subscription)
+		});
+	}
 
-	// async function sendNotification() {
-	// 	console.log('fetching send notif');
-	// 	const res = await fetch('/sendTestNotif');
-	// 	console.log('res: ', res);
-	// }
+	async function sendNotification() {
+		console.log('fetching send notif');
+		const res = await fetch('/sendTestNotif');
+		console.log('res: ', res);
+	}
 </script>
 
 <div class="wrapper">
@@ -139,14 +139,14 @@
 		{/if}
 	</div>
 
-	<!-- <div class="notif-request">
+	<div class="notif-request">
 		<p>Allow notifications to keep up to date with themes!</p>
 		<Button on:click={allowNotifications}>Allow</Button>
 	</div>
 
 	<div class="test">
 		<Button on:click={sendNotification}>Send Test Notification</Button>
-	</div> -->
+	</div>
 
 	<!-- blurred background section that takes up the rest of the page -->
 	<div class="blurbg-container">
