@@ -32,8 +32,8 @@
 			updateRemaining(currentTheme.dateEnd);
 			setInterval(updateRemaining, 1000, currentTheme.dateEnd);
 		} else if (nextTheme) {
-			updateRemaining(nextTheme.dateEnd);
-			setInterval(updateRemaining, 1000, nextTheme.dateEnd);
+			updateRemaining(nextTheme.dateStart);
+			setInterval(updateRemaining, 1000, nextTheme.dateStart);
 		}
 	}
 	let deleteSubmissionConfirm = false;
