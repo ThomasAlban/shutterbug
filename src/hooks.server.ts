@@ -2,20 +2,68 @@ import * as jwt from '$lib/server/jwt';
 import { redirect } from '@sveltejs/kit';
 import { schedule } from 'node-cron';
 import * as db from '$lib/server/db';
-import { sendNotificationToAll } from '$lib/server/push';
+import { sendNotification, sendNotificationToAll } from '$lib/server/push';
 
 let prevCurrentThemeID: string;
+let sent24HrNotif = false;
 // run this function every hour to check if there is a new theme
 schedule('0 */1 * * *', async () => {
 	let currentTheme = await db.getCurrentTheme(new Date());
 	if (!currentTheme) return;
+
 	if (currentTheme.themeID !== prevCurrentThemeID) {
 		sendNotificationToAll({
 			title: `New theme: ${currentTheme.theme}`,
 			body: "You can now also vote on your friends' submissions from last week!"
 		});
+		sent24HrNotif = false;
 	}
-	prevCurrentThemeID = currentTheme.themeID;
+
+	let timeDiff = currentTheme.dateEnd.getTime() - currentTheme.dateStart.getTime();
+	let hours = Math.floor(timeDiff / 1000 / 60 / 60);
+
+	if (hours == 24 && !sent24HrNotif) {
+		let [subscriptions, previousTheme] = await Promise.all([
+			db.getAllPushSubscriptions(),
+			db.getPreviousTheme(new Date())
+		]);
+		if (!previousTheme) return;
+
+		for (const subscription of subscriptions) {
+			let [userSubmittedPhoto, friends] = await Promise.all([
+				db.userAlreadySubmittedPhoto(subscription.userID, currentTheme.themeID),
+				db.getFriendsWithSubmissions(subscription.userID, previousTheme.themeID, true, true)
+			]);
+
+			let submissionsToVoteOn = false;
+
+			// check if there are any photo submissions from the user's friends
+			for (const friend of friends) {
+				if (friend.photoSubmission && !friend.vote?.userVote) {
+					submissionsToVoteOn = true;
+					break;
+				}
+			}
+
+			if (!userSubmittedPhoto && submissionsToVoteOn) {
+				sendNotification(subscription.userID, {
+					title: 'Only 24 hours left',
+					body: "Remember to submit a photo for the current theme, and vote on your friends' submissions from last week!"
+				});
+			} else if (!userSubmittedPhoto && !submissionsToVoteOn) {
+				sendNotification(subscription.userID, {
+					title: 'Only 24 hours left',
+					body: 'Remember to submit a photo for the current theme!'
+				});
+			} else if (userSubmittedPhoto && !submissionsToVoteOn) {
+				sendNotification(subscription.userID, {
+					title: 'Only 24 hours left',
+					body: "Remember to vote on your friends' submissions from last week!"
+				});
+			}
+		}
+		sent24HrNotif = true;
+	}
 });
 
 // this function is run on every request
