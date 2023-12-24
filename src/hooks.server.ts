@@ -6,8 +6,9 @@ import { sendNotification, sendNotificationToAll } from '$lib/server/push';
 
 let prevCurrentThemeID: string;
 let sent24HrNotif = false;
-// run this function every hour to check if there is a new theme
-schedule('0 */1 * * *', async () => {
+// run this function every 20 mins to check if there is a new theme
+schedule('*/20 * * * *', async () => {
+	console.log('running cronjob fn');
 	let currentTheme = await db.getCurrentTheme(new Date());
 	if (!currentTheme) return;
 
@@ -21,6 +22,8 @@ schedule('0 */1 * * *', async () => {
 
 	let timeDiff = currentTheme.dateEnd.getTime() - currentTheme.dateStart.getTime();
 	let hours = Math.floor(timeDiff / 1000 / 60 / 60);
+
+	console.log('hours until theme end: ', hours);
 
 	if (hours == 24 && !sent24HrNotif) {
 		let [subscriptions, previousTheme] = await Promise.all([
@@ -64,6 +67,8 @@ schedule('0 */1 * * *', async () => {
 		}
 		sent24HrNotif = true;
 	}
+
+	prevCurrentThemeID = currentTheme.themeID;
 });
 
 // this function is run on every request
