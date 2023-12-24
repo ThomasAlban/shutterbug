@@ -11,6 +11,7 @@ schedule('*/20 * * * *', async () => {
 	console.log('running cronjob fn');
 	let currentTheme = await db.getCurrentTheme(new Date());
 	if (!currentTheme) return;
+	console.log('prev id: ', prevCurrentThemeID, 'current id: ', currentTheme.themeID);
 
 	if (currentTheme.themeID !== prevCurrentThemeID) {
 		sendNotificationToAll({
