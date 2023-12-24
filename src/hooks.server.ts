@@ -13,7 +13,8 @@ schedule('*/20 * * * *', async () => {
 	if (!currentTheme) return;
 	console.log('prev id: ', prevCurrentThemeID, 'current id: ', currentTheme.themeID);
 
-	if (currentTheme.themeID !== prevCurrentThemeID) {
+	if (currentTheme.themeID !== prevCurrentThemeID && prevCurrentThemeID != undefined) {
+		console.log('sending notif');
 		sendNotificationToAll({
 			title: `New theme: ${currentTheme.theme}`,
 			body: "You can now also vote on your friends' submissions from last week!"
@@ -27,6 +28,7 @@ schedule('*/20 * * * *', async () => {
 	console.log('hours until theme end: ', hours);
 
 	if (hours == 24 && !sent24HrNotif) {
+		console.log('sending 24 hour notifications');
 		let [subscriptions, previousTheme] = await Promise.all([
 			db.getAllPushSubscriptions(),
 			db.getPreviousTheme(new Date())
