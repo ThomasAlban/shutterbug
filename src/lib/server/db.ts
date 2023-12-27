@@ -1105,7 +1105,7 @@ export async function deleteSubmission(userID: string, themeID: string) {
 }
 export async function setPushSubscription(userID: string, subscription: push.PushSubscription) {
 	try {
-		await db.pushSubscription.create({
+		let res = await db.pushSubscription.create({
 			data: {
 				userID,
 				endpoint: subscription.endpoint,
@@ -1113,6 +1113,7 @@ export async function setPushSubscription(userID: string, subscription: push.Pus
 				auth: subscription.keys.auth
 			}
 		});
+		console.log(res);
 	} catch (e) {
 		throw error(500, { message: 'database error: ' + (e as string) });
 	}
