@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { Form } from 'formsnap';
-	import { deleteReportSchema, createThemeSchema } from './schema';
+	import { deleteReportSchema, createThemeSchema, sendNotifSchema } from './schema';
 	export let data;
 	$: ({ reports, themes } = data);
 </script>
@@ -101,6 +101,28 @@
 	<button type="submit">Submit</button>
 </Form.Root>
 
+<h3>Send Notification</h3>
+
+<Form.Root form={data.sendNotifForm} schema={sendNotifSchema} let:config action="?/sendNotif">
+	<Form.Field name="userID" {config}>
+		<Form.Label>User ID:</Form.Label>
+		<Form.Input type="text" />
+		<Form.Description>(Leave blank to send to all)</Form.Description>
+		<Form.Validation />
+	</Form.Field>
+	<Form.Field name="title" {config}>
+		<Form.Label>Title:</Form.Label>
+		<Form.Input type="text" />
+		<Form.Validation />
+	</Form.Field>
+	<Form.Field name="body" {config}>
+		<Form.Label>Body:</Form.Label>
+		<Form.Input type="text" />
+		<Form.Validation />
+	</Form.Field>
+	<button type="submit">Submit</button>
+</Form.Root>
+
 <style>
 	table,
 	th,
@@ -108,5 +130,17 @@
 		border: 1px solid black;
 		border-collapse: collapse;
 		padding: 5px;
+	}
+	/* formsnap label */
+	:global([data-fs-label]) {
+		--size: 1.5;
+		--line-height: 2;
+
+		font-size: min(calc(var(--size) * 1rem), calc(var(--size) * var(--rem-vw-ratio) * 1vw));
+		line-height: min(calc(var(--line-height) * 1rem), calc(var(--line-height) * var(--rem-vw-ratio) * 1vw));
+		padding: 0;
+		margin: 0;
+
+		color: black;
 	}
 </style>

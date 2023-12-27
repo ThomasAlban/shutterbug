@@ -12,6 +12,7 @@ export async function sendNotification(userID: string, data: { title: string; bo
 	for (const subscription of subscriptions) {
 		try {
 			await push.sendNotification(subscription, JSON.stringify(data));
+			console.log('a');
 		} catch (e) {
 			await db.deletePushSubscription(userID, subscription.endpoint);
 		}

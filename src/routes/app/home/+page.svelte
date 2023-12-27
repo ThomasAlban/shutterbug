@@ -46,7 +46,7 @@
 			userVisibleOnly: true,
 			applicationServerKey: PUBLIC_VAPID_KEY
 		});
-		await fetch('/app/home', {
+		await fetch('/enableNotifs', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'

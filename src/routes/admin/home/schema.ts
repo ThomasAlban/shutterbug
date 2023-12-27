@@ -9,3 +9,8 @@ export const createThemeSchema = z.object({
 	dateStart: z.coerce.date(),
 	dateEnd: z.coerce.date().min(new Date(), { message: 'Date End must be in the future' })
 });
+export const sendNotifSchema = z.object({
+	userID: z.string().optional(),
+	title: z.string(),
+	body: z.string()
+});
