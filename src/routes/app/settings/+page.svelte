@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { dev } from '$app/environment';
 	import { PUBLIC_VAPID_KEY } from '$env/static/public';
 	import Button from '$lib/components/Button.svelte';
 	import FormButton from '$lib/components/FormButton.svelte';
@@ -8,16 +9,10 @@
 	let diagnostic: string = '';
 
 	onMount(async () => {
-		diagnostic += 'notif perm: ';
-		diagnostic += Notification.permission;
-		diagnostic += '; ';
-		let sw = await navigator.serviceWorker.ready;
-		if (sw) diagnostic += 'sw exists; ';
-		let subscription = await sw.pushManager.subscribe({
-			userVisibleOnly: true,
-			applicationServerKey: PUBLIC_VAPID_KEY
-		});
-		if (subscription) diagnostic += 'subscription generated; ';
+		console.log(navigator);
+		diagnostic += (await navigator.serviceWorker.getRegistration())
+			? 'service worker exists'
+			: 'service worker doesnt exist';
 	});
 
 	async function allowNotifications() {
@@ -35,6 +30,12 @@
 		});
 		successToast('Success', 'You can now receive notifications!');
 	}
+
+	async function registersw() {
+		let res = await navigator.serviceWorker.register('/service-worker.js', {
+			type: dev ? 'module' : 'classic'
+		});
+	}
 </script>
 
 <div class="wrapper">
@@ -44,6 +45,7 @@
 	<div class="links">
 		<Button link="/app/settings/editProfile" invertColor={true}>Edit Profile</Button>
 		<Button on:click={allowNotifications} invertColor={true}>Enable Notifications</Button>
+		<Button on:click={registersw} invertColor={true}>Register Service Worker</Button>
 		<FormButton action="/auth/logout" useEnhance={false} size={1.75} invertColor={true}>Log Out</FormButton>
 	</div>
 	<div class="diagnostic">
