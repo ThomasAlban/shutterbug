@@ -3,6 +3,22 @@
 	import Button from '$lib/components/Button.svelte';
 	import FormButton from '$lib/components/FormButton.svelte';
 	import { successToast } from '$lib/util';
+	import { onMount } from 'svelte';
+
+	let diagnostic: string = '';
+
+	onMount(async () => {
+		diagnostic += 'notif perm: ';
+		diagnostic += Notification.permission;
+		diagnostic += '; ';
+		let sw = await navigator.serviceWorker.ready;
+		if (sw) diagnostic += 'sw exists; ';
+		let subscription = await sw.pushManager.subscribe({
+			userVisibleOnly: true,
+			applicationServerKey: PUBLIC_VAPID_KEY
+		});
+		if (subscription) diagnostic += 'subscription generated; ';
+	});
 
 	async function allowNotifications() {
 		let sw = await navigator.serviceWorker.ready;
@@ -29,6 +45,9 @@
 		<Button link="/app/settings/editProfile" invertColor={true}>Edit Profile</Button>
 		<Button on:click={allowNotifications} invertColor={true}>Enable Notifications</Button>
 		<FormButton action="/auth/logout" useEnhance={false} size={1.75} invertColor={true}>Log Out</FormButton>
+	</div>
+	<div class="diagnostic">
+		{diagnostic}
 	</div>
 </div>
 

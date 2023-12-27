@@ -1115,6 +1115,7 @@ export async function setPushSubscription(userID: string, subscription: push.Pus
 		});
 		console.log(res);
 	} catch (e) {
+		console.log(e);
 		throw error(500, { message: 'database error: ' + (e as string) });
 	}
 }
