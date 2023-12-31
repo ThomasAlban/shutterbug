@@ -45,12 +45,12 @@
 	<div class="links">
 		<Button link="/app/settings/editProfile" invertColor={true}>Edit Profile</Button>
 		<Button on:click={allowNotifications} invertColor={true}>Enable Notifications</Button>
-		<Button on:click={registersw} invertColor={true}>Register Service Worker</Button>
+		<!-- <Button on:click={registersw} invertColor={true}>Register Service Worker</Button> -->
 		<FormButton action="/auth/logout" useEnhance={false} size={1.75} invertColor={true}>Log Out</FormButton>
 	</div>
-	<div class="diagnostic">
+	<!-- <div class="diagnostic">
 		{diagnostic}
-	</div>
+	</div> -->
 </div>
 
 <style>
