@@ -58,9 +58,10 @@ export const actions = {
 		if (form.data.userID) {
 			let userExists = await db.getClientUser(form.data.userID);
 			if (!userExists) return setError(form, 'userID', 'User does not exist');
-			console.log('sending');
+			console.log('sending to one');
 			result = await sendNotification(form.data.userID, data);
 		} else {
+			console.log('sending to all');
 			result = await sendNotificationToAll(data);
 		}
 		return { form, result };

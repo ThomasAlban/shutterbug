@@ -1,5 +1,5 @@
 import * as db from '$lib/server/db';
-import { sendNotification, sendNotificationToAll } from '$lib/server/push';
+import { sendNotificationToAll } from '$lib/server/push';
 
 // this should be run once every 24 hours at 12:15 pm
 async function GET() {
