@@ -16,10 +16,10 @@ async function GET() {
 
 	if (hoursAfterStart < 24) {
 		console.log('sending new theme notif');
-		sendNotificationToAll({
-			title: `New theme: ${currentTheme.theme}`,
-			body: "You can now also vote on your friends' submissions from last week!"
-		});
+		// sendNotificationToAll({
+		// 	title: `New theme: ${currentTheme.theme}`,
+		// 	body: "You can now also vote on your friends' submissions from last week!"
+		// });
 		return;
 	}
 
@@ -28,9 +28,9 @@ async function GET() {
 
 	if (hoursBeforeEnd < 24) {
 		console.log('sending 24 hr notif');
-		sendNotificationToAll({
-			title: 'Less than 24 hours left',
-			body: "Remember to submit a photo and vote if you haven't already!"
-		});
+		// sendNotificationToAll({
+		// 	title: 'Less than 24 hours left',
+		// 	body: "Remember to submit a photo and vote if you haven't already!"
+		// });
 	}
 }
